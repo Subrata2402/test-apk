@@ -13,12 +13,15 @@ export interface IRelease {
   sha256?: string;
   permissions?: string[];
   appIcon?: string;
+  uploadedByEmail?: string;
+  uploadedByName?: string;
 }
 
 export interface IMember {
   email: string;
   role: 'Owner' | 'Developer' | 'Tester';
   status: 'Pending' | 'Accepted';
+  name?: string;
 }
 
 export interface IApp extends Document {
@@ -50,12 +53,15 @@ const ReleaseSchema = new Schema<IRelease>({
   sha256: { type: String },
   permissions: { type: [String], default: [] },
   appIcon: { type: String },
+  uploadedByEmail: { type: String },
+  uploadedByName: { type: String },
 });
 
 const MemberSchema = new Schema<IMember>({
   email: { type: String, required: true },
   role: { type: String, enum: ['Owner', 'Developer', 'Tester'], required: true },
   status: { type: String, enum: ['Pending', 'Accepted'], default: 'Pending' },
+  name: { type: String },
 });
 
 const AppSchema = new Schema<IApp>(

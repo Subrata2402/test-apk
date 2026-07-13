@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import GoogleLoginModal from './components/GoogleLoginModal';
 import CreateAppModal from './components/CreateAppModal';
 import CustomDropdown from './components/CustomDropdown';
+import './App.css';
 
 export default function App() {
   const [user, setUser] = useState(null); // { name, email, avatar }
@@ -14,6 +15,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'dashboard'
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
 
   const fetchApps = async (token) => {
     try {
@@ -39,7 +41,10 @@ export default function App() {
   React.useEffect(() => {
     const checkLoggedIn = async () => {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token) {
+        setIsAuthChecking(false);
+        return;
+      }
 
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
@@ -58,14 +63,16 @@ export default function App() {
             picture: data.data.user.picture,
             role: data.data.user.role,
           });
+          await fetchApps(token);
           setCurrentView('dashboard');
-          fetchApps(token);
         } else {
           localStorage.removeItem('token');
         }
       } catch (err) {
         console.error('Auto-login failed:', err);
         localStorage.removeItem('token');
+      } finally {
+        setIsAuthChecking(false);
       }
     };
 
@@ -115,7 +122,12 @@ export default function App() {
 
   const handleCreateApp = async (newAppOrUpdatedApp, isUpdate = false) => {
     if (isUpdate) {
-      setApps(apps.map(a => (a._id === newAppOrUpdatedApp._id || a.id === newAppOrUpdatedApp.id) ? newAppOrUpdatedApp : a));
+      setApps(apps.map(a => {
+        const isMatch = newAppOrUpdatedApp._id
+          ? a._id === newAppOrUpdatedApp._id
+          : (newAppOrUpdatedApp.id && a.id === newAppOrUpdatedApp.id);
+        return isMatch ? newAppOrUpdatedApp : a;
+      }));
     } else {
       const token = localStorage.getItem('token');
       if (!token) return;
@@ -149,6 +161,15 @@ export default function App() {
     }
   };
 
+  if (isAuthChecking) {
+    return (
+      <div className="auth-loading-screen">
+        <div className="spinner"></div>
+        <p>Loading your workspace...</p>
+      </div>
+    );
+  }
+
   const selectedApp = apps.find(app => (app._id === selectedAppId || app.id === selectedAppId));
 
   return (
@@ -156,7 +177,7 @@ export default function App() {
       {/* Global Navigation Bar */}
       <header className="global-navbar glass-card">
         <div className="container nav-container">
-          <div className="nav-logo" onClick={() => setCurrentView('landing')} style={{ cursor: 'pointer' }}>
+          <div className="nav-logo" onClick={() => setCurrentView(user ? 'dashboard' : 'landing')} style={{ cursor: 'pointer' }}>
             <Icons.Cpu size={24} className="logo-icon" />
             <span className="logo-text">APK Release Manager</span>
           </div>
@@ -175,15 +196,6 @@ export default function App() {
           <div className="nav-actions">
             {user ? (
               <>
-                {currentView === 'landing' ? (
-                  <button className="btn btn-primary" onClick={() => setCurrentView('dashboard')}>
-                    <Icons.LayoutDashboard size={16} /> Go to Dashboard
-                  </button>
-                ) : (
-                  <button className="btn btn-secondary" onClick={() => setCurrentView('landing')}>
-                    <Icons.Globe size={16} /> View Public Page
-                  </button>
-                )}
                 <div className="user-nav-profile" title={user.email}>
                   <div className="user-nav-avatar">{user.avatar}</div>
                   <span className="user-nav-name">{user.name.split(' ')[0]}</span>
@@ -346,118 +358,6 @@ export default function App() {
           </div>
         </div>
       )}
-
-      <style>{`
-        .app-layout {
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .global-navbar {
-          position: sticky;
-          top: 0;
-          z-index: 100;
-          border-radius: 0;
-          border-top: none;
-          border-left: none;
-          border-right: none;
-          background: rgba(8, 7, 16, 0.8);
-          padding: 12px 0;
-          height: 64px;
-          display: flex;
-          align-items: center;
-        }
-
-        .nav-container {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 20px;
-        }
-
-        .nav-logo {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .nav-logo .logo-icon {
-          color: var(--accent-primary);
-        }
-
-        .nav-logo .logo-text {
-          font-weight: 800;
-          font-size: 1.2rem;
-          letter-spacing: -0.02em;
-          background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .nav-app-selector {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .selector-label {
-          font-size: 0.85rem;
-          color: var(--text-muted);
-          font-weight: 600;
-        }
-
-        .nav-select {
-          padding: 6px 12px;
-          font-size: 0.85rem;
-          background: rgba(255, 255, 255, 0.03);
-          border-color: var(--border-color);
-          border-radius: 8px;
-          color: #ffffff;
-          cursor: pointer;
-        }
-
-        .nav-actions {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .user-nav-profile {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid var(--border-color);
-          padding: 4px 12px 4px 4px;
-          border-radius: 20px;
-        }
-
-        .user-nav-avatar {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          background: var(--accent-secondary);
-          color: #ffffff;
-          font-weight: 700;
-          font-size: 0.75rem;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .user-nav-name {
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: #ffffff;
-        }
-
-        .main-content-container {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-      `}</style>
     </div>
   );
 }

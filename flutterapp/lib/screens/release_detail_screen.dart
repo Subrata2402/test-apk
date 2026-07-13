@@ -36,6 +36,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen>
   bool _isDownloaded = false;
   bool _isAppInstalled = false;
   File? _apkFile;
+  ImageProvider? _iconProvider;
 
   @override
   void initState() {
@@ -43,6 +44,9 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen>
     WidgetsBinding.instance.addObserver(this);
     _checkIfDownloaded();
     _checkIfAppInstalled();
+    if (widget.release.appIcon != null && widget.release.appIcon!.isNotEmpty) {
+      _iconProvider = _getIconProvider(widget.release.appIcon!);
+    }
   }
 
   @override
@@ -117,7 +121,35 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen>
         return;
       }
 
-      final contentLength = response.contentLength ?? 0;
+      int contentLength = response.contentLength ?? 0;
+      if (contentLength == 0) {
+        final contentLengthHeader = response.headers.entries
+            .firstWhere(
+              (e) => e.key.toLowerCase() == 'content-length',
+              orElse: () => const MapEntry('', ''),
+            )
+            .value;
+        if (contentLengthHeader.isNotEmpty) {
+          contentLength = int.tryParse(contentLengthHeader) ?? 0;
+        }
+      }
+
+      if (contentLength == 0 && widget.release.size.isNotEmpty) {
+        final sizeStr = widget.release.size.toLowerCase();
+        final parts = sizeStr.trim().split(RegExp(r'\s+'));
+        if (parts.length == 2) {
+          final val = double.tryParse(parts[0]) ?? 0.0;
+          final unit = parts[1];
+          if (unit.contains('mb')) {
+            contentLength = (val * 1024 * 1024).toInt();
+          } else if (unit.contains('kb')) {
+            contentLength = (val * 1024).toInt();
+          } else if (unit.contains('gb')) {
+            contentLength = (val * 1024 * 1024 * 1024).toInt();
+          }
+        }
+      }
+
       int received = 0;
       final List<int> bytes = [];
 
@@ -237,7 +269,9 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen>
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           image: DecorationImage(
-                            image: _getIconProvider(release.appIcon!),
+                            image:
+                                _iconProvider ??
+                                _getIconProvider(release.appIcon!),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -302,6 +336,70 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen>
                 _buildSectionTitle('Details'),
                 const SizedBox(height: 12),
                 _DetailGrid(release: release, app: widget.app),
+                if (release.uploadedByName != null &&
+                    release.uploadedByName!.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  _buildSectionTitle('Uploaded By'),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.04),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.08),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundColor: const Color(
+                            0xFF06B6D4,
+                          ).withValues(alpha: 0.15),
+                          child: Text(
+                            release.uploadedByName!
+                                .substring(
+                                  0,
+                                  release.uploadedByName!.length >= 2 ? 2 : 1,
+                                )
+                                .toUpperCase(),
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF22D3EE),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                release.uploadedByName!,
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                release.uploadedByEmail ?? '',
+                                style: GoogleFonts.inter(
+                                  fontSize: 11,
+                                  color: Colors.white38,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 if (release.sha256 != null && release.sha256!.isNotEmpty) ...[
                   const SizedBox(height: 24),
                   _buildSectionTitle('SHA-256 Hash'),

@@ -1,0 +1,343 @@
+.app-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: left;
+}
+
+.app-details-header {
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.app-header-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-icon-wrapper-sm {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.app-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-header-info code {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.tab-content-wrapper {
+  margin-top: 8px;
+}
+
+/* Upload Zone */
+.upload-zone {
+  border: 2px dashed var(--border-color);
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.upload-zone:hover,
+.upload-zone.dragging {
+  border-color: var(--accent-primary);
+  background: rgba(139, 92, 246, 0.03);
+}
+
+.upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.upload-icon {
+  color: var(--text-muted);
+  transition: var(--transition-smooth);
+}
+
+.upload-zone:hover .upload-icon {
+  color: var(--accent-primary);
+  transform: translateY(-4px);
+}
+
+.upload-limits {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.upload-progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-primary);
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+@keyframes pulse-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+.progress-bar-pulse {
+  width: 30% !important;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-secondary, #a78bfa), transparent);
+  animation: pulse-sweep 1.4s ease-in-out infinite;
+}
+
+/* Release Form */
+.release-form-container {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.release-form-header {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 16px;
+}
+
+.release-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Releases List */
+.releases-list-section {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-releases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.dashboard-release-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.release-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.release-card-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.release-card-notes {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  flex: 1;
+  white-space: pre-line;
+}
+
+.release-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  margin-top: 8px;
+}
+
+.release-card-size {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.release-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon-only {
+  padding: 8px;
+  border-radius: 8px;
+}
+
+/* Collaborators Tab */
+.collaborators-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.invite-form-container {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invite-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.invite-form {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 576px) {
+  .invite-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.input-with-icon {
+  position: relative;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.invite-btn {
+  height: 46px;
+  padding: 0 24px;
+}
+
+.collaborators-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.collaborators-list {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.collaborator-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.collaborator-item:last-child {
+  border-bottom: none;
+}
+
+.collaborator-info-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.collaborator-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.collaborator-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.collaborator-email {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.empty-state {
+  padding: 48px;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  color: var(--text-muted);
+}

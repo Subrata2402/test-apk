@@ -380,7 +380,7 @@ class _AppListScreenState extends State<AppListScreen> {
 
   Widget _buildAppCard(AppModel app) {
     final latestRelease = app.releases.isNotEmpty
-        ? app.releases.first.version
+        ? 'v${app.releases.first.version} (${app.releases.first.buildNumber})'
         : 'None';
     final totalReleases = app.releases.length;
     final totalMembers = app.members.length;
@@ -470,10 +470,7 @@ class _AppListScreenState extends State<AppListScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildCardStat(
-                  'Latest',
-                  latestRelease == 'None' ? 'None' : 'v$latestRelease',
-                ),
+                _buildCardStat('Latest', latestRelease),
                 _buildCardStat('Releases', '$totalReleases'),
                 _buildCardStat('Members', '$totalMembers'),
               ],
@@ -534,8 +531,11 @@ class _AppListScreenState extends State<AppListScreen> {
   }
 
   Widget _buildError() {
-    return Center(
-      child: Padding(
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        height: MediaQuery.of(context).size.height - 150,
+        alignment: Alignment.center,
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -568,28 +568,33 @@ class _AppListScreenState extends State<AppListScreen> {
   }
 
   Widget _buildEmpty() {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.lock_person_rounded,
-            size: 56,
-            color: Colors.white.withValues(alpha: 0.1),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            "You haven't been added\nto any app yet.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white38, fontSize: 15),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Ask a developer to invite you as a Tester.',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(color: Colors.white24, fontSize: 13),
-          ),
-        ],
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Container(
+        height: MediaQuery.of(context).size.height - 150,
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.lock_person_rounded,
+              size: 56,
+              color: Colors.white.withValues(alpha: 0.1),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "You haven't been added\nto any app yet.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: Colors.white38, fontSize: 15),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Ask a developer to invite you as a Tester.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(color: Colors.white24, fontSize: 13),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'api_client.dart';
 import 'storage_service.dart';
@@ -43,7 +44,7 @@ class AuthService {
       }
       return null;
     } catch (e) {
-      print('Google Sign-In Error: $e');
+      developer.log('Google Sign-In Error', error: e);
       return null;
     }
   }

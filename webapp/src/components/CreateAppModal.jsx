@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react';
+import './CreateAppModal.css';
 
 export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, showAlert }) {
   const [appName, setAppName] = useState('');
@@ -14,54 +15,35 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
       showAlert('Please fill in all fields', 'Warning', 'warning');
       return;
     }
-
-    const newApp = {
-      name: appName,
-      packageName,
-      description,
-      category: 'Android App',
-      icon: 'Android',
-      downloads: '0',
-      rating: '0.0',
-      activeUsers: '0',
-      screenshots: [
-        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        'linear-gradient(135deg, #2af598 0%, #009efd 100%)'
-      ],
-      releases: [],
-      members: [
-        { email: user.email, role: 'Owner' }
-      ]
-    };
-
-    onCreateApp(newApp);
-    onClose();
-
-    // Reset form
+    onCreateApp({ name: appName, packageName, description });
     setAppName('');
     setPackageName('');
     setDescription('');
+    onClose();
   };
 
   return (
-    <div className="modal-overlay flex-center">
-      <div className="modal-container glass-card animate-fade-in" style={{ maxWidth: '500px' }}>
+    <div className="modal-overlay">
+      <div className="modal-container glass-panel animate-fade-in">
         <button className="modal-close" onClick={onClose}>
           <Icons.X size={20} />
         </button>
 
         <div className="modal-header">
-          <h2>Create New Application</h2>
-          <p>Register your application to start uploading releases and inviting collaborators.</p>
+          <h2>Create Application</h2>
+          <p>Register a new application to start managing its releases.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="create-app-form">
           <div className="form-group">
-            <label className="form-label">Application Name</label>
+            <label htmlFor="appName" className="form-label">
+              Application Name
+            </label>
             <input
               type="text"
+              id="appName"
               className="form-input"
-              placeholder="e.g., AeroPlayer Pro"
+              placeholder="e.g., My Awesome App"
               value={appName}
               onChange={(e) => setAppName(e.target.value)}
               required
@@ -69,11 +51,14 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
           </div>
 
           <div className="form-group">
-            <label className="form-label">Package Name (Unique ID)</label>
+            <label htmlFor="packageName" className="form-label">
+              Package Name (Application ID)
+            </label>
             <input
               type="text"
+              id="packageName"
               className="form-input"
-              placeholder="e.g., com.aero.player.pro"
+              placeholder="e.g., com.example.myapp"
               value={packageName}
               onChange={(e) => setPackageName(e.target.value)}
               required
@@ -81,12 +66,16 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
           </div>
 
           <div className="form-group">
-            <label className="form-label">Description</label>
+            <label htmlFor="description" className="form-label">
+              Description
+            </label>
             <textarea
-              className="form-textarea"
-              placeholder="Describe what your application does..."
+              id="description"
+              className="form-input"
+              placeholder="Briefly describe what this application does..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              rows="3"
               required
             />
           </div>
@@ -101,94 +90,6 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
           </div>
         </form>
       </div>
-
-      <style>{`
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.7);
-          backdrop-filter: blur(8px);
-          z-index: 1000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .modal-container {
-          width: 100%;
-          max-width: 500px;
-          padding: 32px;
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-          border-radius: 20px;
-          background: rgba(15, 15, 25, 0.85);
-        }
-
-        .modal-close {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          background: transparent;
-          border: none;
-          color: var(--text-secondary);
-          cursor: pointer;
-          padding: 4px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: var(--transition-smooth);
-        }
-
-        .modal-close:hover {
-          background: rgba(255, 255, 255, 0.05);
-          color: #ffffff;
-        }
-
-        .modal-header {
-          text-align: left;
-          margin-bottom: 8px;
-        }
-
-        .modal-header h2 {
-          font-size: 1.5rem;
-          margin-bottom: 6px;
-        }
-
-        .modal-header p {
-          font-size: 0.9rem;
-          color: var(--text-secondary);
-        }
-
-        .create-app-form {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        .form-row {
-          display: flex;
-          gap: 16px;
-        }
-
-        @media (max-width: 576px) {
-          .form-row {
-            flex-direction: column;
-            gap: 20px;
-          }
-        }
-
-        .modal-actions {
-          display: flex;
-          justify-content: flex-end;
-          gap: 12px;
-          border-top: 1px solid var(--border-color);
-          padding-top: 20px;
-          margin-top: 10px;
-        }
-      `}</style>
     </div>
   );
 }

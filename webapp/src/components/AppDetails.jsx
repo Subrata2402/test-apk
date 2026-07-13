@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import * as Icons from 'lucide-react';
 import CustomDropdown from './CustomDropdown';
+import './AppDetails.css';
 
 export default function AppDetails({ app, user, onUpdateApp, showAlert, showConfirm }) {
   const [activeTab, setActiveTab] = useState('releases'); // 'releases' | 'collaborators'
@@ -10,6 +11,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
   const isMock = !app._id;
   const currentUserMember = app.members.find(m => m.email.toLowerCase() === user.email.toLowerCase());
   const canUpload = !isMock && currentUserMember && (currentUserMember.role === 'Owner' || currentUserMember.role === 'Developer');
+  const canInvite = !isMock && currentUserMember && (currentUserMember.role === 'Owner' || currentUserMember.role === 'Developer');
 
   // APK Upload States
   const [isDragging, setIsDragging] = useState(false);
@@ -26,6 +28,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
 
   const [selectedRelease, setSelectedRelease] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [downloadingBuild, setDownloadingBuild] = useState(null);
 
   const fileInputRef = useRef(null);
 
@@ -136,6 +139,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
     const token = localStorage.getItem('token');
     if (!token) return;
 
+    setDownloadingBuild(buildNumber);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/apps/${app._id || app.id}/releases/${buildNumber}/download`, {
         headers: {
@@ -161,6 +165,8 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
     } catch (err) {
       console.error('Download failed:', err);
       alert('Failed to download APK');
+    } finally {
+      setDownloadingBuild(null);
     }
   };
 
@@ -474,8 +480,18 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleDownload(release.buildNumber, release.version)}
+                            disabled={downloadingBuild !== null}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                           >
-                            <Icons.Download size={14} /> Download
+                            {downloadingBuild === release.buildNumber ? (
+                              <>
+                                <Icons.Loader size={14} className="animate-spin" /> Preparing...
+                              </>
+                            ) : (
+                              <>
+                                <Icons.Download size={14} /> Download
+                              </>
+                            )}
                           </button>
                         </div>
                       </div>
@@ -489,41 +505,51 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
           <div className="collaborators-tab-content animate-fade-in">
             {/* Invite Form */}
             {!isMock ? (
-              <div className="invite-form-container glass-card">
-                <h3>Invite Collaborator</h3>
-                <p className="invite-desc">Invite developers to upload releases or testers to download and test builds.</p>
+              canInvite ? (
+                <div className="invite-form-container glass-card">
+                  <h3>Invite Collaborator</h3>
+                  <p className="invite-desc">Invite developers to upload releases or testers to download and test builds.</p>
 
-                <form onSubmit={handleInviteSubmit} className="invite-form">
-                  <div className="form-group" style={{ flex: 2 }}>
-                    <label className="form-label">Email Address</label>
-                    <div className="input-with-icon">
-                      <Icons.Mail size={16} className="input-icon" />
-                      <input
-                        type="email"
-                        className="form-input"
-                        placeholder="developer@company.com"
-                        value={inviteEmail}
-                        onChange={(e) => setInviteEmail(e.target.value)}
-                        required
-                        style={{ paddingLeft: '40px' }}
+                  <form onSubmit={handleInviteSubmit} className="invite-form">
+                    <div className="form-group" style={{ flex: 2 }}>
+                      <label className="form-label">Email Address</label>
+                      <div className="input-with-icon">
+                        <Icons.Mail size={16} className="input-icon" />
+                        <input
+                          type="email"
+                          className="form-input"
+                          placeholder="developer@company.com"
+                          value={inviteEmail}
+                          onChange={(e) => setInviteEmail(e.target.value)}
+                          required
+                          style={{ paddingLeft: '40px' }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group" style={{ flex: 1 }}>
+                      <label className="form-label">Role</label>
+                      <CustomDropdown
+                        options={['Developer', 'Tester']}
+                        value={inviteRole}
+                        onChange={setInviteRole}
                       />
                     </div>
-                  </div>
 
-                  <div className="form-group" style={{ flex: 1 }}>
-                    <label className="form-label">Role</label>
-                    <CustomDropdown
-                      options={['Developer', 'Tester']}
-                      value={inviteRole}
-                      onChange={setInviteRole}
-                    />
-                  </div>
-
-                  <button type="submit" className="btn btn-primary invite-btn">
-                    <Icons.UserPlus size={16} /> Send Invitation
-                  </button>
-                </form>
-              </div>
+                    <div className="form-group" style={{ justifyContent: 'flex-end' }}>
+                      <label className="form-label" style={{ visibility: 'hidden' }}>Invite</label>
+                      <button type="submit" className="btn btn-primary invite-btn">
+                        <Icons.UserPlus size={16} /> Send Invitation
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ) : (
+                <div className="glass-card" style={{ padding: '24px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.4)', marginBottom: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                  <Icons.Lock size={24} style={{ color: 'rgba(255, 255, 255, 0.2)' }} />
+                  <p style={{ margin: 0 }}>Only owners and developers can invite collaborators.</p>
+                </div>
+              )
             ) : (
               <div className="glass-card" style={{ padding: '24px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.4)', marginBottom: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                 <Icons.Lock size={24} style={{ color: 'rgba(255, 255, 255, 0.2)' }} />
@@ -539,11 +565,12 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                   <div key={idx} className="collaborator-item">
                     <div className="collaborator-info-main">
                       <div className="collaborator-avatar">
-                        {member.email.substring(0, 2).toUpperCase()}
+                        {(member.name || member.email).substring(0, 2).toUpperCase()}
                       </div>
                       <div className="collaborator-details">
-                        <span className="collaborator-email">{member.email}</span>
-                        <span className="collaborator-role-badge">
+                        <span className="collaborator-name" style={{ fontWeight: '600', color: '#ffffff' }}>{member.name || member.email.split('@')[0]}</span>
+                        <span className="collaborator-email" style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{member.email}</span>
+                        <span className="collaborator-role-badge" style={{ marginTop: '4px' }}>
                           <span className={`badge ${member.role === 'Owner' ? 'badge-primary' : member.role === 'Developer' ? 'badge-secondary' : 'badge-success'}`}>
                             {member.role}
                           </span>
@@ -555,7 +582,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                         </span>
                       </div>
                     </div>
-                    {member.role !== 'Owner' && (
+                    {member.role !== 'Owner' && canInvite && (
                       <button className="btn btn-danger btn-sm btn-icon-only" onClick={() => handleRemoveMember(member.email)} title="Remove Member">
                         <Icons.UserMinus size={14} />
                       </button>
@@ -568,345 +595,6 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
         )}
       </div>
 
-      <style>{`
-        .app-details-container {
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-          text-align: left;
-        }
-
-        .app-details-header {
-          padding: 24px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 16px;
-        }
-
-        .app-header-main {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .app-icon-wrapper-sm {
-          width: 56px;
-          height: 56px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #ffffff;
-        }
-
-        .app-header-info {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .app-header-title-row {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .app-header-info code {
-          font-size: 0.8rem;
-          color: var(--text-secondary);
-        }
-
-        .tab-content-wrapper {
-          margin-top: 8px;
-        }
-
-        /* Upload Zone */
-        .upload-zone {
-          border: 2px dashed var(--border-color);
-          border-radius: 16px;
-          padding: 48px;
-          text-align: center;
-          cursor: pointer;
-          transition: var(--transition-smooth);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          background: rgba(255, 255, 255, 0.01);
-        }
-
-        .upload-zone:hover, .upload-zone.dragging {
-          border-color: var(--accent-primary);
-          background: rgba(139, 92, 246, 0.03);
-        }
-
-        .upload-prompt {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .upload-icon {
-          color: var(--text-muted);
-          transition: var(--transition-smooth);
-        }
-
-        .upload-zone:hover .upload-icon {
-          color: var(--accent-primary);
-          transform: translateY(-4px);
-        }
-
-        .upload-limits {
-          font-size: 0.75rem;
-          color: var(--text-muted);
-        }
-
-        .upload-progress-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 16px;
-          width: 100%;
-          max-width: 300px;
-        }
-
-        .progress-bar-bg {
-          width: 100%;
-          height: 6px;
-          background: rgba(255, 255, 255, 0.05);
-          border-radius: 3px;
-          overflow: hidden;
-        }
-
-        .progress-bar-fill {
-          height: 100%;
-          background: var(--accent-primary);
-          border-radius: 3px;
-          transition: width 0.2s ease;
-        }
-
-        @keyframes pulse-sweep {
-          0%   { transform: translateX(-100%); }
-          100% { transform: translateX(400%); }
-        }
-
-        .progress-bar-pulse {
-          width: 30% !important;
-          background: linear-gradient(90deg, transparent, var(--accent-primary), var(--accent-secondary, #a78bfa), transparent);
-          animation: pulse-sweep 1.4s ease-in-out infinite;
-        }
-
-        /* Release Form */
-        .release-form-container {
-          padding: 28px;
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        .release-form-header {
-          display: flex;
-          gap: 16px;
-          align-items: center;
-          border-bottom: 1px solid var(--border-color);
-          padding-bottom: 16px;
-        }
-
-        .release-form {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        /* Releases List */
-        .releases-list-section {
-          margin-top: 32px;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .dashboard-releases-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 20px;
-        }
-
-        .dashboard-release-card {
-          padding: 20px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .release-card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-        }
-
-        .release-card-date {
-          font-size: 0.8rem;
-          color: var(--text-muted);
-        }
-
-        .release-card-notes {
-          font-size: 0.9rem;
-          color: var(--text-secondary);
-          flex: 1;
-          white-space: pre-line;
-        }
-
-        .release-card-footer {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-top: 1px solid var(--border-color);
-          padding-top: 12px;
-          margin-top: 8px;
-        }
-
-        .release-card-size {
-          font-size: 0.8rem;
-          color: var(--text-muted);
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .release-card-actions {
-          display: flex;
-          gap: 8px;
-        }
-
-        .btn-icon-only {
-          padding: 8px;
-          border-radius: 8px;
-        }
-
-        /* Collaborators Tab */
-        .collaborators-tab-content {
-          display: flex;
-          flex-direction: column;
-          gap: 28px;
-        }
-
-        .invite-form-container {
-          padding: 24px;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .invite-desc {
-          font-size: 0.9rem;
-          color: var(--text-secondary);
-          margin-bottom: 8px;
-        }
-
-        .invite-form {
-          display: flex;
-          gap: 16px;
-          align-items: flex-end;
-          flex-wrap: wrap;
-        }
-
-        @media (max-width: 576px) {
-          .invite-form {
-            flex-direction: column;
-            align-items: stretch;
-          }
-        }
-
-        .input-with-icon {
-          position: relative;
-          width: 100%;
-        }
-
-        .input-icon {
-          position: absolute;
-          left: 14px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--text-muted);
-        }
-
-        .invite-btn {
-          height: 46px;
-          padding: 0 24px;
-        }
-
-        .collaborators-list-section {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .collaborators-list {
-          display: flex;
-          flex-direction: column;
-          border-radius: 12px;
-          overflow: hidden;
-        }
-
-        .collaborator-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 16px 20px;
-          border-bottom: 1px solid var(--border-color);
-        }
-
-        .collaborator-item:last-child {
-          border-bottom: none;
-        }
-
-        .collaborator-info-main {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .collaborator-avatar {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid var(--border-color);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 0.8rem;
-          color: var(--text-secondary);
-        }
-
-        .collaborator-details {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .collaborator-email {
-          font-weight: 600;
-          font-size: 0.95rem;
-        }
-
-        .empty-state {
-          padding: 48px;
-          flex-direction: column;
-          gap: 12px;
-          color: var(--text-secondary);
-        }
-
-        .empty-icon {
-          color: var(--text-muted);
-        }
-      `}</style>
 
       {/* Release Details Modal */}
       {selectedRelease && (
@@ -955,6 +643,14 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                 <span className="detail-label">Upload Date</span>
                 <span className="detail-value">{selectedRelease.date}</span>
               </div>
+              {selectedRelease.uploadedByName && (
+                <div className="detail-item" style={{ gridColumn: 'span 2' }}>
+                  <span className="detail-label">Uploaded By</span>
+                  <span className="detail-value">
+                    {selectedRelease.uploadedByName} ({selectedRelease.uploadedByEmail})
+                  </span>
+                </div>
+              )}
             </div>
 
             {selectedRelease.sha256 && (
@@ -992,10 +688,19 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                 className="btn btn-primary"
                 onClick={() => {
                   handleDownload(selectedRelease.buildNumber, selectedRelease.version);
-                  setSelectedRelease(null);
                 }}
+                disabled={downloadingBuild !== null}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                <Icons.Download size={16} /> Download APK
+                {downloadingBuild === selectedRelease.buildNumber ? (
+                  <>
+                    <Icons.Loader size={16} className="animate-spin" /> Preparing Download...
+                  </>
+                ) : (
+                  <>
+                    <Icons.Download size={16} /> Download APK
+                  </>
+                )}
               </button>
             </div>
           </div>

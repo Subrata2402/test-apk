@@ -4,17 +4,20 @@ class MemberModel {
   final String email;
   final String role;
   final String status;
+  final String name;
 
   const MemberModel({
     required this.email,
     required this.role,
     required this.status,
+    required this.name,
   });
 
   factory MemberModel.fromJson(Map<String, dynamic> json) => MemberModel(
     email: json['email'] as String? ?? '',
     role: json['role'] as String? ?? '',
     status: json['status'] as String? ?? '',
+    name: json['name'] as String? ?? '',
   );
 }
 

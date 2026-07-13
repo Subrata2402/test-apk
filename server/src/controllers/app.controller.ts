@@ -1,5 +1,21 @@
 import { Request, Response, NextFunction } from 'express';
 import { App } from '../models/app.model.js';
+import { User } from '../models/user.model.js';
+
+const populateMemberNames = async (apps: any[]): Promise<any[]> => {
+  const emails = apps.flatMap(app => app.members.map((m: any) => m.email.toLowerCase()));
+  const users = await User.find({ email: { $in: emails } });
+  const userMap = new Map(users.map(u => [u.email.toLowerCase(), u.name]));
+
+  return apps.map(app => {
+    const appObj = app.toObject ? app.toObject() : app;
+    appObj.members = appObj.members.map((m: any) => ({
+      ...m,
+      name: userMap.get(m.email.toLowerCase()) || m.email.split('@')[0],
+    }));
+    return appObj;
+  });
+};
 
 export const createApp = async (
   req: Request,
@@ -51,7 +67,7 @@ export const createApp = async (
     res.status(201).json({
       status: 'success',
       data: {
-        app: newApp,
+        app: (await populateMemberNames([newApp]))[0],
       },
     });
   } catch (error) {
@@ -87,7 +103,7 @@ export const getApps = async (
       status: 'success',
       results: apps.length,
       data: {
-        apps,
+        apps: await populateMemberNames(apps),
       },
     });
   } catch (error) {
@@ -199,6 +215,8 @@ export const uploadApk = async (
       sha256: parsed.sha256,
       permissions: parsed.permissions,
       appIcon: parsed.appIcon,
+      uploadedByEmail: req.user.email,
+      uploadedByName: req.user.name,
     };
 
     app.releases.unshift(newRelease);
@@ -208,7 +226,7 @@ export const uploadApk = async (
       status: 'success',
       data: {
         release: newRelease,
-        app,
+        app: (await populateMemberNames([app]))[0],
       },
     });
   } catch (error) {
@@ -342,7 +360,7 @@ export const deleteRelease = async (
     res.status(200).json({
       status: 'success',
       data: {
-        app,
+        app: (await populateMemberNames([app]))[0],
       },
     });
   } catch (error) {
@@ -407,7 +425,7 @@ export const inviteMember = async (
     res.status(200).json({
       status: 'success',
       data: {
-        app,
+        app: (await populateMemberNames([app]))[0],
       },
     });
   } catch (error) {
@@ -460,7 +478,7 @@ export const removeMember = async (
     res.status(200).json({
       status: 'success',
       data: {
-        app,
+        app: (await populateMemberNames([app]))[0],
       },
     });
   } catch (error) {
@@ -495,7 +513,7 @@ export const getInvitations = async (
       status: 'success',
       results: apps.length,
       data: {
-        apps,
+        apps: await populateMemberNames(apps),
       },
     });
   } catch (error) {
@@ -535,7 +553,7 @@ export const acceptInvitation = async (
     res.status(200).json({
       status: 'success',
       data: {
-        app,
+        app: (await populateMemberNames([app]))[0],
       },
     });
   } catch (error) {

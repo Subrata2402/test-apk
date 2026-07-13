@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/auth_service.dart';
+import '../core/constants.dart';
+import '../core/app_colors.dart';
 import 'app_list_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -54,8 +56,7 @@ class _LoginScreenState extends State<LoginScreen>
     } else {
       setState(() {
         _isLoading = false;
-        _errorMessage =
-            'Sign-in failed. Please ensure you are a registered tester.';
+        _errorMessage = kLoginErrorMsg;
       });
     }
   }
@@ -63,13 +64,17 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF080710),
+      backgroundColor: AppColors.background,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF0F0F19), Color(0xFF1A0B2E), Color(0xFF080710)],
+            colors: [
+              AppColors.gradientStart,
+              AppColors.gradientMiddle,
+              AppColors.background,
+            ],
           ),
         ),
         child: SafeArea(
@@ -93,11 +98,11 @@ class _LoginScreenState extends State<LoginScreen>
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
                         gradient: const LinearGradient(
-                          colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+                          colors: [AppColors.primary, AppColors.primaryDark],
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF8B5CF6).withOpacity(0.35),
+                            color: AppColors.primary.withValues(alpha: 0.35),
                             blurRadius: 20,
                             spreadRadius: 2,
                           ),
@@ -111,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'TestAPK',
+                      kAppName,
                       style: GoogleFonts.inter(
                         fontSize: 30,
                         fontWeight: FontWeight.w700,
@@ -121,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Your gateway to beta releases',
+                      kLoginSubtitle,
                       style: GoogleFonts.inter(
                         fontSize: 14,
                         color: Colors.white54,
@@ -136,23 +141,23 @@ class _LoginScreenState extends State<LoginScreen>
                       children: const [
                         _FeatureChip(
                           icon: Icons.android,
-                          label: 'Beta Testing',
+                          label: kFeatureBetaTesting,
                         ),
                         _FeatureChip(
                           icon: Icons.download_rounded,
-                          label: 'APK Downloads',
+                          label: kFeatureApkDownloads,
                         ),
                         _FeatureChip(
                           icon: Icons.notes_rounded,
-                          label: 'Release Notes',
+                          label: kFeatureReleaseNotes,
                         ),
                         _FeatureChip(
                           icon: Icons.verified_rounded,
-                          label: 'Verified Builds',
+                          label: kFeatureVerifiedBuilds,
                         ),
                         _FeatureChip(
                           icon: Icons.security,
-                          label: 'SHA-256 Verified',
+                          label: kFeatureSha256,
                         ),
                       ],
                     ),
@@ -162,32 +167,30 @@ class _LoginScreenState extends State<LoginScreen>
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.04),
+                        color: Colors.white.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.08),
+                          color: Colors.white.withValues(alpha: 0.08),
                         ),
                       ),
                       child: Column(
                         children: [
                           _InfoRow(
                             icon: Icons.lock_person_rounded,
-                            title: 'Tester Access Only',
-                            subtitle:
-                                'Only invited testers can access app releases.',
+                            title: kInfoTitleTesterAccess,
+                            subtitle: kInfoSubtitleTesterAccess,
                           ),
                           const Divider(color: Colors.white12, height: 24),
                           _InfoRow(
                             icon: Icons.cloud_done_rounded,
-                            title: 'Secure Cloud Storage',
-                            subtitle:
-                                'APKs stored on Google Drive, delivered securely.',
+                            title: kInfoTitleSecureStorage,
+                            subtitle: kInfoSubtitleSecureStorage,
                           ),
                           const Divider(color: Colors.white12, height: 24),
                           _InfoRow(
                             icon: Icons.notifications_active_rounded,
-                            title: 'Always Up-to-Date',
-                            subtitle: 'Instant access to the latest builds.',
+                            title: kInfoTitleAlwaysUpToDate,
+                            subtitle: kInfoSubtitleAlwaysUpToDate,
                           ),
                         ],
                       ),
@@ -201,10 +204,10 @@ class _LoginScreenState extends State<LoginScreen>
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
+                          color: Colors.red.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: Colors.red.withOpacity(0.3),
+                            color: Colors.red.withValues(alpha: 0.3),
                           ),
                         ),
                         child: Text(
@@ -236,13 +239,16 @@ class _LoginScreenState extends State<LoginScreen>
                                 'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
                                 width: 22,
                                 height: 22,
-                                errorBuilder: (_, __, ___) => const Icon(
-                                  Icons.login,
-                                  color: Colors.white,
-                                ),
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const Icon(
+                                      Icons.login,
+                                      color: Colors.white,
+                                    ),
                               ),
                         label: Text(
-                          _isLoading ? 'Signing in…' : 'Continue with Google',
+                          _isLoading
+                              ? kLoginSigningIn
+                              : kLoginContinueWithGoogle,
                           style: GoogleFonts.inter(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -250,10 +256,10 @@ class _LoginScreenState extends State<LoginScreen>
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF8B5CF6),
-                          disabledBackgroundColor: const Color(
-                            0xFF8B5CF6,
-                          ).withOpacity(0.5),
+                          backgroundColor: AppColors.primary,
+                          disabledBackgroundColor: AppColors.primary.withValues(
+                            alpha: 0.5,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -263,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'By signing in, you confirm you are an authorized tester.',
+                      kLoginConfirmation,
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         color: Colors.white30,
@@ -291,20 +297,20 @@ class _FeatureChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF8B5CF6).withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: const Color(0xFF8B5CF6).withOpacity(0.25)),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: const Color(0xFF8B5CF6)),
+          Icon(icon, size: 14, color: AppColors.primary),
           const SizedBox(width: 6),
           Text(
             label,
             style: GoogleFonts.inter(
               fontSize: 12,
-              color: const Color(0xFFD8B4FE),
+              color: AppColors.primaryLight,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -333,10 +339,10 @@ class _InfoRow extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFF8B5CF6).withOpacity(0.12),
+            color: AppColors.primary.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: const Color(0xFF8B5CF6), size: 18),
+          child: Icon(icon, color: AppColors.primary, size: 18),
         ),
         const SizedBox(width: 14),
         Expanded(

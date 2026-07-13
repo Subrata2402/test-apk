@@ -10,6 +10,8 @@ class ReleaseModel {
   final String? targetSdkVersion;
   final List<String> permissions;
   final String? appIcon; // base64
+  final String? uploadedByEmail;
+  final String? uploadedByName;
 
   const ReleaseModel({
     required this.buildNumber,
@@ -23,6 +25,8 @@ class ReleaseModel {
     this.targetSdkVersion,
     this.permissions = const [],
     this.appIcon,
+    this.uploadedByEmail,
+    this.uploadedByName,
   });
 
   factory ReleaseModel.fromJson(Map<String, dynamic> json) => ReleaseModel(
@@ -38,5 +42,7 @@ class ReleaseModel {
     permissions:
         (json['permissions'] as List?)?.map((e) => e.toString()).toList() ?? [],
     appIcon: json['appIcon'] as String?,
+    uploadedByEmail: json['uploadedByEmail'] as String?,
+    uploadedByName: json['uploadedByName'] as String?,
   );
 }

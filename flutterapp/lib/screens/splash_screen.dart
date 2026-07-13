@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/auth_service.dart';
+import '../core/app_colors.dart';
 import 'app_list_screen.dart';
 import 'login_screen.dart';
 
@@ -55,13 +56,17 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF080710),
+      backgroundColor: AppColors.background,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF0F0F19), Color(0xFF1A0B2E), Color(0xFF080710)],
+            colors: [
+              AppColors.gradientStart,
+              AppColors.gradientMiddle,
+              AppColors.background,
+            ],
           ),
         ),
         child: Center(
@@ -78,11 +83,11 @@ class _SplashScreenState extends State<SplashScreen>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
+                        colors: [AppColors.primary, AppColors.primaryDark],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF8B5CF6).withOpacity(0.4),
+                          color: AppColors.primary.withValues(alpha: 0.4),
                           blurRadius: 24,
                           spreadRadius: 4,
                         ),
@@ -119,7 +124,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        const Color(0xFF8B5CF6).withOpacity(0.8),
+                        AppColors.primary.withValues(alpha: 0.8),
                       ),
                     ),
                   ),
