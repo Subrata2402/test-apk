@@ -182,16 +182,7 @@ export default function App() {
             <span className="logo-text">APK Release Manager</span>
           </div>
 
-          {currentView === 'landing' && apps.length > 0 && (
-            <div className="nav-app-selector" style={{ minWidth: '180px' }}>
-              <span className="selector-label">Viewing:</span>
-              <CustomDropdown
-                options={apps.map(app => ({ value: app.id, label: app.name, icon: app.icon }))}
-                value={selectedAppId}
-                onChange={setSelectedAppId}
-              />
-            </div>
-          )}
+
 
           <div className="nav-actions">
             {user ? (
@@ -214,9 +205,7 @@ export default function App() {
       <div className="container main-content-container">
         {currentView === 'landing' ? (
           <LandingPage
-            app={selectedApp}
             onLoginClick={() => setIsLoginModalOpen(true)}
-            showAlert={showAlert}
           />
         ) : (
           <Dashboard
