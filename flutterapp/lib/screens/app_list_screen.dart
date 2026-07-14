@@ -44,16 +44,11 @@ class _AppListScreenState extends State<AppListScreen> {
       if (appsResponse.statusCode == 200 && invitesResponse.statusCode == 200) {
         final appsBody = jsonDecode(appsResponse.body) as Map<String, dynamic>;
         final appsList = appsBody['data']['apps'] as List;
-        final apps = appsList
-            .map((a) => AppModel.fromJson(a as Map<String, dynamic>))
-            .toList();
+        final apps = appsList.map((a) => AppModel.fromJson(a as Map<String, dynamic>)).toList();
 
-        final invitesBody =
-            jsonDecode(invitesResponse.body) as Map<String, dynamic>;
+        final invitesBody = jsonDecode(invitesResponse.body) as Map<String, dynamic>;
         final invitesList = invitesBody['data']['apps'] as List;
-        final invitations = invitesList
-            .map((a) => AppModel.fromJson(a as Map<String, dynamic>))
-            .toList();
+        final invitations = invitesList.map((a) => AppModel.fromJson(a as Map<String, dynamic>)).toList();
 
         setState(() {
           _apps = apps;
@@ -76,72 +71,56 @@ class _AppListScreenState extends State<AppListScreen> {
 
   Future<void> _acceptInvitation(String appId) async {
     try {
-      final response = await ApiClient.instance.post(
-        '/apps/$appId/invitations/accept',
-        {},
-      );
+      final response = await ApiClient.instance.post('/apps/$appId/invitations/accept', {});
       if (!mounted) return;
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invitation accepted!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invitation accepted!'), backgroundColor: Colors.green));
         _fetchData();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to accept invitation'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to accept invitation'), backgroundColor: Colors.red));
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
     }
   }
 
   Future<void> _rejectInvitation(String appId) async {
     try {
-      final response = await ApiClient.instance.post(
-        '/apps/$appId/invitations/reject',
-        {},
-      );
+      final response = await ApiClient.instance.post('/apps/$appId/invitations/reject', {});
       if (!mounted) return;
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invitation rejected'),
-            backgroundColor: Colors.orange,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Invitation rejected'), backgroundColor: Colors.orange));
         _fetchData();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to reject invitation'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Failed to reject invitation'), backgroundColor: Colors.red));
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
     }
   }
 
   Future<void> _signOut() async {
     await AuthService.instance.signOut();
     if (!mounted) return;
-    Navigator.of(
-      context,
-    ).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
+  }
+
+  ImageProvider _getIconProvider(String base64Str) {
+    String cleanStr = base64Str;
+    if (cleanStr.contains(',')) {
+      cleanStr = cleanStr.split(',').last;
+    }
+    return MemoryImage(base64Decode(cleanStr.trim()));
   }
 
   @override
@@ -183,9 +162,7 @@ class _AppListScreenState extends State<AppListScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.03),
-        border: Border(
-          bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.06))),
       ),
       child: Row(
         children: [
@@ -194,47 +171,30 @@ class _AppListScreenState extends State<AppListScreen> {
             height: 32,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              gradient: const LinearGradient(
-                colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)],
-              ),
+              gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
             ),
             child: const Icon(Icons.android, color: Colors.white, size: 18),
           ),
           const SizedBox(width: 12),
           Text(
             'TestAPK',
-            style: GoogleFonts.inter(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
           ),
           const Spacer(),
           if (_user?.picture != null)
-            CircleAvatar(
-              radius: 16,
-              backgroundImage: NetworkImage(_user!.picture!),
-            )
+            CircleAvatar(radius: 16, backgroundImage: NetworkImage(_user!.picture!))
           else
             CircleAvatar(
               radius: 16,
               backgroundColor: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
               child: Text(
                 _user?.initials ?? '?',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white),
               ),
             ),
           const SizedBox(width: 4),
           IconButton(
-            icon: const Icon(
-              Icons.logout_rounded,
-              color: Colors.white38,
-              size: 20,
-            ),
+            icon: const Icon(Icons.logout_rounded, color: Colors.white38, size: 20),
             onPressed: _signOut,
             tooltip: 'Sign out',
           ),
@@ -310,11 +270,7 @@ class _AppListScreenState extends State<AppListScreen> {
                 backgroundColor: Colors.amber.withValues(alpha: 0.15),
                 child: Text(
                   app.initials,
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.amber.shade300,
-                  ),
+                  style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.amber.shade300),
                 ),
               ),
               const SizedBox(width: 12),
@@ -324,19 +280,9 @@ class _AppListScreenState extends State<AppListScreen> {
                   children: [
                     Text(
                       app.name,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
+                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
                     ),
-                    Text(
-                      app.packageName,
-                      style: GoogleFonts.robotoMono(
-                        fontSize: 10,
-                        color: Colors.white30,
-                      ),
-                    ),
+                    Text(app.packageName, style: GoogleFonts.robotoMono(fontSize: 10, color: Colors.white30)),
                   ],
                 ),
               ),
@@ -344,10 +290,7 @@ class _AppListScreenState extends State<AppListScreen> {
           ),
           if (app.description.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(
-              app.description,
-              style: GoogleFonts.inter(fontSize: 13, color: Colors.white60),
-            ),
+            Text(app.description, style: GoogleFonts.inter(fontSize: 13, color: Colors.white60)),
           ],
           const SizedBox(height: 14),
           Row(
@@ -355,9 +298,7 @@ class _AppListScreenState extends State<AppListScreen> {
             children: [
               TextButton(
                 onPressed: () => _rejectInvitation(app.id),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.red.shade300,
-                ),
+                style: TextButton.styleFrom(foregroundColor: Colors.red.shade300),
                 child: const Text('Decline'),
               ),
               const SizedBox(width: 8),
@@ -366,9 +307,7 @@ class _AppListScreenState extends State<AppListScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber.shade600,
                   foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 child: const Text('Accept'),
               ),
@@ -387,9 +326,7 @@ class _AppListScreenState extends State<AppListScreen> {
     return GestureDetector(
       onTap: () {
         Navigator.of(context)
-            .push(
-              MaterialPageRoute(builder: (_) => ReleaseListScreen(app: app)),
-            )
+            .push(MaterialPageRoute(builder: (_) => ReleaseListScreen(app: app)))
             .then((_) => _fetchData()); // Refresh on return
       },
       child: Container(
@@ -405,20 +342,41 @@ class _AppListScreenState extends State<AppListScreen> {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: const Color(
-                    0xFF8B5CF6,
-                  ).withValues(alpha: 0.15),
-                  child: Text(
-                    app.initials,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFFD8B4FE),
+                // CircleAvatar(
+                //   radius: 20,
+                //   backgroundColor: const Color(
+                //     0xFF8B5CF6,
+                //   ).withValues(alpha: 0.15),
+                //   child: Text(
+                //     app.initials,
+                //     style: GoogleFonts.inter(
+                //       fontSize: 13,
+                //       fontWeight: FontWeight.w700,
+                //       color: const Color(0xFFD8B4FE),
+                //     ),
+                //   ),
+                // ),
+                if (app.releases.first.appIcon != null && app.releases.first.appIcon!.isNotEmpty)
+                  Container(
+                    width: 56,
+                    height: 56,
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(image: _getIconProvider(app.releases.first.appIcon!), fit: BoxFit.cover),
                     ),
+                  )
+                else
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3)),
+                    ),
+                    child: const Icon(Icons.android_rounded, color: Color(0xFFC084FC), size: 32),
                   ),
-                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -426,43 +384,29 @@ class _AppListScreenState extends State<AppListScreen> {
                     children: [
                       Text(
                         app.name,
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
+                        style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        app.packageName,
-                        style: GoogleFonts.robotoMono(
-                          fontSize: 11,
-                          color: Colors.white30,
-                        ),
-                      ),
+                      Text(app.packageName, style: GoogleFonts.robotoMono(fontSize: 11, color: Colors.white30)),
                     ],
                   ),
                 ),
-                const Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.white24,
-                  size: 20,
-                ),
+                const Icon(Icons.chevron_right_rounded, color: Colors.white24, size: 20),
               ],
             ),
-            if (app.description.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Text(
-                app.description,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  color: Colors.white60,
-                  height: 1.4,
-                ),
-              ),
-            ],
+            // if (app.description.isNotEmpty) ...[
+            //   const SizedBox(height: 12),
+            //   Text(
+            //     app.description,
+            //     maxLines: 2,
+            //     overflow: TextOverflow.ellipsis,
+            //     style: GoogleFonts.inter(
+            //       fontSize: 13,
+            //       color: Colors.white60,
+            //       height: 1.4,
+            //     ),
+            //   ),
+            // ],
             const SizedBox(height: 14),
             Container(height: 1, color: Colors.white.withValues(alpha: 0.06)),
             const SizedBox(height: 12),
@@ -470,12 +414,7 @@ class _AppListScreenState extends State<AppListScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildCardStat('Latest', latestRelease),
-                if (app.releases.isNotEmpty)
-                  ReleaseActionButton(
-                    app: app,
-                    release: app.releases.first,
-                    compact: true,
-                  ),
+                if (app.releases.isNotEmpty) ReleaseActionButton(app: app, release: app.releases.first, compact: true),
               ],
             ),
           ],
@@ -490,12 +429,7 @@ class _AppListScreenState extends State<AppListScreen> {
       children: [
         Text(
           label.toUpperCase(),
-          style: GoogleFonts.inter(
-            fontSize: 9,
-            fontWeight: FontWeight.w600,
-            color: Colors.white30,
-            letterSpacing: 0.5,
-          ),
+          style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w600, color: Colors.white30, letterSpacing: 0.5),
         ),
         const SizedBox(height: 2),
         Text(
@@ -522,10 +456,7 @@ class _AppListScreenState extends State<AppListScreen> {
             (_) => Container(
               margin: const EdgeInsets.only(bottom: 12),
               height: 80,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
-              ),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
             ),
           ),
         ),
@@ -555,14 +486,9 @@ class _AppListScreenState extends State<AppListScreen> {
               onPressed: _fetchData,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF8B5CF6),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: Text(
-                'Retry',
-                style: GoogleFonts.inter(color: Colors.white),
-              ),
+              child: Text('Retry', style: GoogleFonts.inter(color: Colors.white)),
             ),
           ],
         ),
@@ -579,11 +505,7 @@ class _AppListScreenState extends State<AppListScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.lock_person_rounded,
-              size: 56,
-              color: Colors.white.withValues(alpha: 0.1),
-            ),
+            Icon(Icons.lock_person_rounded, size: 56, color: Colors.white.withValues(alpha: 0.1)),
             const SizedBox(height: 16),
             Text(
               "You haven't been added\nto any app yet.",

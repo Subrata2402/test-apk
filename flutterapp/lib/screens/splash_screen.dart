@@ -12,8 +12,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _fade;
   late Animation<double> _scale;
@@ -21,15 +20,9 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    );
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
-    _scale = Tween<double>(
-      begin: 0.85,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack));
+    _scale = Tween<double>(begin: 0.85, end: 1.0).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack));
     _ctrl.forward();
     _checkAuth();
   }
@@ -39,12 +32,9 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
     final user = await AuthService.instance.tryAutoLogin();
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) =>
-            user != null ? const AppListScreen() : const LoginScreen(),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => user != null ? const AppListScreen() : const LoginScreen()));
   }
 
   @override
@@ -62,11 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.gradientStart,
-              AppColors.gradientMiddle,
-              AppColors.background,
-            ],
+            colors: [AppColors.gradientStart, AppColors.gradientMiddle, AppColors.background],
           ),
         ),
         child: Center(
@@ -82,22 +68,12 @@ class _SplashScreenState extends State<SplashScreen>
                     height: 80,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      gradient: const LinearGradient(
-                        colors: [AppColors.primary, AppColors.primaryDark],
-                      ),
+                      gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryDark]),
                       boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.4),
-                          blurRadius: 24,
-                          spreadRadius: 4,
-                        ),
+                        BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 24, spreadRadius: 4),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.android,
-                      color: Colors.white,
-                      size: 44,
-                    ),
+                    child: const Icon(Icons.android, color: Colors.white, size: 44),
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -110,22 +86,14 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Release Manager for Testers',
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      color: Colors.white54,
-                    ),
-                  ),
+                  Text('Release Manager for Testers', style: GoogleFonts.inter(fontSize: 14, color: Colors.white54)),
                   const SizedBox(height: 48),
                   SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.primary.withValues(alpha: 0.8),
-                      ),
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary.withValues(alpha: 0.8)),
                     ),
                   ),
                 ],

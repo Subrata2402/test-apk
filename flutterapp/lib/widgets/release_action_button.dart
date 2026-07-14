@@ -1,33 +1,27 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/core/storage_service.dart';
+import 'package:flutterapp/models/app_model.dart';
+import 'package:flutterapp/models/release_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:http/http.dart' as http;
-import '../core/api_client.dart';
-import '../core/storage_service.dart';
-import '../models/app_model.dart';
-import '../models/release_model.dart';
 
 class ReleaseActionButton extends StatefulWidget {
   final AppModel app;
   final ReleaseModel release;
   final bool compact;
 
-  const ReleaseActionButton({
-    super.key,
-    required this.app,
-    required this.release,
-    this.compact = false,
-  });
+  const ReleaseActionButton({super.key, required this.app, required this.release, this.compact = false});
 
   @override
   State<ReleaseActionButton> createState() => _ReleaseActionButtonState();
 }
 
-class _ReleaseActionButtonState extends State<ReleaseActionButton>
-    with WidgetsBindingObserver {
+class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsBindingObserver {
   static const _platform = MethodChannel('com.testapk.app/app_launcher');
 
   bool _isDownloading = false;
@@ -38,8 +32,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
   File? _apkFile;
 
   bool get _isAppInstalled => _installedVersionCode > -1;
-  bool get _isUpdateAvailable =>
-      _isAppInstalled && !(_installedVersionCode >= widget.release.buildNumber);
+  bool get _isUpdateAvailable => _isAppInstalled && !(_installedVersionCode >= widget.release.buildNumber);
 
   @override
   void initState() {
@@ -64,9 +57,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
   }
 
   Future<File> _getApkFile() async {
-    final dir =
-        await getExternalStorageDirectory() ??
-        await getApplicationDocumentsDirectory();
+    final dir = await getExternalStorageDirectory() ?? await getApplicationDocumentsDirectory();
     final fileName =
         '${widget.app.name.replaceAll(' ', '_')}_v${widget.release.version}_b${widget.release.buildNumber}.apk';
     return File('${dir.path}/$fileName');
@@ -85,13 +76,10 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
 
   Future<void> _checkIfAppInstalled() async {
     try {
-      final Map<dynamic, dynamic>? info = await _platform.invokeMethod(
-        'getInstalledVersionInfo',
-        {'packageName': widget.app.packageName},
-      );
-      debugPrint(
-        'ReleaseActionButton: getInstalledVersionInfo for "${widget.app.packageName}" returned: $info',
-      );
+      final Map<dynamic, dynamic>? info = await _platform.invokeMethod('getInstalledVersionInfo', {
+        'packageName': widget.app.packageName,
+      });
+      debugPrint('ReleaseActionButton: getInstalledVersionInfo for "${widget.app.packageName}" returned: $info');
       if (mounted) {
         setState(() {
           _installedVersionCode = info?['versionCode'] as int? ?? -1;
@@ -116,8 +104,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
 
     try {
       final token = await StorageService.instance.getToken();
-      final url =
-          '${ApiClient.instance.baseUrl}/apps/${widget.app.id}/releases/${widget.release.buildNumber}/download';
+      final url = '${ApiClient.instance.baseUrl}/apps/${widget.app.id}/releases/${widget.release.buildNumber}/download';
 
       final request = http.Request('GET', Uri.parse(url));
       request.headers['Authorization'] = 'Bearer $token';
@@ -135,10 +122,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
       int contentLength = response.contentLength ?? 0;
       if (contentLength == 0) {
         final contentLengthHeader = response.headers.entries
-            .firstWhere(
-              (e) => e.key.toLowerCase() == 'content-length',
-              orElse: () => const MapEntry('', ''),
-            )
+            .firstWhere((e) => e.key.toLowerCase() == 'content-length', orElse: () => const MapEntry('', ''))
             .value;
         if (contentLengthHeader.isNotEmpty) {
           contentLength = int.tryParse(contentLengthHeader) ?? 0;
@@ -190,10 +174,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
         SnackBar(
           backgroundColor: Colors.green.shade800,
           behavior: SnackBarBehavior.floating,
-          content: Text(
-            'Downloaded: ${file.path.split('/').last}',
-            style: GoogleFonts.inter(color: Colors.white),
-          ),
+          content: Text('Downloaded: ${file.path.split('/').last}', style: GoogleFonts.inter(color: Colors.white)),
         ),
       );
     } catch (e) {
@@ -214,19 +195,13 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
 
   Future<void> _launchApp() async {
     try {
-      final bool success = await _platform.invokeMethod('launchApp', {
-        'packageName': widget.app.packageName,
-      });
+      final bool success = await _platform.invokeMethod('launchApp', {'packageName': widget.app.packageName});
       if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to launch application')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to launch application')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error launching app: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error launching app: $e')));
       }
     }
   }
@@ -239,9 +214,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
     final double borderRadius = widget.compact ? 10.0 : 14.0;
 
     final Color primaryColor = _isAppInstalled
-        ? (_isUpdateAvailable
-              ? const Color(0xFF8B5CF6)
-              : const Color(0xFF10B981))
+        ? (_isUpdateAvailable ? const Color(0xFF8B5CF6) : const Color(0xFF10B981))
         : const Color(0xFF8B5CF6);
 
     return Column(
@@ -260,10 +233,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
             ),
             child: Text(
               _errorMessage!,
-              style: GoogleFonts.inter(
-                color: Colors.red.shade300,
-                fontSize: widget.compact ? 11 : 13,
-              ),
+              style: GoogleFonts.inter(color: Colors.red.shade300, fontSize: widget.compact ? 11 : 13),
             ),
           ),
         ],
@@ -274,29 +244,20 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
             onPressed: _isDownloading
                 ? null
                 : (_isAppInstalled
-                      ? (_isUpdateAvailable
-                            ? (_isDownloaded ? _installApk : _downloadApk)
-                            : _launchApp)
+                      ? (_isUpdateAvailable ? (_isDownloaded ? _installApk : _downloadApk) : _launchApp)
                       : (_isDownloaded ? _installApk : _downloadApk)),
             icon: _isDownloading
                 ? SizedBox(
                     width: iconSize,
                     height: iconSize,
-                    child: const CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
                 : Icon(
                     _isAppInstalled
                         ? (_isUpdateAvailable
-                              ? (_isDownloaded
-                                    ? Icons.install_mobile_rounded
-                                    : Icons.system_update_alt_rounded)
+                              ? (_isDownloaded ? Icons.install_mobile_rounded : Icons.system_update_alt_rounded)
                               : Icons.open_in_new_rounded)
-                        : (_isDownloaded
-                              ? Icons.install_mobile_rounded
-                              : Icons.download_rounded),
+                        : (_isDownloaded ? Icons.install_mobile_rounded : Icons.download_rounded),
                     size: iconSize,
                     color: Colors.white,
                   ),
@@ -304,27 +265,15 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
               _isDownloading
                   ? 'Downloading… ${(_downloadProgress * 100).toStringAsFixed(0)}%'
                   : (_isAppInstalled
-                        ? (_isUpdateAvailable
-                              ? (_isDownloaded ? 'Install Update' : 'Update')
-                              : 'Open App')
+                        ? (_isUpdateAvailable ? (_isDownloaded ? 'Install Update' : 'Update') : 'Open App')
                         : (_isDownloaded ? 'Install APK' : 'Download APK')),
-              style: GoogleFonts.inter(
-                fontSize: fontSize,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: GoogleFonts.inter(fontSize: fontSize, fontWeight: FontWeight.w600, color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: primaryColor,
-              disabledBackgroundColor: const Color(
-                0xFF8B5CF6,
-              ).withValues(alpha: 0.4),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(borderRadius),
-              ),
-              padding: widget.compact
-                  ? const EdgeInsets.symmetric(horizontal: 16)
-                  : null,
+              disabledBackgroundColor: const Color(0xFF8B5CF6).withValues(alpha: 0.4),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
+              padding: widget.compact ? const EdgeInsets.symmetric(horizontal: 16) : null,
               elevation: 0,
             ),
           ),
@@ -336,9 +285,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton>
             child: LinearProgressIndicator(
               value: _downloadProgress,
               backgroundColor: Colors.white12,
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                Color(0xFF8B5CF6),
-              ),
+              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF8B5CF6)),
               minHeight: widget.compact ? 4 : 6,
             ),
           ),

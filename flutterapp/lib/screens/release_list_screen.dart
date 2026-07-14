@@ -5,7 +5,6 @@ import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/screens/release_detail_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 
 class ReleaseListScreen extends StatefulWidget {
   final AppModel app;
@@ -31,14 +30,9 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final list = body['data']['apps'] as List;
-        final apps = list
-            .map((a) => AppModel.fromJson(a as Map<String, dynamic>))
-            .toList();
+        final apps = list.map((a) => AppModel.fromJson(a as Map<String, dynamic>)).toList();
 
-        final updatedApp = apps.firstWhere(
-          (a) => a.id == _app.id,
-          orElse: () => _app,
-        );
+        final updatedApp = apps.firstWhere((a) => a.id == _app.id, orElse: () => _app);
         setState(() {
           _app = updatedApp;
         });
@@ -61,10 +55,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFF080710),
         appBar: AppBar(
-          title: Text(
-            _app.name,
-            style: GoogleFonts.inter(fontWeight: FontWeight.w700),
-          ),
+          title: Text(_app.name, style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
@@ -73,10 +64,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
             indicatorColor: const Color(0xFF8B5CF6),
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white38,
-            labelStyle: GoogleFonts.inter(
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
-            ),
+            labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
             tabs: const [
               Tab(text: 'Releases'),
               Tab(text: 'Members'),
@@ -108,20 +96,11 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (_app.description.isNotEmpty)
-                                Text(
-                                  _app.description,
-                                  style: GoogleFonts.inter(
-                                    fontSize: 14,
-                                    color: Colors.white60,
-                                  ),
-                                ),
+                                Text(_app.description, style: GoogleFonts.inter(fontSize: 14, color: Colors.white60)),
                               const SizedBox(height: 6),
                               Text(
                                 _app.packageName,
-                                style: GoogleFonts.robotoMono(
-                                  fontSize: 11,
-                                  color: Colors.white30,
-                                ),
+                                style: GoogleFonts.robotoMono(fontSize: 11, color: Colors.white30),
                               ),
                             ],
                           ),
@@ -134,19 +113,9 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.inbox_rounded,
-                                  size: 48,
-                                  color: Colors.white.withValues(alpha: 0.1),
-                                ),
+                                Icon(Icons.inbox_rounded, size: 48, color: Colors.white.withValues(alpha: 0.1)),
                                 const SizedBox(height: 12),
-                                Text(
-                                  'No releases yet',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white30,
-                                    fontSize: 14,
-                                  ),
-                                ),
+                                Text('No releases yet', style: GoogleFonts.inter(color: Colors.white30, fontSize: 14)),
                               ],
                             ),
                           ),
@@ -158,8 +127,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                             delegate: SliverChildBuilderDelegate(
                               (_, i) => _ReleaseCard(
                                 release: _app.releases[i],
-                                onTap: () =>
-                                    _navigateToReleaseDetail(_app.releases[i]),
+                                onTap: () => _navigateToReleaseDetail(_app.releases[i]),
                               ),
                               childCount: _app.releases.length,
                             ),
@@ -192,10 +160,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 'Collaborators invited to this application.',
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  color: Colors.white38,
-                                ),
+                                style: GoogleFonts.inter(fontSize: 13, color: Colors.white38),
                               ),
                             ],
                           ),
@@ -214,13 +179,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                   color: Colors.white.withValues(alpha: 0.1),
                                 ),
                                 const SizedBox(height: 12),
-                                Text(
-                                  'No members yet',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white30,
-                                    fontSize: 14,
-                                  ),
-                                ),
+                                Text('No members yet', style: GoogleFonts.inter(color: Colors.white30, fontSize: 14)),
                               ],
                             ),
                           ),
@@ -255,12 +214,6 @@ class _ReleaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String dateStr = release.date;
-    try {
-      final dt = DateTime.parse(release.date);
-      dateStr = DateFormat('MMM d, yyyy').format(dt);
-    } catch (_) {}
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -279,15 +232,9 @@ class _ReleaseCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
-                ),
+                border: Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.2)),
               ),
-              child: const Icon(
-                Icons.android,
-                color: Color(0xFF8B5CF6),
-                size: 24,
-              ),
+              child: const Icon(Icons.android, color: Color(0xFF8B5CF6), size: 24),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -298,62 +245,20 @@ class _ReleaseCard extends StatelessWidget {
                     children: [
                       Text(
                         release.appName ?? 'Build #${release.buildNumber}',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      _TagChip(
-                        label: 'v${release.version} (${release.buildNumber})',
+                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '$dateStr  •  ${release.size}',
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: Colors.white38,
-                    ),
+                    'v${release.version} (${release.buildNumber})',
+                    style: GoogleFonts.inter(fontSize: 12, color: Colors.white38),
                   ),
                 ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: Colors.white24,
-              size: 20,
-            ),
+            const Icon(Icons.chevron_right_rounded, color: Colors.white24, size: 20),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TagChip extends StatelessWidget {
-  final String label;
-  const _TagChip({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: const Color(0xFF8B5CF6).withValues(alpha: 0.25),
-        ),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.inter(
-          fontSize: 10,
-          color: const Color(0xFFD8B4FE),
-          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -367,12 +272,8 @@ class _MemberCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayName = member.name.isNotEmpty
-        ? member.name
-        : member.email.split('@')[0];
-    final initials = displayName
-        .substring(0, displayName.length >= 2 ? 2 : 1)
-        .toUpperCase();
+    final displayName = member.name.isNotEmpty ? member.name : member.email.split('@')[0];
+    final initials = displayName.substring(0, displayName.length >= 2 ? 2 : 1).toUpperCase();
     final isPending = member.status == 'Pending';
 
     return Container(
@@ -391,18 +292,12 @@ class _MemberCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF06B6D4).withValues(alpha: 0.12),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: const Color(0xFF06B6D4).withValues(alpha: 0.2),
-              ),
+              border: Border.all(color: const Color(0xFF06B6D4).withValues(alpha: 0.2)),
             ),
             child: Center(
               child: Text(
                 initials,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: const Color(0xFF06B6D4),
-                ),
+                style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF06B6D4)),
               ),
             ),
           ),
@@ -413,11 +308,7 @@ class _MemberCard extends StatelessWidget {
               children: [
                 Text(
                   displayName,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
+                  style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
@@ -433,20 +324,11 @@ class _MemberCard extends StatelessWidget {
                     if (isPending) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: const Color(
-                            0xFFF59E0B,
-                          ).withValues(alpha: 0.12),
+                          color: const Color(0xFFF59E0B).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: const Color(
-                              0xFFF59E0B,
-                            ).withValues(alpha: 0.25),
-                          ),
+                          border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.25)),
                         ),
                         child: Text(
                           'Pending',
@@ -502,11 +384,7 @@ class _RoleChip extends StatelessWidget {
       ),
       child: Text(
         role,
-        style: GoogleFonts.inter(
-          fontSize: 10,
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
+        style: GoogleFonts.inter(fontSize: 10, color: color, fontWeight: FontWeight.w600),
       ),
     );
   }

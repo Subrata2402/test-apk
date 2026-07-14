@@ -12,8 +12,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
-    with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -24,10 +23,7 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 700),
-    );
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 700));
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeIn);
     _slide = Tween<Offset>(
       begin: const Offset(0, 0.08),
@@ -50,9 +46,7 @@ class _LoginScreenState extends State<LoginScreen>
     final user = await AuthService.instance.signInWithGoogle();
     if (!mounted) return;
     if (user != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AppListScreen()),
-      );
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const AppListScreen()));
     } else {
       setState(() {
         _isLoading = false;
@@ -70,11 +64,7 @@ class _LoginScreenState extends State<LoginScreen>
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              AppColors.gradientStart,
-              AppColors.gradientMiddle,
-              AppColors.background,
-            ],
+            colors: [AppColors.gradientStart, AppColors.gradientMiddle, AppColors.background],
           ),
         ),
         child: SafeArea(
@@ -83,10 +73,7 @@ class _LoginScreenState extends State<LoginScreen>
             child: SlideTransition(
               position: _slide,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 32,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -97,22 +84,12 @@ class _LoginScreenState extends State<LoginScreen>
                       height: 72,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(18),
-                        gradient: const LinearGradient(
-                          colors: [AppColors.primary, AppColors.primaryDark],
-                        ),
+                        gradient: const LinearGradient(colors: [AppColors.primary, AppColors.primaryDark]),
                         boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.35),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                          ),
+                          BoxShadow(color: AppColors.primary.withValues(alpha: 0.35), blurRadius: 20, spreadRadius: 2),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.android,
-                        color: Colors.white,
-                        size: 40,
-                      ),
+                      child: const Icon(Icons.android, color: Colors.white, size: 40),
                     ),
                     const SizedBox(height: 20),
                     Text(
@@ -125,13 +102,7 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      kLoginSubtitle,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: Colors.white54,
-                      ),
-                    ),
+                    Text(kLoginSubtitle, style: GoogleFonts.inter(fontSize: 14, color: Colors.white54)),
                     const SizedBox(height: 40),
                     // Feature chips
                     Wrap(
@@ -139,26 +110,11 @@ class _LoginScreenState extends State<LoginScreen>
                       runSpacing: 10,
                       alignment: WrapAlignment.center,
                       children: const [
-                        _FeatureChip(
-                          icon: Icons.android,
-                          label: kFeatureBetaTesting,
-                        ),
-                        _FeatureChip(
-                          icon: Icons.download_rounded,
-                          label: kFeatureApkDownloads,
-                        ),
-                        _FeatureChip(
-                          icon: Icons.notes_rounded,
-                          label: kFeatureReleaseNotes,
-                        ),
-                        _FeatureChip(
-                          icon: Icons.verified_rounded,
-                          label: kFeatureVerifiedBuilds,
-                        ),
-                        _FeatureChip(
-                          icon: Icons.security,
-                          label: kFeatureSha256,
-                        ),
+                        _FeatureChip(icon: Icons.android, label: kFeatureBetaTesting),
+                        _FeatureChip(icon: Icons.download_rounded, label: kFeatureApkDownloads),
+                        _FeatureChip(icon: Icons.notes_rounded, label: kFeatureReleaseNotes),
+                        _FeatureChip(icon: Icons.verified_rounded, label: kFeatureVerifiedBuilds),
+                        _FeatureChip(icon: Icons.security, label: kFeatureSha256),
                       ],
                     ),
                     const SizedBox(height: 52),
@@ -169,9 +125,7 @@ class _LoginScreenState extends State<LoginScreen>
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.08),
-                        ),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                       ),
                       child: Column(
                         children: [
@@ -199,23 +153,15 @@ class _LoginScreenState extends State<LoginScreen>
                     // Google Sign-In button
                     if (_errorMessage != null) ...[
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         decoration: BoxDecoration(
                           color: Colors.red.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.red.withValues(alpha: 0.3),
-                          ),
+                          border: Border.all(color: Colors.red.withValues(alpha: 0.3)),
                         ),
                         child: Text(
                           _errorMessage!,
-                          style: GoogleFonts.inter(
-                            color: Colors.red.shade300,
-                            fontSize: 13,
-                          ),
+                          style: GoogleFonts.inter(color: Colors.red.shade300, fontSize: 13),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -230,39 +176,23 @@ class _LoginScreenState extends State<LoginScreen>
                             ? const SizedBox(
                                 width: 20,
                                 height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
+                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
                             : Image.network(
                                 'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
                                 width: 22,
                                 height: 22,
                                 errorBuilder: (context, error, stackTrace) =>
-                                    const Icon(
-                                      Icons.login,
-                                      color: Colors.white,
-                                    ),
+                                    const Icon(Icons.login, color: Colors.white),
                               ),
                         label: Text(
-                          _isLoading
-                              ? kLoginSigningIn
-                              : kLoginContinueWithGoogle,
-                          style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
+                          _isLoading ? kLoginSigningIn : kLoginContinueWithGoogle,
+                          style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          disabledBackgroundColor: AppColors.primary.withValues(
-                            alpha: 0.5,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
+                          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           elevation: 0,
                         ),
                       ),
@@ -270,10 +200,7 @@ class _LoginScreenState extends State<LoginScreen>
                     const SizedBox(height: 20),
                     Text(
                       kLoginConfirmation,
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: Colors.white30,
-                      ),
+                      style: GoogleFonts.inter(fontSize: 12, color: Colors.white30),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -308,11 +235,7 @@ class _FeatureChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: GoogleFonts.inter(
-              fontSize: 12,
-              color: AppColors.primaryLight,
-              fontWeight: FontWeight.w500,
-            ),
+            style: GoogleFonts.inter(fontSize: 12, color: AppColors.primaryLight, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -324,11 +247,7 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  const _InfoRow({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
+  const _InfoRow({required this.icon, required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -351,17 +270,10 @@ class _InfoRow extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
-                ),
+                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
               ),
               const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: GoogleFonts.inter(fontSize: 12, color: Colors.white38),
-              ),
+              Text(subtitle, style: GoogleFonts.inter(fontSize: 12, color: Colors.white38)),
             ],
           ),
         ),
