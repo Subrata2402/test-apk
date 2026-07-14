@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/models/app_model.dart';
+import 'package:flutterapp/models/release_model.dart';
+import 'package:flutterapp/screens/release_detail_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import '../core/api_client.dart';
-import '../models/app_model.dart';
-import '../models/release_model.dart';
-import 'release_detail_screen.dart';
 
 class ReleaseListScreen extends StatefulWidget {
   final AppModel app;

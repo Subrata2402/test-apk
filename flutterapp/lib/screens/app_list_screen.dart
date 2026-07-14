@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/core/auth_service.dart';
+import 'package:flutterapp/models/app_model.dart';
+import 'package:flutterapp/models/user_model.dart';
+import 'package:flutterapp/screens/login_screen.dart';
+import 'package:flutterapp/screens/release_list_screen.dart';
+import 'package:flutterapp/widgets/release_action_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
-import '../core/api_client.dart';
-import '../core/auth_service.dart';
-import '../models/app_model.dart';
-import '../models/user_model.dart';
-import 'login_screen.dart';
-import 'release_list_screen.dart';
-import '../widgets/release_action_button.dart';
 
 class AppListScreen extends StatefulWidget {
   const AppListScreen({super.key});

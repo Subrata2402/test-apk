@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/models/app_model.dart';
+import 'package:flutterapp/models/release_model.dart';
+import 'package:flutterapp/widgets/release_action_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
-import '../models/release_model.dart';
-import '../models/app_model.dart';
-import '../widgets/release_action_button.dart';
 
 class ReleaseDetailScreen extends StatefulWidget {
   final ReleaseModel release;
