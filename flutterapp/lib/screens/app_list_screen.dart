@@ -413,7 +413,7 @@ class _AppListScreenState extends State<AppListScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildCardStat('Latest', latestRelease),
+                _buildCardStat('Latest Version', latestRelease),
                 if (app.releases.isNotEmpty) ReleaseActionButton(app: app, release: app.releases.first, compact: true),
               ],
             ),

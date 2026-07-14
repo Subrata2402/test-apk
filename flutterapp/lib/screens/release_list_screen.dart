@@ -89,23 +89,24 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                   child: CustomScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     slivers: [
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (_app.description.isNotEmpty)
-                                Text(_app.description, style: GoogleFonts.inter(fontSize: 14, color: Colors.white60)),
-                              const SizedBox(height: 6),
-                              Text(
-                                _app.packageName,
-                                style: GoogleFonts.robotoMono(fontSize: 11, color: Colors.white30),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // SliverToBoxAdapter(
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(20),
+                      //     child: Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       children: [
+                      //         if (_app.description.isNotEmpty)
+                      //           Text(_app.description, style: GoogleFonts.inter(fontSize: 14, color: Colors.white60)),
+                      //         const SizedBox(height: 6),
+                      //         Text(
+                      //           _app.packageName,
+                      //           style: GoogleFonts.robotoMono(fontSize: 11, color: Colors.white30),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+                      SliverToBoxAdapter(child: SizedBox(height: 20)),
                       if (_app.releases.isEmpty)
                         SliverFillRemaining(
                           hasScrollBody: false,
