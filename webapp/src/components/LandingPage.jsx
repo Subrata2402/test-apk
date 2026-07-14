@@ -47,7 +47,7 @@ export default function LandingPage({ onLoginClick }) {
 
           <div className="hero-actions">
             <a
-              href="/downloads/testapk.apk"
+              href="https://drive.google.com/file/d/18xqsbaUiwLBo-c6dDFlHheNpf3W_HcVh/view?usp=sharing"
               download="testapk.apk"
               className="btn btn-primary btn-lg flex-center gap-2"
               style={{ textDecoration: 'none' }}
@@ -179,7 +179,7 @@ export default function LandingPage({ onLoginClick }) {
                             <span>{release.size}</span>
                           </span>
                           <a
-                            href="/downloads/testapk.apk"
+                            href="https://drive.google.com/file/d/18xqsbaUiwLBo-c6dDFlHheNpf3W_HcVh/view?usp=sharing"
                             download="testapk.apk"
                             className="btn btn-primary btn-sm flex-center gap-1"
                             style={{ textDecoration: 'none' }}
