@@ -1,0 +1,349 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:http/http.dart' as http;
+import '../core/api_client.dart';
+import '../core/storage_service.dart';
+import '../models/app_model.dart';
+import '../models/release_model.dart';
+
+class ReleaseActionButton extends StatefulWidget {
+  final AppModel app;
+  final ReleaseModel release;
+  final bool compact;
+
+  const ReleaseActionButton({
+    super.key,
+    required this.app,
+    required this.release,
+    this.compact = false,
+  });
+
+  @override
+  State<ReleaseActionButton> createState() => _ReleaseActionButtonState();
+}
+
+class _ReleaseActionButtonState extends State<ReleaseActionButton>
+    with WidgetsBindingObserver {
+  static const _platform = MethodChannel('com.testapk.app/app_launcher');
+
+  bool _isDownloading = false;
+  double _downloadProgress = 0;
+  String? _errorMessage;
+  bool _isDownloaded = false;
+  int _installedVersionCode = -1;
+  File? _apkFile;
+
+  bool get _isAppInstalled => _installedVersionCode > -1;
+  bool get _isUpdateAvailable =>
+      _isAppInstalled && !(_installedVersionCode >= widget.release.buildNumber);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _checkIfDownloaded();
+    _checkIfAppInstalled();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkIfDownloaded();
+      _checkIfAppInstalled();
+    }
+  }
+
+  Future<File> _getApkFile() async {
+    final dir =
+        await getExternalStorageDirectory() ??
+        await getApplicationDocumentsDirectory();
+    final fileName =
+        '${widget.app.name.replaceAll(' ', '_')}_v${widget.release.version}_b${widget.release.buildNumber}.apk';
+    return File('${dir.path}/$fileName');
+  }
+
+  Future<void> _checkIfDownloaded() async {
+    final file = await _getApkFile();
+    final exists = await file.exists();
+    if (mounted) {
+      setState(() {
+        _apkFile = file;
+        _isDownloaded = exists;
+      });
+    }
+  }
+
+  Future<void> _checkIfAppInstalled() async {
+    try {
+      final Map<dynamic, dynamic>? info = await _platform.invokeMethod(
+        'getInstalledVersionInfo',
+        {'packageName': widget.app.packageName},
+      );
+      debugPrint(
+        'ReleaseActionButton: getInstalledVersionInfo for "${widget.app.packageName}" returned: $info',
+      );
+      if (mounted) {
+        setState(() {
+          _installedVersionCode = info?['versionCode'] as int? ?? -1;
+        });
+      }
+    } catch (e) {
+      debugPrint('ReleaseActionButton: Error checking app installation: $e');
+      if (mounted) {
+        setState(() {
+          _installedVersionCode = -1;
+        });
+      }
+    }
+  }
+
+  Future<void> _downloadApk() async {
+    setState(() {
+      _isDownloading = true;
+      _downloadProgress = 0;
+      _errorMessage = null;
+    });
+
+    try {
+      final token = await StorageService.instance.getToken();
+      final url =
+          '${ApiClient.instance.baseUrl}/apps/${widget.app.id}/releases/${widget.release.buildNumber}/download';
+
+      final request = http.Request('GET', Uri.parse(url));
+      request.headers['Authorization'] = 'Bearer $token';
+
+      final response = await request.send();
+
+      if (response.statusCode != 200) {
+        setState(() {
+          _isDownloading = false;
+          _errorMessage = 'Download failed (${response.statusCode})';
+        });
+        return;
+      }
+
+      int contentLength = response.contentLength ?? 0;
+      if (contentLength == 0) {
+        final contentLengthHeader = response.headers.entries
+            .firstWhere(
+              (e) => e.key.toLowerCase() == 'content-length',
+              orElse: () => const MapEntry('', ''),
+            )
+            .value;
+        if (contentLengthHeader.isNotEmpty) {
+          contentLength = int.tryParse(contentLengthHeader) ?? 0;
+        }
+      }
+
+      if (contentLength == 0 && widget.release.size.isNotEmpty) {
+        final sizeStr = widget.release.size.toLowerCase();
+        final parts = sizeStr.trim().split(RegExp(r'\s+'));
+        if (parts.length == 2) {
+          final val = double.tryParse(parts[0]) ?? 0.0;
+          final unit = parts[1];
+          if (unit.contains('mb')) {
+            contentLength = (val * 1024 * 1024).toInt();
+          } else if (unit.contains('kb')) {
+            contentLength = (val * 1024).toInt();
+          } else if (unit.contains('gb')) {
+            contentLength = (val * 1024 * 1024 * 1024).toInt();
+          }
+        }
+      }
+
+      int received = 0;
+      final List<int> bytes = [];
+
+      await for (final chunk in response.stream) {
+        bytes.addAll(chunk);
+        received += chunk.length;
+        if (contentLength > 0 && mounted) {
+          setState(() {
+            _downloadProgress = received / contentLength;
+          });
+        }
+      }
+
+      final file = await _getApkFile();
+      await file.writeAsBytes(bytes);
+
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+          _isDownloaded = true;
+          _apkFile = file;
+        });
+      }
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green.shade800,
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            'Downloaded: ${file.path.split('/').last}',
+            style: GoogleFonts.inter(color: Colors.white),
+          ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+          _errorMessage = 'Error: ${e.toString()}';
+        });
+      }
+    }
+  }
+
+  Future<void> _installApk() async {
+    if (_apkFile != null) {
+      await OpenFilex.open(_apkFile!.path);
+    }
+  }
+
+  Future<void> _launchApp() async {
+    try {
+      final bool success = await _platform.invokeMethod('launchApp', {
+        'packageName': widget.app.packageName,
+      });
+      if (!success && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to launch application')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error launching app: $e')));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double buttonHeight = widget.compact ? 38.0 : 52.0;
+    final double fontSize = widget.compact ? 13.0 : 15.0;
+    final double iconSize = widget.compact ? 16.0 : 20.0;
+    final double borderRadius = widget.compact ? 10.0 : 14.0;
+
+    final Color primaryColor = _isAppInstalled
+        ? (_isUpdateAvailable
+              ? const Color(0xFF8B5CF6)
+              : const Color(0xFF10B981))
+        : const Color(0xFF8B5CF6);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_errorMessage != null) ...[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(widget.compact ? 8 : 12),
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: Colors.red.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: Border.all(color: Colors.red.withValues(alpha: 0.25)),
+            ),
+            child: Text(
+              _errorMessage!,
+              style: GoogleFonts.inter(
+                color: Colors.red.shade300,
+                fontSize: widget.compact ? 11 : 13,
+              ),
+            ),
+          ),
+        ],
+        SizedBox(
+          width: widget.compact ? null : double.infinity,
+          height: buttonHeight,
+          child: ElevatedButton.icon(
+            onPressed: _isDownloading
+                ? null
+                : (_isAppInstalled
+                      ? (_isUpdateAvailable
+                            ? (_isDownloaded ? _installApk : _downloadApk)
+                            : _launchApp)
+                      : (_isDownloaded ? _installApk : _downloadApk)),
+            icon: _isDownloading
+                ? SizedBox(
+                    width: iconSize,
+                    height: iconSize,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Icon(
+                    _isAppInstalled
+                        ? (_isUpdateAvailable
+                              ? (_isDownloaded
+                                    ? Icons.install_mobile_rounded
+                                    : Icons.system_update_alt_rounded)
+                              : Icons.open_in_new_rounded)
+                        : (_isDownloaded
+                              ? Icons.install_mobile_rounded
+                              : Icons.download_rounded),
+                    size: iconSize,
+                    color: Colors.white,
+                  ),
+            label: Text(
+              _isDownloading
+                  ? 'Downloading… ${(_downloadProgress * 100).toStringAsFixed(0)}%'
+                  : (_isAppInstalled
+                        ? (_isUpdateAvailable
+                              ? (_isDownloaded ? 'Install Update' : 'Update')
+                              : 'Open App')
+                        : (_isDownloaded ? 'Install APK' : 'Download APK')),
+              style: GoogleFonts.inter(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              disabledBackgroundColor: const Color(
+                0xFF8B5CF6,
+              ).withValues(alpha: 0.4),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
+              ),
+              padding: widget.compact
+                  ? const EdgeInsets.symmetric(horizontal: 16)
+                  : null,
+              elevation: 0,
+            ),
+          ),
+        ),
+        if (_isDownloading && _downloadProgress > 0) ...[
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: _downloadProgress,
+              backgroundColor: Colors.white12,
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF8B5CF6),
+              ),
+              minHeight: widget.compact ? 4 : 6,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}

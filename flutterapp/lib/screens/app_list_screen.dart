@@ -8,6 +8,7 @@ import '../models/app_model.dart';
 import '../models/user_model.dart';
 import 'login_screen.dart';
 import 'release_list_screen.dart';
+import '../widgets/release_action_button.dart';
 
 class AppListScreen extends StatefulWidget {
   const AppListScreen({super.key});
@@ -382,8 +383,6 @@ class _AppListScreenState extends State<AppListScreen> {
     final latestRelease = app.releases.isNotEmpty
         ? 'v${app.releases.first.version} (${app.releases.first.buildNumber})'
         : 'None';
-    final totalReleases = app.releases.length;
-    final totalMembers = app.members.length;
 
     return GestureDetector(
       onTap: () {
@@ -471,8 +470,12 @@ class _AppListScreenState extends State<AppListScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildCardStat('Latest', latestRelease),
-                _buildCardStat('Releases', '$totalReleases'),
-                _buildCardStat('Members', '$totalMembers'),
+                if (app.releases.isNotEmpty)
+                  ReleaseActionButton(
+                    app: app,
+                    release: app.releases.first,
+                    compact: true,
+                  ),
               ],
             ),
           ],

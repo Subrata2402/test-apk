@@ -21,6 +21,17 @@ class MainActivity : FlutterActivity() {
                         result.error("BAD_ARGS", "Package name is null", null)
                     }
                 }
+                "getInstalledVersionInfo" -> {
+                    val packageName = call.argument<String>("packageName")
+                    android.util.Log.d("MainActivity", "getInstalledVersionInfo called for package: $packageName")
+                    if (packageName != null) {
+                        val info = getInstalledVersionInfo(packageName)
+                        android.util.Log.d("MainActivity", "getInstalledVersionInfo returned: $info")
+                        result.success(info)
+                    } else {
+                        result.error("BAD_ARGS", "Package name is null", null)
+                    }
+                }
                 "launchApp" -> {
                     val packageName = call.argument<String>("packageName")
                     if (packageName != null) {
@@ -34,6 +45,22 @@ class MainActivity : FlutterActivity() {
                     result.notImplemented()
                 }
             }
+        }
+    }
+
+    private fun getInstalledVersionInfo(packageName: String): Map<String, Any> {
+        return try {
+            val pInfo = packageManager.getPackageInfo(packageName, 0)
+            val versionCode = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                (pInfo.longVersionCode and 0xFFFFFFFFL).toInt()
+            } else {
+                @Suppress("DEPRECATION")
+                pInfo.versionCode
+            }
+            val versionName = pInfo.versionName ?: ""
+            mapOf("versionCode" to versionCode, "versionName" to versionName)
+        } catch (e: PackageManager.NameNotFoundException) {
+            mapOf("versionCode" to -1, "versionName" to "")
         }
     }
 
