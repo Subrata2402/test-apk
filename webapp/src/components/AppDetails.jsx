@@ -306,9 +306,9 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
         </div>
         <div className="app-header-actions">
           {/* We can trigger a view switch back to the landing page for this app */}
-          <button className="btn btn-secondary" onClick={() => window.location.reload()}>
+          {/* <button className="btn btn-secondary" onClick={() => window.location.reload()}>
             <Icons.ExternalLink size={16} /> View Public Page
-          </button>
+          </button> */}
         </div>
       </header>
 
