@@ -281,7 +281,22 @@ export const downloadApk = async (
 
     // Get file stream from Google Drive
     const { getFileStreamFromDrive } = await import('../services/google-drive.service.js');
-    const { stream, contentLength } = await getFileStreamFromDrive(release.apkUrl);
+    
+    let fileData;
+    try {
+      fileData = await getFileStreamFromDrive(release.apkUrl);
+    } catch (err: any) {
+      if (err.code === 404 || err.status === 404 || (err.message && err.message.includes('File not found'))) {
+        res.status(404).json({
+          status: 'fail',
+          message: 'The APK file was not found on Google Drive. It may have been deleted.',
+        });
+        return;
+      }
+      throw err;
+    }
+
+    const { stream, contentLength } = fileData;
 
     res.setHeader('Content-Type', 'application/vnd.android.package-archive');
     res.setHeader(

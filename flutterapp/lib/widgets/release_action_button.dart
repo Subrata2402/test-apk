@@ -112,9 +112,18 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
       final response = await request.send();
 
       if (response.statusCode != 200) {
+        if (widget.compact && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red.shade800,
+              behavior: SnackBarBehavior.floating,
+              content: Text('Download failed (${response.statusCode})', style: GoogleFonts.inter(color: Colors.white)),
+            ),
+          );
+        }
         setState(() {
           _isDownloading = false;
-          _errorMessage = 'Download failed (${response.statusCode})';
+          _errorMessage = widget.compact ? null : 'Download failed (${response.statusCode})';
         });
         return;
       }
@@ -179,12 +188,22 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
       );
     } catch (e) {
       if (mounted) {
+        if (widget.compact) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.red.shade800,
+              behavior: SnackBarBehavior.floating,
+              content: Text('Error: ${e.toString()}', style: GoogleFonts.inter(color: Colors.white)),
+            ),
+          );
+        }
         setState(() {
           _isDownloading = false;
-          _errorMessage = 'Error: ${e.toString()}';
+          _errorMessage = widget.compact ? null : 'Error: ${e.toString()}';
         });
       }
     }
+
   }
 
   Future<void> _installApk() async {

@@ -23,6 +23,7 @@ class _AppListScreenState extends State<AppListScreen> {
   bool _isLoading = true;
   String? _error;
   UserModel? get _user => AuthService.instance.currentUser;
+  final Map<String, String> _processingActions = {};
 
   @override
   void initState() {
@@ -70,6 +71,9 @@ class _AppListScreenState extends State<AppListScreen> {
   }
 
   Future<void> _acceptInvitation(String appId) async {
+    setState(() {
+      _processingActions[appId] = 'accept';
+    });
     try {
       final response = await ApiClient.instance.post('/apps/$appId/invitations/accept', {});
       if (!mounted) return;
@@ -86,10 +90,19 @@ class _AppListScreenState extends State<AppListScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _processingActions.remove(appId);
+        });
+      }
     }
   }
 
   Future<void> _rejectInvitation(String appId) async {
+    setState(() {
+      _processingActions[appId] = 'reject';
+    });
     try {
       final response = await ApiClient.instance.post('/apps/$appId/invitations/reject', {});
       if (!mounted) return;
@@ -106,6 +119,12 @@ class _AppListScreenState extends State<AppListScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    } finally {
+      if (mounted) {
+        setState(() {
+          _processingActions.remove(appId);
+        });
+      }
     }
   }
 
@@ -252,6 +271,10 @@ class _AppListScreenState extends State<AppListScreen> {
   }
 
   Widget _buildInvitationCard(AppModel app) {
+    final isAccepting = _processingActions[app.id] == 'accept';
+    final isRejecting = _processingActions[app.id] == 'reject';
+    final isProcessing = _processingActions.containsKey(app.id);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -297,19 +320,37 @@ class _AppListScreenState extends State<AppListScreen> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               TextButton(
-                onPressed: () => _rejectInvitation(app.id),
+                onPressed: isProcessing ? null : () => _rejectInvitation(app.id),
                 style: TextButton.styleFrom(foregroundColor: Colors.red.shade300),
-                child: const Text('Decline'),
+                child: isRejecting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
+                        ),
+                      )
+                    : const Text('Decline'),
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                onPressed: () => _acceptInvitation(app.id),
+                onPressed: isProcessing ? null : () => _acceptInvitation(app.id),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber.shade600,
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                child: const Text('Accept'),
+                child: isAccepting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                        ),
+                      )
+                    : const Text('Accept'),
               ),
             ],
           ),
@@ -317,6 +358,7 @@ class _AppListScreenState extends State<AppListScreen> {
       ),
     );
   }
+
 
   Widget _buildAppCard(AppModel app) {
     final latestRelease = app.releases.isNotEmpty

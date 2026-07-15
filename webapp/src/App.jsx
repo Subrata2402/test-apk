@@ -16,8 +16,10 @@ export default function App() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
+  const [isLoadingApps, setIsLoadingApps] = useState(false);
 
   const fetchApps = async (token) => {
+    setIsLoadingApps(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/apps`, {
         headers: {
@@ -35,6 +37,8 @@ export default function App() {
       }
     } catch (err) {
       console.error('Failed to fetch apps:', err);
+    } finally {
+      setIsLoadingApps(false);
     }
   };
 
@@ -161,7 +165,7 @@ export default function App() {
     }
   };
 
-  if (isAuthChecking) {
+  if (isAuthChecking || isLoadingApps) {
     return (
       <div className="auth-loading-screen">
         <div className="spinner"></div>

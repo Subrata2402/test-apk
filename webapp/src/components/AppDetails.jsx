@@ -28,6 +28,8 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
 
   const [selectedRelease, setSelectedRelease] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isInviting, setIsInviting] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
   const [downloadingBuild, setDownloadingBuild] = useState(null);
 
   const fileInputRef = useRef(null);
@@ -63,7 +65,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
 
   const validateAndProcessFile = (file) => {
     if (!file.name.endsWith('.apk')) {
-      alert('Please upload only APK files.');
+      showAlert('Please upload only APK files.', 'Error', 'error');
       return;
     }
     setUploadFile(file);
@@ -73,7 +75,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
   const handleReleaseSubmit = async (e) => {
     e.preventDefault();
     if (!releaseNotes || !uploadFile) {
-      alert('Please fill in all release details.');
+      showAlert('Please fill in all release details.', 'Error', 'error');
       return;
     }
 
@@ -118,20 +120,20 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
             const errorData = JSON.parse(xhr.responseText);
             errorMsg = errorData.message || errorMsg;
           } catch (_) { }
-          alert(errorMsg);
+          showAlert(errorMsg, 'Error', 'error');
         }
       };
 
       xhr.onerror = () => {
         setIsUploading(false);
-        alert('An error occurred during the upload.');
+        showAlert('An error occurred during the upload.', 'Error', 'error');
       };
 
       xhr.send(formData);
     } catch (err) {
       console.error('Upload failed:', err);
       setIsUploading(false);
-      alert('Upload failed');
+      showAlert('Upload failed', 'Error', 'error');
     }
   };
 
@@ -149,7 +151,8 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
 
       if (!response.ok) {
         const data = await response.json();
-        alert(data.message || 'Failed to download APK');
+        const errorMsg = data.message || data.error?.message || 'Failed to download APK';
+        showAlert(errorMsg, 'Error', 'error');
         return;
       }
 
@@ -164,7 +167,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error('Download failed:', err);
-      alert('Failed to download APK');
+      showAlert('Failed to download APK', 'Error', 'error');
     } finally {
       setDownloadingBuild(null);
     }
@@ -183,6 +186,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
     const token = localStorage.getItem('token');
     if (!token) return;
 
+    setIsInviting(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/apps/${app._id || app.id}/members`, {
         method: 'POST',
@@ -207,6 +211,8 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
     } catch (err) {
       console.error('Failed to send invitation:', err);
       showAlert('Failed to send invitation', 'Error', 'error');
+    } finally {
+      setIsInviting(false);
     }
   };
 
@@ -222,6 +228,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
         const token = localStorage.getItem('token');
         if (!token) return;
 
+        setIsRemoving(true);
         try {
           const response = await fetch(`${import.meta.env.VITE_API_URL}/apps/${app._id || app.id}/members/${emailToRemove}`, {
             method: 'DELETE',
@@ -240,6 +247,8 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
         } catch (err) {
           console.error('Failed to remove member:', err);
           showAlert('Failed to remove member', 'Error', 'error');
+        } finally {
+          setIsRemoving(false);
         }
       },
       'Remove Member'
@@ -727,6 +736,49 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
           <p style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 600 }}>Deleting release…</p>
         </div>
       )}
+
+      {/* Invite Loader Overlay */}
+      {isInviting && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.65)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '20px',
+            zIndex: 2000,
+          }}
+        >
+          <div className="spinner" style={{ width: '48px', height: '48px', borderWidth: '4px' }} />
+          <p style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 600 }}>Sending invitation…</p>
+        </div>
+      )}
+
+      {/* Remove Member Loader Overlay */}
+      {isRemoving && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.65)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '20px',
+            zIndex: 2000,
+          }}
+        >
+          <div className="spinner" style={{ width: '48px', height: '48px', borderWidth: '4px' }} />
+          <p style={{ color: '#fff', fontSize: '1.1rem', fontWeight: 600 }}>Removing member…</p>
+        </div>
+      )}
     </div>
   );
 }
+
