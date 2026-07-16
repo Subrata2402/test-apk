@@ -5,6 +5,7 @@ import 'package:flutterapp/core/api_client.dart';
 import 'package:flutterapp/core/storage_service.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
+import 'package:flutterapp/utils/extensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_filex/open_filex.dart';
@@ -227,10 +228,10 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
 
   @override
   Widget build(BuildContext context) {
-    final double buttonHeight = widget.compact ? 38.0 : 52.0;
-    final double fontSize = widget.compact ? 13.0 : 15.0;
-    final double iconSize = widget.compact ? 16.0 : 20.0;
-    final double borderRadius = widget.compact ? 10.0 : 14.0;
+    final double buttonHeight = widget.compact ? context.scale(38.0) : context.scale(52.0);
+    final double fontSize = widget.compact ? context.scale(13.0) : context.scale(15.0);
+    final double iconSize = widget.compact ? context.scale(16.0) : context.scale(20.0);
+    final double borderRadius = widget.compact ? context.scale(10.0) : context.scale(14.0);
 
     final Color primaryColor = _isAppInstalled
         ? (_isUpdateAvailable ? const Color(0xFF8B5CF6) : const Color(0xFF10B981))
@@ -243,8 +244,8 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
         if (_errorMessage != null) ...[
           Container(
             width: double.infinity,
-            padding: EdgeInsets.all(widget.compact ? 8 : 12),
-            margin: const EdgeInsets.only(bottom: 8),
+            padding: EdgeInsets.all(widget.compact ? context.scale(8) : context.scale(12)),
+            margin: EdgeInsets.only(bottom: context.scale(8)),
             decoration: BoxDecoration(
               color: Colors.red.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(borderRadius),
@@ -252,7 +253,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
             ),
             child: Text(
               _errorMessage!,
-              style: GoogleFonts.inter(color: Colors.red.shade300, fontSize: widget.compact ? 11 : 13),
+              style: GoogleFonts.inter(color: Colors.red.shade300, fontSize: widget.compact ? context.scale(11) : context.scale(13)),
             ),
           ),
         ],
@@ -269,7 +270,12 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                 ? SizedBox(
                     width: iconSize,
                     height: iconSize,
-                    child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    child: CircularProgressIndicator(
+                      value: _downloadProgress > 0 ? _downloadProgress : null,
+                      strokeWidth: 2,
+                      color: Colors.white,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                    ),
                   )
                 : Icon(
                     _isAppInstalled
@@ -292,23 +298,12 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
               backgroundColor: primaryColor,
               disabledBackgroundColor: const Color(0xFF8B5CF6).withValues(alpha: 0.4),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
-              padding: widget.compact ? const EdgeInsets.symmetric(horizontal: 16) : null,
+              padding: widget.compact ? EdgeInsets.symmetric(horizontal: context.scale(16)) : null,
               elevation: 0,
             ),
           ),
         ),
-        if (_isDownloading && _downloadProgress > 0) ...[
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: _downloadProgress,
-              backgroundColor: Colors.white12,
-              valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF8B5CF6)),
-              minHeight: widget.compact ? 4 : 6,
-            ),
-          ),
-        ],
+
       ],
     );
   }

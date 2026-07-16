@@ -1,15 +1,17 @@
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
+import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/release_action_button.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert';
 
 class ReleaseDetailScreen extends StatefulWidget {
   final ReleaseModel release;
   final AppModel app;
-
   const ReleaseDetailScreen({super.key, required this.release, required this.app});
 
   @override
@@ -28,11 +30,14 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
   }
 
   ImageProvider _getIconProvider(String base64Str) {
-    String cleanStr = base64Str;
-    if (cleanStr.contains(',')) {
-      cleanStr = cleanStr.split(',').last;
-    }
-    return MemoryImage(base64Decode(cleanStr.trim()));
+    String s = base64Str;
+    if (s.contains(',')) s = s.split(',').last;
+    return MemoryImage(base64Decode(s.trim()));
+  }
+
+  String _formatDate(String raw) {
+    try { return DateFormat('MMM d, yyyy').format(DateTime.parse(raw)); }
+    catch (_) { return raw; }
   }
 
   @override
@@ -41,212 +46,266 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
     final dateStr = release.date.isNotEmpty ? _formatDate(release.date) : 'Unknown date';
 
     return Scaffold(
-      backgroundColor: const Color(0xFF080710),
-      appBar: AppBar(
-        title: Text('Release Details', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF0F0F19), Color(0xFF1A0B2E), Color(0xFF080710)],
+      backgroundColor: const Color(0xFF0A1628),
+      body: Stack(
+        children: [
+          // Background gradient
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF2D1B69), Color(0xFF11244D), Color(0xFF0A1628)],
+                stops: [0.0, 0.55, 1.0],
+              ),
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (release.appIcon != null && release.appIcon!.isNotEmpty)
-                      Container(
-                        width: 56,
-                        height: 56,
-                        margin: const EdgeInsets.only(right: 16),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                            image: _iconProvider ?? _getIconProvider(release.appIcon!),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    else
-                      Container(
-                        width: 56,
-                        height: 56,
-                        margin: const EdgeInsets.only(right: 16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.3)),
-                        ),
-                        child: const Icon(Icons.android_rounded, color: Color(0xFFC084FC), size: 32),
-                      ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            release.appName ?? widget.app.name,
-                            style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w700, color: Colors.white),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.app.packageName,
-                            style: GoogleFonts.robotoMono(fontSize: 12, color: Colors.white38),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'v${release.version}  •  $dateStr',
-                            style: GoogleFonts.inter(fontSize: 13, color: Colors.white38),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 28),
-                // Metadata grid
-                _buildSectionTitle('Details'),
-                const SizedBox(height: 12),
-                _DetailGrid(release: release, app: widget.app),
-                if (release.uploadedByName != null && release.uploadedByName!.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Uploaded By'),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                    ),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 16,
-                          backgroundColor: const Color(0xFF06B6D4).withValues(alpha: 0.15),
-                          child: Text(
-                            release.uploadedByName!
-                                .substring(0, release.uploadedByName!.length >= 2 ? 2 : 1)
-                                .toUpperCase(),
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF22D3EE),
+
+          // Bokeh orbs
+          Positioned(
+            top: -context.scale(100), left: -context.scale(80),
+            child: _Orb(size: context.scale(300), color: const Color(0xFF7C3AED).withValues(alpha: 0.35)),
+          ),
+          Positioned(
+            bottom: -context.scale(60), right: -context.scale(60),
+            child: _Orb(size: context.scale(240), color: const Color(0xFFEC4899).withValues(alpha: 0.22)),
+          ),
+
+          // Content
+          Column(
+            children: [
+              // Glass AppBar
+              ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    color: Colors.white.withValues(alpha: 0.07),
+                    child: SafeArea(
+                      bottom: false,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(context.scale(4), context.scale(8), context.scale(16), context.scale(12)),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.arrow_back_rounded, color: Colors.white, size: context.scale(22)),
+                              onPressed: () => Navigator.of(context).pop(),
                             ),
-                          ),
+                            Text(
+                              'Release Details',
+                              style: GoogleFonts.inter(fontSize: context.scale(17), fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.5),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Scrollable body
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(context.scale(20)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: context.scale(4)),
+
+                      // Header card
+                      _GlassPanel(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (release.appIcon != null && release.appIcon!.isNotEmpty)
+                              Container(
+                                width: context.scale(56), height: context.scale(56),
+                                margin: EdgeInsets.only(right: context.scale(16)),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(context.scale(14)),
+                                  image: DecorationImage(image: _iconProvider ?? _getIconProvider(release.appIcon!), fit: BoxFit.cover),
+                                  border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1),
+                                ),
+                              )
+                            else
+                              Container(
+                                width: context.scale(56), height: context.scale(56),
+                                margin: EdgeInsets.only(right: context.scale(16)),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.18),
+                                  borderRadius: BorderRadius.circular(context.scale(14)),
+                                  border: Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.30), width: 0.8),
+                                ),
+                                child: Icon(Icons.android_rounded, color: const Color(0xFFDDD6FE), size: context.scale(32)),
+                              ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    release.appName ?? widget.app.name,
+                                    style: GoogleFonts.inter(fontSize: context.scale(20), fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: -0.5),
+                                  ),
+                                  SizedBox(height: context.scale(4)),
+                                  Text(widget.app.packageName, style: GoogleFonts.robotoMono(fontSize: context.scale(11), color: Colors.white.withValues(alpha: 0.45))),
+                                  SizedBox(height: context.scale(6)),
+                                  Text('v${release.version}  •  $dateStr', style: GoogleFonts.inter(fontSize: context.scale(13), color: Colors.white.withValues(alpha: 0.50))),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      SizedBox(height: context.scale(20)),
+                      _SectionTitle(title: 'Details'),
+                      SizedBox(height: context.scale(12)),
+                      _DetailGrid(release: release, app: widget.app),
+
+                      if (release.uploadedByName != null && release.uploadedByName!.isNotEmpty) ...[
+                        SizedBox(height: context.scale(20)),
+                        _SectionTitle(title: 'Uploaded By'),
+                        SizedBox(height: context.scale(12)),
+                        _GlassPanel(
+                          child: Row(
                             children: [
-                              Text(
-                                release.uploadedByName!,
-                                style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                              Container(
+                                width: context.scale(38), height: context.scale(38),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF06B6D4).withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: const Color(0xFF06B6D4).withValues(alpha: 0.30), width: 0.8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    release.uploadedByName!.substring(0, release.uploadedByName!.length >= 2 ? 2 : 1).toUpperCase(),
+                                    style: GoogleFonts.inter(fontSize: context.scale(11), fontWeight: FontWeight.w700, color: const Color(0xFF22D3EE)),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                release.uploadedByEmail ?? '',
-                                style: GoogleFonts.inter(fontSize: 11, color: Colors.white38),
+                              SizedBox(width: context.scale(12)),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(release.uploadedByName!, style: GoogleFonts.inter(fontSize: context.scale(13), fontWeight: FontWeight.w600, color: Colors.white)),
+                                    SizedBox(height: context.scale(2)),
+                                    Text(release.uploadedByEmail ?? '', style: GoogleFonts.inter(fontSize: context.scale(11), color: Colors.white.withValues(alpha: 0.45))),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ],
+
+                      if (release.releaseNotes.isNotEmpty) ...[
+                        SizedBox(height: context.scale(20)),
+                        _SectionTitle(title: 'Release Notes'),
+                        SizedBox(height: context.scale(12)),
+                        _GlassPanel(
+                          child: Text(
+                            release.releaseNotes,
+                            style: GoogleFonts.inter(fontSize: context.scale(14), color: Colors.white.withValues(alpha: 0.75), height: 1.6),
+                          ),
+                        ),
+                      ],
+
+                      if (release.permissions.isNotEmpty) ...[
+                        SizedBox(height: context.scale(20)),
+                        _SectionTitle(title: 'Permissions (${release.permissions.length})'),
+                        SizedBox(height: context.scale(12)),
+                        Wrap(
+                          spacing: context.scale(8),
+                          runSpacing: context.scale(8),
+                          children: release.permissions.map((p) => _PermissionChip(permission: p)).toList(),
+                        ),
+                      ],
+
+                      SizedBox(height: context.scale(150))// space for bottom bar
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          // Glass bottom action bar
+          Positioned(
+            left: 0, right: 0, bottom: 0,
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.08),
+                    border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.14), width: 0.8)),
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: EdgeInsets.all(context.scale(20)),
+                      child: ReleaseActionButton(app: widget.app, release: widget.release),
                     ),
                   ),
-                ],
-                // if (release.sha256 != null && release.sha256!.isNotEmpty) ...[
-                //   const SizedBox(height: 24),
-                //   _buildSectionTitle('SHA-256 Hash'),
-                //   const SizedBox(height: 8),
-                //   Container(
-                //     width: double.infinity,
-                //     padding: const EdgeInsets.all(12),
-                //     decoration: BoxDecoration(
-                //       color: Colors.white.withValues(alpha: 0.04),
-                //       borderRadius: BorderRadius.circular(10),
-                //       border: Border.all(
-                //         color: Colors.white.withValues(alpha: 0.08),
-                //       ),
-                //     ),
-                //     child: Text(
-                //       release.sha256!,
-                //       style: GoogleFonts.robotoMono(
-                //         fontSize: 11,
-                //         color: Colors.white54,
-                //         height: 1.5,
-                //       ),
-                //     ),
-                //   ),
-                // ],
-                if (release.releaseNotes.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Release Notes'),
-                  const SizedBox(height: 8),
-                  Text(
-                    release.releaseNotes,
-                    style: GoogleFonts.inter(fontSize: 14, color: Colors.white60, height: 1.6),
-                  ),
-                ],
-                if (release.permissions.isNotEmpty) ...[
-                  const SizedBox(height: 24),
-                  _buildSectionTitle('Permissions (${release.permissions.length})'),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: release.permissions.map((p) => _PermissionChip(permission: p)).toList(),
-                  ),
-                ],
-              ],
+                ),
+              ),
             ),
           ),
-        ),
+        ],
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(24),
+    );
+  }
+}
+
+class _Orb extends StatelessWidget {
+  final double size;
+  final Color color;
+  const _Orb({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: size, height: size,
         decoration: BoxDecoration(
-          color: const Color(0xFF0F0F19),
-          border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.06))),
+          shape: BoxShape.circle,
+          gradient: RadialGradient(colors: [color, Colors.transparent]),
         ),
-        child: SafeArea(
-          child: ReleaseActionButton(app: widget.app, release: widget.release),
+      );
+}
+
+class _GlassPanel extends StatelessWidget {
+  final Widget child;
+  const _GlassPanel({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(context.scale(18)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(context.scale(18)),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.09),
+            borderRadius: BorderRadius.circular(context.scale(18)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.18), width: 0.8),
+          ),
+          child: child,
         ),
       ),
     );
   }
+}
 
-  Widget _buildSectionTitle(String title) => Text(
-    title,
-    style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white38, letterSpacing: 0.8),
-  );
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle({required this.title});
 
-  String _formatDate(String raw) {
-    try {
-      final dt = DateTime.parse(raw);
-      return DateFormat('MMM d, yyyy').format(dt);
-    } catch (_) {
-      return raw;
-    }
-  }
+  @override
+  Widget build(BuildContext context) => Text(
+        title.toUpperCase(),
+        style: GoogleFonts.inter(fontSize: context.scale(11), fontWeight: FontWeight.w600, color: Colors.white.withValues(alpha: 0.40), letterSpacing: 0.8),
+      );
 }
 
 class _DetailGrid extends StatelessWidget {
@@ -266,34 +325,34 @@ class _DetailGrid extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 10,
-        crossAxisSpacing: 10,
-        childAspectRatio: 2.5,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2, mainAxisSpacing: context.scale(10), crossAxisSpacing: context.scale(10), childAspectRatio: 2.5,
       ),
       itemCount: items.length,
+      padding: EdgeInsets.zero,
       itemBuilder: (_, i) {
         final item = items[i];
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.04),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(item['label']!, style: GoogleFonts.inter(fontSize: 10, color: Colors.white30, letterSpacing: 0.4)),
-              const SizedBox(height: 2),
-              Text(
-                item['value']!,
-                style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white),
-                overflow: TextOverflow.ellipsis,
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(context.scale(12)),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: context.scale(14), vertical: context.scale(10)),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.09),
+                borderRadius: BorderRadius.circular(context.scale(12)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.16), width: 0.8),
               ),
-            ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(item['label']!, style: GoogleFonts.inter(fontSize: context.scale(10), color: Colors.white.withValues(alpha: 0.40), letterSpacing: 0.4)),
+                  SizedBox(height: context.scale(3)),
+                  Text(item['value']!, style: GoogleFonts.inter(fontSize: context.scale(13), fontWeight: FontWeight.w600, color: Colors.white), overflow: TextOverflow.ellipsis),
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -308,14 +367,20 @@ class _PermissionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final short = permission.split('.').last;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(context.scale(8)),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: context.scale(10), vertical: context.scale(5)),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.09),
+            borderRadius: BorderRadius.circular(context.scale(8)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.16), width: 0.8),
+          ),
+          child: Text(short, style: GoogleFonts.robotoMono(fontSize: context.scale(11), color: Colors.white.withValues(alpha: 0.65))),
+        ),
       ),
-      child: Text(short, style: GoogleFonts.robotoMono(fontSize: 11, color: Colors.white54)),
     );
   }
 }
