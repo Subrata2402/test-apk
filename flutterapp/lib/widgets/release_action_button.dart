@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterapp/core/api_client.dart';
@@ -259,49 +260,82 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
             ),
           ),
         ],
-        SizedBox(
-          width: widget.compact ? null : double.infinity,
-          height: buttonHeight,
-          child: ElevatedButton.icon(
-            onPressed: _isDownloading
-                ? null
-                : (_isAppInstalled
-                      ? (_isUpdateAvailable ? (_isDownloaded ? _installApk : _downloadApk) : _launchApp)
-                      : (_isDownloaded ? _installApk : _downloadApk)),
-            icon: _isDownloading
-                ? SizedBox(
-                    width: iconSize,
-                    height: iconSize,
-                    child: CircularProgressIndicator(
-                      value: _downloadProgress > 0 ? _downloadProgress : null,
-                      strokeWidth: 2,
-                      color: Colors.white,
-                      backgroundColor: Colors.white.withValues(alpha: 0.2),
-                    ),
-                  )
-                : Icon(
-                    _isAppInstalled
-                        ? (_isUpdateAvailable
-                              ? (_isDownloaded ? Icons.install_mobile_rounded : Icons.system_update_alt_rounded)
-                              : Icons.open_in_new_rounded)
-                        : (_isDownloaded ? Icons.install_mobile_rounded : Icons.download_rounded),
-                    size: iconSize,
-                    color: Colors.white,
+        ClipRRect(
+          borderRadius: BorderRadius.circular(borderRadius),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+              width: widget.compact ? null : double.infinity,
+              height: buttonHeight,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: _isDownloading
+                      ? [primaryColor.withValues(alpha: 0.40), primaryColor.withValues(alpha: 0.20)]
+                      : [primaryColor.withValues(alpha: 0.85), primaryColor.withValues(alpha: 0.60)],
+                ),
+                borderRadius: BorderRadius.circular(borderRadius),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 0.8),
+                boxShadow: [
+                  BoxShadow(
+                    color: primaryColor.withValues(alpha: _isDownloading ? 0.15 : 0.40),
+                    blurRadius: context.scale(16),
+                    spreadRadius: -2,
+                    offset: Offset(0, context.scale(4)),
                   ),
-            label: Text(
-              _isDownloading
-                  ? 'Downloading… ${(_downloadProgress * 100).toStringAsFixed(0)}%'
-                  : (_isAppInstalled
-                        ? (_isUpdateAvailable ? (_isDownloaded ? 'Install Update' : 'Update') : 'Open App')
-                        : (_isDownloaded ? 'Install APK' : 'Download APK')),
-              style: GoogleFonts.inter(fontSize: fontSize, fontWeight: FontWeight.w600, color: Colors.white),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: primaryColor,
-              disabledBackgroundColor: const Color(0xFF8B5CF6).withValues(alpha: 0.4),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(borderRadius)),
-              padding: widget.compact ? EdgeInsets.symmetric(horizontal: context.scale(16)) : null,
-              elevation: 0,
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _isDownloading
+                      ? null
+                      : (_isAppInstalled
+                            ? (_isUpdateAvailable ? (_isDownloaded ? _installApk : _downloadApk) : _launchApp)
+                            : (_isDownloaded ? _installApk : _downloadApk)),
+                  splashColor: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(borderRadius),
+                  child: Padding(
+                    padding: widget.compact ? EdgeInsets.symmetric(horizontal: context.scale(16)) : EdgeInsets.zero,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: widget.compact ? MainAxisSize.min : MainAxisSize.max,
+                      children: [
+                        _isDownloading
+                            ? SizedBox(
+                                width: iconSize,
+                                height: iconSize,
+                                child: CircularProgressIndicator(
+                                  value: _downloadProgress > 0 ? _downloadProgress : null,
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                ),
+                              )
+                            : Icon(
+                                _isAppInstalled
+                                    ? (_isUpdateAvailable
+                                          ? (_isDownloaded ? Icons.install_mobile_rounded : Icons.system_update_alt_rounded)
+                                          : Icons.open_in_new_rounded)
+                                    : (_isDownloaded ? Icons.install_mobile_rounded : Icons.download_rounded),
+                                size: iconSize,
+                                color: Colors.white,
+                              ),
+                        SizedBox(width: context.scale(8)),
+                        Text(
+                          _isDownloading
+                              ? 'Downloading… ${(_downloadProgress * 100).toStringAsFixed(0)}%'
+                              : (_isAppInstalled
+                                    ? (_isUpdateAvailable ? (_isDownloaded ? 'Install Update' : 'Update') : 'Open App')
+                                    : (_isDownloaded ? 'Install APK' : 'Download APK')),
+                          style: GoogleFonts.inter(fontSize: fontSize, fontWeight: FontWeight.w600, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ),

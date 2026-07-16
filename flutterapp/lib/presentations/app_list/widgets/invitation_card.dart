@@ -74,19 +74,11 @@ class InvitationCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              TextButton(
+              GlassButton(
+                label: 'Decline',
+                isLoading: isRejecting,
                 onPressed: isProcessing ? null : onReject,
-                style: TextButton.styleFrom(foregroundColor: const Color(0xFFFF6B6B)),
-                child: isRejecting
-                    ? SizedBox(
-                        width: context.scale(16),
-                        height: context.scale(16),
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6B6B)),
-                        ),
-                      )
-                    : const Text('Decline'),
+                gradient: const LinearGradient(colors: [Color(0xFFEF4444), Color(0xFFDC2626)]),
               ),
               SizedBox(width: context.scale(8)),
               GlassButton(

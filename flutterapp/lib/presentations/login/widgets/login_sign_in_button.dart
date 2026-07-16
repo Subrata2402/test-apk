@@ -57,7 +57,7 @@ class LoginSignInButton extends StatelessWidget {
                       )
                     else
                       Image.network(
-                        'https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg',
+                        'https://developers.google.com/identity/images/g-logo.png',
                         width: context.scale(20),
                         height: context.scale(20),
                         errorBuilder: (_, _, _) => Icon(Icons.login, color: Colors.white, size: context.scale(20)),
