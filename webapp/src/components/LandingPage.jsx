@@ -47,7 +47,7 @@ export default function LandingPage({ onLoginClick }) {
 
           <div className="hero-actions">
             <a
-              href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B1/testapk_v1.0.0+1.apk"
+              href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
               download="testapk.apk"
               className="btn btn-primary btn-lg flex-center gap-2"
               style={{ textDecoration: 'none' }}
@@ -179,7 +179,7 @@ export default function LandingPage({ onLoginClick }) {
                             <span>{release.size}</span>
                           </span>
                           <a
-                            href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B1/testapk_v1.0.0+1.apk"
+                            href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
                             download="testapk.apk"
                             className="btn btn-primary btn-sm flex-center gap-1"
                             style={{ textDecoration: 'none' }}
