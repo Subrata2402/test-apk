@@ -39,8 +39,7 @@ class ReleaseModel {
     sha256: json['sha256'] as String?,
     minSdkVersion: json['minSdkVersion'] as String?,
     targetSdkVersion: json['targetSdkVersion'] as String?,
-    permissions:
-        (json['permissions'] as List?)?.map((e) => e.toString()).toList() ?? [],
+    permissions: (json['permissions'] as List?)?.map((e) => e.toString()).toList() ?? [],
     appIcon: json['appIcon'] as String?,
     uploadedByEmail: json['uploadedByEmail'] as String?,
     uploadedByName: json['uploadedByName'] as String?,

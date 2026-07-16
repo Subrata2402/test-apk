@@ -8,8 +8,7 @@ class StorageService {
 
   static const _tokenKey = 'jwt_token';
 
-  Future<void> saveToken(String token) =>
-      _storage.write(key: _tokenKey, value: token);
+  Future<void> saveToken(String token) => _storage.write(key: _tokenKey, value: token);
 
   Future<String?> getToken() => _storage.read(key: _tokenKey);
 

@@ -6,12 +6,7 @@ class MemberModel {
   final String status;
   final String name;
 
-  const MemberModel({
-    required this.email,
-    required this.role,
-    required this.status,
-    required this.name,
-  });
+  const MemberModel({required this.email, required this.role, required this.status, required this.name});
 
   factory MemberModel.fromJson(Map<String, dynamic> json) => MemberModel(
     email: json['email'] as String? ?? '',
@@ -45,21 +40,12 @@ class AppModel {
     name: json['name'] as String,
     packageName: json['packageName'] as String? ?? '',
     description: json['description'] as String? ?? '',
-    releases:
-        (json['releases'] as List?)
-            ?.map((r) => ReleaseModel.fromJson(r as Map<String, dynamic>))
-            .toList() ??
-        [],
-    members:
-        (json['members'] as List?)
-            ?.map((m) => MemberModel.fromJson(m as Map<String, dynamic>))
-            .toList() ??
-        [],
+    releases: (json['releases'] as List?)?.map((r) => ReleaseModel.fromJson(r as Map<String, dynamic>)).toList() ?? [],
+    members: (json['members'] as List?)?.map((m) => MemberModel.fromJson(m as Map<String, dynamic>)).toList() ?? [],
     memberRole: json['memberRole'] as String?,
   );
 
-  ReleaseModel? get latestRelease =>
-      releases.isNotEmpty ? releases.first : null;
+  ReleaseModel? get latestRelease => releases.isNotEmpty ? releases.first : null;
 
   String get initials {
     final parts = name.trim().split(' ');

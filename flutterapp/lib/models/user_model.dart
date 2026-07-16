@@ -5,13 +5,7 @@ class UserModel {
   final String? picture;
   final String role;
 
-  const UserModel({
-    required this.id,
-    required this.email,
-    required this.name,
-    this.picture,
-    required this.role,
-  });
+  const UserModel({required this.id, required this.email, required this.name, this.picture, required this.role});
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
     id: json['id'] as String? ?? json['_id'] as String,

@@ -11,10 +11,7 @@ class AuthService {
   AuthService._();
   static final AuthService instance = AuthService._();
 
-  final _googleSignIn = GoogleSignIn(
-    serverClientId: kGoogleClientId,
-    scopes: ['email', 'profile'],
-  );
+  final _googleSignIn = GoogleSignIn(serverClientId: kGoogleClientId, scopes: ['email', 'profile']);
 
   UserModel? _currentUser;
   UserModel? get currentUser => _currentUser;
@@ -29,17 +26,13 @@ class AuthService {
       if (idToken == null) return null;
 
       // Exchange idToken for our JWT
-      final response = await ApiClient.instance.post('/auth/google', {
-        'idToken': idToken,
-      });
+      final response = await ApiClient.instance.post('/auth/google', {'idToken': idToken});
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         final token = body['token'] as String;
         await StorageService.instance.saveToken(token);
-        _currentUser = UserModel.fromJson(
-          body['data']['user'] as Map<String, dynamic>,
-        );
+        _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
         return _currentUser;
       }
       return null;
@@ -57,9 +50,7 @@ class AuthService {
       final response = await ApiClient.instance.get('/users/me');
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
-        _currentUser = UserModel.fromJson(
-          body['data']['user'] as Map<String, dynamic>,
-        );
+        _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
         return _currentUser;
       }
     } catch (_) {}

@@ -11,10 +11,7 @@ class ApiClient {
 
   Future<Map<String, String>> _headers() async {
     final token = await StorageService.instance.getToken();
-    return {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
+    return {'Content-Type': 'application/json', if (token != null) 'Authorization': 'Bearer $token'};
   }
 
   Future<http.Response> get(String path) async {
@@ -24,11 +21,7 @@ class ApiClient {
 
   Future<http.Response> post(String path, Map<String, dynamic> body) async {
     final headers = await _headers();
-    return http.post(
-      Uri.parse('$kApiBaseUrl$path'),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    return http.post(Uri.parse('$kApiBaseUrl$path'), headers: headers, body: jsonEncode(body));
   }
 
   Future<http.Response> delete(String path) async {

@@ -204,7 +204,6 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
         });
       }
     }
-
   }
 
   Future<void> _installApk() async {
@@ -253,7 +252,10 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
             ),
             child: Text(
               _errorMessage!,
-              style: GoogleFonts.inter(color: Colors.red.shade300, fontSize: widget.compact ? context.scale(11) : context.scale(13)),
+              style: GoogleFonts.inter(
+                color: Colors.red.shade300,
+                fontSize: widget.compact ? context.scale(11) : context.scale(13),
+              ),
             ),
           ),
         ],
@@ -303,7 +305,6 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
             ),
           ),
         ),
-
       ],
     );
   }
