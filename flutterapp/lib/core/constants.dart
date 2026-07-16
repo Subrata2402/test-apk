@@ -24,3 +24,67 @@ const String kInfoSubtitleAlwaysUpToDate = 'Instant access to the latest builds.
 const String kLoginSigningIn = 'Signing in…';
 const String kLoginContinueWithGoogle = 'Continue with Google';
 const String kLoginConfirmation = 'By signing in, you confirm you are an authorized tester.';
+
+/// Splash Screen
+const String kSplashSubtitle = 'Release Manager for Testers';
+
+/// App List Screen
+const String kAppListErrorFailedToLoad = 'Failed to load data';
+const String kAppListErrorConnection = 'Connection error: ';
+const String kInviteAcceptedMsg = 'Invitation accepted!';
+const String kInviteAcceptFailedMsg = 'Failed to accept invitation';
+const String kInviteRejectedMsg = 'Invitation rejected';
+const String kInviteRejectFailedMsg = 'Failed to reject invitation';
+const String kErrorPrefix = 'Error: ';
+
+/// App List Empty State
+const String kAppListEmptyTitle = "You haven't been added\nto any app yet.";
+const String kAppListEmptySubtitle = 'Ask a developer to invite you as a Tester.';
+
+/// App Bar
+const String kSignOutTooltip = 'Sign out';
+
+/// App Card
+const String kLabelLatestVersion = 'Latest Version';
+const String kNone = 'None';
+
+/// Release List Screen
+const String kTabReleases = 'Releases';
+const String kTabMembers = 'Members';
+const String kNoReleasesMsg = 'No releases yet';
+const String kTeamMembersTitle = 'Team Members';
+const String kTeamMembersSubtitle = 'Collaborators invited to this application.';
+const String kNoMembersMsg = 'No members yet';
+
+/// Release Card
+const String kBuildPrefix = 'Build #';
+
+/// Release Detail Screen
+const String kReleaseDetailsTitle = 'Release Details';
+const String kSectionDetails = 'DETAILS';
+const String kSectionUploadedBy = 'UPLOADED BY';
+const String kSectionReleaseNotes = 'RELEASE NOTES';
+const String kSectionPermissionsPrefix = 'PERMISSIONS (';
+const String kUnknownDate = 'Unknown date';
+
+/// Detail Grid
+const String kLabelBuildNumber = 'Build Number';
+const String kLabelMinSdk = 'Min SDK';
+const String kApiPrefix = 'API ';
+const String kLabelTargetSdk = 'Target SDK';
+const String kLabelSize = 'Size';
+
+/// Release Action Button
+const String kDownloadFailedMsg = 'Download failed (';
+const String kDownloadedMsg = 'Downloaded: ';
+const String kLaunchFailedMsg = 'Failed to launch application';
+const String kLaunchErrorMsg = 'Error launching app: ';
+const String kDownloadingMsg = 'Downloading… ';
+const String kInstallUpdateBtnLabel = 'Install Update';
+const String kUpdateBtnLabel = 'Update';
+const String kOpenAppBtnLabel = 'Open App';
+const String kInstallApkBtnLabel = 'Install APK';
+const String kDownloadApkBtnLabel = 'Download APK';
+const String kRetryBtnLabel = 'Retry';
+const String kDeclineBtnLabel = 'Decline';
+const String kAcceptBtnLabel = 'Accept';

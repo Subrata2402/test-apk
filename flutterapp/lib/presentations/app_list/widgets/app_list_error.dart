@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/glass_button.dart';
@@ -30,7 +31,7 @@ class AppListError extends StatelessWidget {
             ),
             SizedBox(height: context.scale(20)),
             GlassButton(
-              label: 'Retry',
+              label: kRetryBtnLabel,
               onPressed: onRetry,
               gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
             ),

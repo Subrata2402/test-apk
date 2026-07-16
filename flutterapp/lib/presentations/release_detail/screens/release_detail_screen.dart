@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -51,7 +52,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final release = widget.release;
-    final dateStr = release.date.isNotEmpty ? _formatDate(release.date) : 'Unknown date';
+    final dateStr = release.date.isNotEmpty ? _formatDate(release.date) : kUnknownDate;
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A1628),
@@ -106,7 +107,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                               onPressed: () => Navigator.of(context).pop(),
                             ),
                             Text(
-                              'Release Details',
+                              kReleaseDetailsTitle,
                               style: GoogleFonts.inter(
                                 fontSize: context.scale(17),
                                 fontWeight: FontWeight.w700,
@@ -208,13 +209,13 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                       ),
 
                       SizedBox(height: context.scale(20)),
-                      const SectionLabel(label: 'DETAILS'),
+                      const SectionLabel(label: kSectionDetails),
                       SizedBox(height: context.scale(12)),
                       DetailGrid(release: release, app: widget.app),
 
                       if (release.uploadedByName != null && release.uploadedByName!.isNotEmpty) ...[
                         SizedBox(height: context.scale(20)),
-                        const SectionLabel(label: 'UPLOADED BY'),
+                        const SectionLabel(label: kSectionUploadedBy),
                         SizedBox(height: context.scale(12)),
                         GlassPanel(
                           padding: EdgeInsets.all(context.scale(18)),
@@ -276,7 +277,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
 
                       if (release.releaseNotes.isNotEmpty) ...[
                         SizedBox(height: context.scale(20)),
-                        const SectionLabel(label: 'RELEASE NOTES'),
+                        const SectionLabel(label: kSectionReleaseNotes),
                         SizedBox(height: context.scale(12)),
                         GlassPanel(
                           padding: EdgeInsets.all(context.scale(18)),
@@ -294,7 +295,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
 
                       if (release.permissions.isNotEmpty) ...[
                         SizedBox(height: context.scale(20)),
-                        SectionLabel(label: 'PERMISSIONS (${release.permissions.length})'),
+                        SectionLabel(label: '$kSectionPermissionsPrefix${release.permissions.length})'),
                         SizedBox(height: context.scale(12)),
                         Wrap(
                           spacing: context.scale(8),

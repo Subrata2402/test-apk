@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/user_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -50,7 +51,7 @@ class AppListAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   SizedBox(width: context.scale(12)),
                   Text(
-                    'TestAPK',
+                    kAppName,
                     style: GoogleFonts.inter(
                       fontSize: context.scale(18),
                       fontWeight: FontWeight.w700,
@@ -89,7 +90,7 @@ class AppListAppBar extends StatelessWidget implements PreferredSizeWidget {
                       size: context.scale(20),
                     ),
                     onPressed: onSignOut,
-                    tooltip: 'Sign out',
+                    tooltip: kSignOutTooltip,
                   ),
                 ],
               ),

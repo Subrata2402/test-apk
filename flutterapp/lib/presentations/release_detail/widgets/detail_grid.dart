@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -14,10 +15,10 @@ class DetailGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <Map<String, String>>[
-      {'label': 'Build Number', 'value': release.buildNumber.toString()},
-      if (release.minSdkVersion != null) {'label': 'Min SDK', 'value': 'API ${release.minSdkVersion}'},
-      if (release.targetSdkVersion != null) {'label': 'Target SDK', 'value': 'API ${release.targetSdkVersion}'},
-      {'label': 'Size', 'value': release.size},
+      {'label': kLabelBuildNumber, 'value': release.buildNumber.toString()},
+      if (release.minSdkVersion != null) {'label': kLabelMinSdk, 'value': '$kApiPrefix${release.minSdkVersion}'},
+      if (release.targetSdkVersion != null) {'label': kLabelTargetSdk, 'value': '$kApiPrefix${release.targetSdkVersion}'},
+      {'label': kLabelSize, 'value': release.size},
     ];
 
     return GridView.builder(

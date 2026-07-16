@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/core/storage_service.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
@@ -119,13 +120,13 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
             SnackBar(
               backgroundColor: Colors.red.shade800,
               behavior: SnackBarBehavior.floating,
-              content: Text('Download failed (${response.statusCode})', style: GoogleFonts.inter(color: Colors.white)),
+              content: Text('$kDownloadFailedMsg${response.statusCode})', style: GoogleFonts.inter(color: Colors.white)),
             ),
           );
         }
         setState(() {
           _isDownloading = false;
-          _errorMessage = widget.compact ? null : 'Download failed (${response.statusCode})';
+          _errorMessage = widget.compact ? null : '$kDownloadFailedMsg${response.statusCode})';
         });
         return;
       }
@@ -185,7 +186,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
         SnackBar(
           backgroundColor: Colors.green.shade800,
           behavior: SnackBarBehavior.floating,
-          content: Text('Downloaded: ${file.path.split('/').last}', style: GoogleFonts.inter(color: Colors.white)),
+          content: Text('$kDownloadedMsg${file.path.split('/').last}', style: GoogleFonts.inter(color: Colors.white)),
         ),
       );
     } catch (e) {
@@ -195,13 +196,13 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
             SnackBar(
               backgroundColor: Colors.red.shade800,
               behavior: SnackBarBehavior.floating,
-              content: Text('Error: ${e.toString()}', style: GoogleFonts.inter(color: Colors.white)),
+              content: Text('$kErrorPrefix${e.toString()}', style: GoogleFonts.inter(color: Colors.white)),
             ),
           );
         }
         setState(() {
           _isDownloading = false;
-          _errorMessage = widget.compact ? null : 'Error: ${e.toString()}';
+          _errorMessage = widget.compact ? null : '$kErrorPrefix${e.toString()}';
         });
       }
     }
@@ -217,11 +218,11 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
     try {
       final bool success = await _platform.invokeMethod('launchApp', {'packageName': widget.app.packageName});
       if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to launch application')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text(kLaunchFailedMsg)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error launching app: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$kLaunchErrorMsg$e')));
       }
     }
   }
@@ -325,10 +326,10 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                         SizedBox(width: context.scale(8)),
                         Text(
                           _isDownloading
-                              ? 'Downloading… ${(_downloadProgress * 100).toStringAsFixed(0)}%'
+                              ? '$kDownloadingMsg${(_downloadProgress * 100).toStringAsFixed(0)}%'
                               : (_isAppInstalled
-                                    ? (_isUpdateAvailable ? (_isDownloaded ? 'Install Update' : 'Update') : 'Open App')
-                                    : (_isDownloaded ? 'Install APK' : 'Download APK')),
+                                    ? (_isUpdateAvailable ? (_isDownloaded ? kInstallUpdateBtnLabel : kUpdateBtnLabel) : kOpenAppBtnLabel)
+                                    : (_isDownloaded ? kInstallApkBtnLabel : kDownloadApkBtnLabel)),
                           style: GoogleFonts.inter(fontSize: fontSize, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ],

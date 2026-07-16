@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -75,14 +76,14 @@ class InvitationCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               GlassButton(
-                label: 'Decline',
+                label: kDeclineBtnLabel,
                 isLoading: isRejecting,
                 onPressed: isProcessing ? null : onReject,
                 gradient: const LinearGradient(colors: [Color(0xFFEF4444), Color(0xFFDC2626)]),
               ),
               SizedBox(width: context.scale(8)),
               GlassButton(
-                label: 'Accept',
+                label: kAcceptBtnLabel,
                 isLoading: isAccepting,
                 onPressed: isProcessing ? null : onAccept,
                 gradient: const LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFD97706)]),

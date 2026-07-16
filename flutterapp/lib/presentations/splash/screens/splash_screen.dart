@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp/core/auth_service.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/presentations/app_list/screens/app_list_screen.dart';
 import 'package:flutterapp/presentations/login/screens/login_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -93,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     const SplashLogo(),
                     SizedBox(height: context.scale(24)),
                     Text(
-                      'TestAPK',
+                      kAppName,
                       style: GoogleFonts.inter(
                         fontSize: context.scale(36),
                         fontWeight: FontWeight.w700,
@@ -104,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     ),
                     SizedBox(height: context.scale(8)),
                     Text(
-                      'Release Manager for Testers',
+                      kSplashSubtitle,
                       style: GoogleFonts.inter(
                         fontSize: context.scale(14),
                         color: Colors.white.withValues(alpha: 0.55),

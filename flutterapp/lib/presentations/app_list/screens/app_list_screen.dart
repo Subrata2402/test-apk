@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/core/api_client.dart';
 import 'package:flutterapp/core/auth_service.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/user_model.dart';
@@ -61,13 +62,13 @@ class _AppListScreenState extends State<AppListScreen> {
         });
       } else {
         setState(() {
-          _error = 'Failed to load data';
+          _error = kAppListErrorFailedToLoad;
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Connection error: ${e.toString()}';
+        _error = '$kAppListErrorConnection${e.toString()}';
         _isLoading = false;
       });
     }
@@ -81,16 +82,16 @@ class _AppListScreenState extends State<AppListScreen> {
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Invitation accepted!'), backgroundColor: Color(0xFF10B981)));
+        ).showSnackBar(const SnackBar(content: Text(kInviteAcceptedMsg), backgroundColor: Color(0xFF10B981)));
         _fetchData();
       } else {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to accept invitation'), backgroundColor: Colors.red));
+        ).showSnackBar(const SnackBar(content: Text(kInviteAcceptFailedMsg), backgroundColor: Colors.red));
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
     } finally {
       if (mounted) setState(() => _processingActions.remove(appId));
     }
@@ -104,16 +105,16 @@ class _AppListScreenState extends State<AppListScreen> {
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Invitation rejected'), backgroundColor: Colors.orange));
+        ).showSnackBar(const SnackBar(content: Text(kInviteRejectedMsg), backgroundColor: Colors.orange));
         _fetchData();
       } else {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Failed to reject invitation'), backgroundColor: Colors.red));
+        ).showSnackBar(const SnackBar(content: Text(kInviteRejectFailedMsg), backgroundColor: Colors.red));
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
     } finally {
       if (mounted) setState(() => _processingActions.remove(appId));
     }

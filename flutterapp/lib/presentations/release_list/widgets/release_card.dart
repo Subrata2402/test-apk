@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/glass_panel.dart';
@@ -44,7 +45,7 @@ class ReleaseCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    release.appName ?? 'Build #${release.buildNumber}',
+                    release.appName ?? '$kBuildPrefix${release.buildNumber}',
                     style: GoogleFonts.inter(
                       fontSize: context.scale(14),
                       fontWeight: FontWeight.w600,

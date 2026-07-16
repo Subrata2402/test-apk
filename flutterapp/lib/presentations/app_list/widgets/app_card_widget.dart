@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -23,7 +24,7 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final latestRelease = app.releases.isNotEmpty
         ? 'v${app.releases.first.version} (${app.releases.first.buildNumber})'
-        : 'None';
+        : kNone;
 
     return GestureDetector(
       onTap: onTap,
@@ -90,7 +91,7 @@ class AppCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildCardStat(context, 'Latest Version', latestRelease),
+                _buildCardStat(context, kLabelLatestVersion, latestRelease),
                 if (app.releases.isNotEmpty) ReleaseActionButton(app: app, release: app.releases.first, compact: true),
               ],
             ),

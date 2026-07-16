@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/presentations/release_detail/screens/release_detail_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -118,8 +119,8 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                               labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: context.scale(13)),
                               dividerColor: Colors.white.withValues(alpha: 0.10),
                               tabs: const [
-                                Tab(text: 'Releases'),
-                                Tab(text: 'Members'),
+                                Tab(text: kTabReleases),
+                                Tab(text: kTabMembers),
                               ],
                             ),
                           ],
@@ -152,7 +153,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                       ),
                                       SizedBox(height: context.scale(12)),
                                       Text(
-                                        'No releases yet',
+                                        kNoReleasesMsg,
                                         style: GoogleFonts.inter(
                                           color: Colors.white.withValues(alpha: 0.40),
                                           fontSize: context.scale(14),
@@ -201,7 +202,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Team Members',
+                                      kTeamMembersTitle,
                                       style: GoogleFonts.inter(
                                         fontSize: context.scale(16),
                                         fontWeight: FontWeight.w700,
@@ -211,7 +212,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                     ),
                                     SizedBox(height: context.scale(4)),
                                     Text(
-                                      'Collaborators invited to this application.',
+                                      kTeamMembersSubtitle,
                                       style: GoogleFonts.inter(
                                         fontSize: context.scale(13),
                                         color: Colors.white.withValues(alpha: 0.45),
@@ -235,7 +236,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                       ),
                                       SizedBox(height: context.scale(12)),
                                       Text(
-                                        'No members yet',
+                                        kNoMembersMsg,
                                         style: GoogleFonts.inter(
                                           color: Colors.white.withValues(alpha: 0.40),
                                           fontSize: context.scale(14),
