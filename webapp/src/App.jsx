@@ -6,13 +6,16 @@ import Dashboard from './components/Dashboard';
 import GoogleLoginModal from './components/GoogleLoginModal';
 import CreateAppModal from './components/CreateAppModal';
 import CustomDropdown from './components/CustomDropdown';
+import DeviceAuthPage from './components/DeviceAuthPage';
 import './App.css';
 
 export default function App() {
   const [user, setUser] = useState(null); // { name, email, avatar }
   const [apps, setApps] = useState(initialApps);
   const [selectedAppId, setSelectedAppId] = useState(initialApps[0]?.id || null);
-  const [currentView, setCurrentView] = useState('landing'); // 'landing' | 'dashboard'
+  const [currentView, setCurrentView] = useState(
+    window.location.pathname === '/device' ? 'device-auth' : 'landing'
+  );
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
@@ -69,7 +72,11 @@ export default function App() {
             isDriveConfigured: data.data.user.isDriveConfigured,
           });
           await fetchApps(token);
-          setCurrentView('dashboard');
+          if (window.location.pathname === '/device') {
+            setCurrentView('device-auth');
+          } else {
+            setCurrentView('dashboard');
+          }
         } else {
           localStorage.removeItem('token');
         }
@@ -86,7 +93,11 @@ export default function App() {
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
-    setCurrentView('dashboard');
+    if (window.location.pathname === '/device') {
+      setCurrentView('device-auth');
+    } else {
+      setCurrentView('dashboard');
+    }
     const token = localStorage.getItem('token');
     if (token) {
       fetchApps(token);
@@ -211,6 +222,13 @@ export default function App() {
         {currentView === 'landing' ? (
           <LandingPage
             onLoginClick={() => setIsLoginModalOpen(true)}
+          />
+        ) : currentView === 'device-auth' ? (
+          <DeviceAuthPage
+            user={user}
+            onLoginClick={() => setIsLoginModalOpen(true)}
+            showAlert={showAlert}
+            onGoToDashboard={() => setCurrentView('dashboard')}
           />
         ) : (
           <Dashboard

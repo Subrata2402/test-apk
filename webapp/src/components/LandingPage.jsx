@@ -81,6 +81,102 @@ export default function LandingPage({ onLoginClick }) {
         </div>
       </div>
 
+      {/* Platform Components Section */}
+      <div className="components-section" style={{ marginTop: '32px', marginBottom: '32px' }}>
+        <h2 className="section-title" style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '24px', color: '#ffffff' }}>Platform Components</h2>
+        <div className="about-content-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
+          {/* Webapp Card */}
+          <div className="about-card glass-card">
+            <div className="about-card-header">
+              <div className="about-card-icon-wrapper webapp-color flex-center">
+                <Icons.Globe size={24} />
+              </div>
+              <h3>Web Dashboard</h3>
+            </div>
+            <p className="about-card-desc">
+              The central management console for your application releases, team members, and storage configurations.
+            </p>
+            <ul className="about-features-list">
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Google Drive Storage:</strong> Connects directly to your personal Google Drive for secure APK storage.</span>
+              </li>
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Team Management:</strong> Invite developers to publish releases and testers to download builds.</span>
+              </li>
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Release History:</strong> Track version codes, build numbers, SHA-256 hashes, and permissions.</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Flutter App Card */}
+          <div className="about-card glass-card">
+            <div className="about-card-header">
+              <div className="about-card-icon-wrapper flutter-color flex-center">
+                <Icons.Smartphone size={24} />
+              </div>
+              <h3>Flutter Client</h3>
+            </div>
+            <p className="about-card-desc">
+              The mobile application designed for testers and developers to easily install and test new releases.
+            </p>
+            <ul className="about-features-list">
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Glassmorphic UI:</strong> A premium, modern, and responsive iOS-inspired design.</span>
+              </li>
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>One-Tap Install:</strong> Download and automatically install APKs directly from the app.</span>
+              </li>
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Version Detection:</strong> Automatically compares installed versions with the latest release.</span>
+              </li>
+            </ul>
+            <a
+              href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
+              download="testapk.apk"
+              className="btn btn-primary btn-sm flex-center gap-2 mt-4"
+              style={{ textDecoration: 'none', width: 'fit-content' }}
+            >
+              <Icons.Download size={14} />
+              <span>Download APK</span>
+            </a>
+          </div>
+
+          {/* CLI Tool Card */}
+          <div className="about-card glass-card">
+            <div className="about-card-header">
+              <div className="about-card-icon-wrapper cli-color flex-center">
+                <Icons.Terminal size={24} />
+              </div>
+              <h3>CLI Tool</h3>
+            </div>
+            <p className="about-card-desc">
+              A powerful command-line interface for automating release uploads directly from your CI/CD pipelines.
+            </p>
+            <ul className="about-features-list">
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Device Auth Flow:</strong> Securely log in using the standard OAuth Device Authorization Flow.</span>
+              </li>
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Real-Time Progress:</strong> Visual progress bar and percentage indicator during uploads.</span>
+              </li>
+              <li>
+                <Icons.Check size={16} className="feature-check" />
+                <span><strong>Drive Upload Status:</strong> Real-time feedback while the server transfers the APK to Google Drive.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       {/* Main Grid */}
       <div className="landing-grid">
         {/* Left Column: Tabs Content */}

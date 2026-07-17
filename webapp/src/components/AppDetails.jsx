@@ -34,6 +34,18 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
 
   const fileInputRef = useRef(null);
 
+  // Reset upload states when app changes
+  React.useEffect(() => {
+    setUploadFile(null);
+    setUploadProgress(0);
+    setIsUploading(false);
+    setUploadPhase('uploading');
+    setShowReleaseForm(false);
+    setReleaseNotes('');
+    setSelectedRelease(null);
+    setInviteEmail('');
+  }, [app._id, app.id]);
+
   // Helper to render dynamic Lucide icons
   const IconComponent = Icons[app.icon] || Icons.HelpCircle;
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react';
 import AppDetails from './AppDetails';
+import AboutPage from './AboutPage';
 import './Dashboard.css';
 
 export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCreateApp, onLogout, onOpenCreateModal, showAlert, showConfirm }) {
@@ -45,6 +46,21 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
               })}
             </div>
           </div>
+
+          <div className="nav-section" style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+            <button
+              className={`app-nav-item ${selectedAppId === 'about' ? 'active' : ''}`}
+              onClick={() => onSelectApp('about')}
+            >
+              <div className="app-nav-icon-wrapper" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}>
+                <Icons.Info size={18} />
+              </div>
+              <div className="app-nav-info">
+                <span className="app-nav-name">About TestAPK</span>
+                <span className="app-nav-package">System Info & Docs</span>
+              </div>
+            </button>
+          </div>
         </nav>
 
         <div className="sidebar-footer">
@@ -63,7 +79,31 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
               </span>
               <span className="user-email">{user.email}</span>
             </div>
-            <button className="logout-btn" onClick={onLogout} title="Logout">
+            <button 
+              className="logout-btn" 
+              onClick={() => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                  navigator.clipboard.writeText(token);
+                  showAlert('API Token copied to clipboard!', 'Success', 'success');
+                }
+              }} 
+              title="Copy API Token"
+              style={{ marginRight: '4px' }}
+            >
+              <Icons.Key size={18} />
+            </button>
+            <button
+              className="logout-btn"
+              onClick={() => {
+                showConfirm(
+                  'Are you sure you want to log out?',
+                  onLogout,
+                  'Logout'
+                );
+              }}
+              title="Logout"
+            >
               <Icons.LogOut size={18} />
             </button>
           </div>
@@ -72,7 +112,9 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
 
       {/* Main Content Area */}
       <main className="dashboard-main">
-        {selectedApp ? (
+        {selectedAppId === 'about' ? (
+          <AboutPage showAlert={showAlert} />
+        ) : selectedApp ? (
           <AppDetails
             app={selectedApp}
             user={user}
