@@ -33,13 +33,13 @@ export default function GoogleLoginModal({ isOpen, onClose, onLoginSuccess }) {
       // Save token to localStorage
       localStorage.setItem('token', data.token);
 
-      // Call success callback
       onLoginSuccess({
         name: data.data.user.name,
         email: data.data.user.email,
         avatar: data.data.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
         picture: data.data.user.picture,
         role: data.data.user.role,
+        isDriveConfigured: data.data.user.isDriveConfigured,
       });
       onClose();
     } catch (err) {

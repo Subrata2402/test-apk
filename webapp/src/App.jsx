@@ -66,6 +66,7 @@ export default function App() {
             avatar: data.data.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
             picture: data.data.user.picture,
             role: data.data.user.role,
+            isDriveConfigured: data.data.user.isDriveConfigured,
           });
           await fetchApps(token);
           setCurrentView('dashboard');
@@ -240,6 +241,7 @@ export default function App() {
         onCreateApp={handleCreateApp}
         user={user}
         showAlert={showAlert}
+        onDriveConfigured={() => setUser(prev => ({ ...prev, isDriveConfigured: true }))}
       />
 
       {/* Global Alert Modal */}

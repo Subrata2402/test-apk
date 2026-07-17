@@ -5,6 +5,8 @@ export interface IUser extends Document {
   name: string;
   picture?: string;
   googleId?: string;
+  googleRefreshToken?: string;
+  googleDriveFolderId?: string;
   role: 'user' | 'admin';
   createdAt: Date;
   updatedAt: Date;
@@ -31,6 +33,12 @@ const userSchema = new Schema<IUser>(
       type: String,
       unique: true,
       sparse: true,
+    },
+    googleRefreshToken: {
+      type: String,
+    },
+    googleDriveFolderId: {
+      type: String,
     },
     role: {
       type: String,

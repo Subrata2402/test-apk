@@ -53,7 +53,14 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
               {user.avatar || (user.name ? user.name.substring(0, 2).toUpperCase() : 'US')}
             </div>
             <div className="user-info">
-              <span className="user-name">{user.name}</span>
+              <span className="user-name" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span>{user.name}</span>
+                {user.isDriveConfigured ? (
+                  <Icons.Cloud size={14} style={{ color: 'var(--accent-success)' }} title="Google Drive Connected" />
+                ) : (
+                  <Icons.CloudOff size={14} style={{ color: 'var(--accent-warning)' }} title="Google Drive Not Connected" />
+                )}
+              </span>
               <span className="user-email">{user.email}</span>
             </div>
             <button className="logout-btn" onClick={onLogout} title="Logout">

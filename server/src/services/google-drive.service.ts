@@ -2,31 +2,68 @@ import { google } from 'googleapis';
 import { Readable } from 'stream';
 import { env } from '../config/env.js';
 
-const oauth2Client = new google.auth.OAuth2(
-  env.GOOGLE_CLIENT_ID,
-  env.GOOGLE_CLIENT_SECRET
-);
-
-if (env.GOOGLE_DRIVE_REFRESH_TOKEN) {
-  oauth2Client.setCredentials({
-    refresh_token: env.GOOGLE_DRIVE_REFRESH_TOKEN,
-  });
+export interface DriveCredentials {
+  refreshToken: string;
+  folderId: string;
 }
 
-const drive = google.drive({ version: 'v3', auth: oauth2Client });
+const getDriveClient = (credentials: DriveCredentials) => {
+  if (!credentials || !credentials.refreshToken) {
+    throw new Error('Google Drive credentials are not configured.');
+  }
+  const oauth2Client = new google.auth.OAuth2(
+    env.GOOGLE_CLIENT_ID,
+    env.GOOGLE_CLIENT_SECRET
+  );
+  oauth2Client.setCredentials({
+    refresh_token: credentials.refreshToken,
+  });
+  return google.drive({ version: 'v3', auth: oauth2Client });
+};
+
+export const createFolderInDrive = async (
+  folderName: string,
+  refreshToken: string
+): Promise<string> => {
+  const oauth2Client = new google.auth.OAuth2(
+    env.GOOGLE_CLIENT_ID,
+    env.GOOGLE_CLIENT_SECRET
+  );
+  oauth2Client.setCredentials({ refresh_token: refreshToken });
+  const drive = google.drive({ version: 'v3', auth: oauth2Client });
+
+  const fileMetadata = {
+    name: folderName,
+    mimeType: 'application/vnd.google-apps.folder',
+  };
+
+  const response = await drive.files.create({
+    requestBody: fileMetadata,
+    fields: 'id',
+  });
+
+  if (!response.data.id) {
+    throw new Error('Failed to create folder in Google Drive');
+  }
+
+  return response.data.id;
+};
 
 export const uploadFileToDrive = async (
   fileName: string,
   fileBuffer: Buffer,
-  mimeType: string
+  mimeType: string,
+  credentials: DriveCredentials
 ): Promise<string> => {
-  if (!env.GOOGLE_DRIVE_REFRESH_TOKEN) {
-    throw new Error('GOOGLE_DRIVE_REFRESH_TOKEN is not configured in environment variables. Please run get-refresh-token script first.');
+  if (!credentials || !credentials.refreshToken || !credentials.folderId) {
+    throw new Error('Google Drive credentials are not configured.');
   }
+
+  const driveClient = getDriveClient(credentials);
 
   const fileMetadata = {
     name: fileName,
-    parents: [env.GOOGLE_DRIVE_FOLDER_ID],
+    parents: [credentials.folderId],
   };
 
   const media = {
@@ -34,7 +71,7 @@ export const uploadFileToDrive = async (
     body: Readable.from(fileBuffer),
   };
 
-  const response = await drive.files.create({
+  const response = await driveClient.files.create({
     requestBody: fileMetadata,
     media: media,
     fields: 'id',
@@ -47,12 +84,17 @@ export const uploadFileToDrive = async (
   return response.data.id;
 };
 
-export const getFileStreamFromDrive = async (fileId: string): Promise<{ stream: Readable; contentLength?: string }> => {
-  if (!env.GOOGLE_DRIVE_REFRESH_TOKEN) {
-    throw new Error('GOOGLE_DRIVE_REFRESH_TOKEN is not configured in environment variables. Please run get-refresh-token script first.');
+export const getFileStreamFromDrive = async (
+  fileId: string,
+  credentials: DriveCredentials
+): Promise<{ stream: Readable; contentLength?: string }> => {
+  if (!credentials || !credentials.refreshToken) {
+    throw new Error('Google Drive credentials are not configured.');
   }
 
-  const response = await drive.files.get(
+  const driveClient = getDriveClient(credentials);
+
+  const response = await driveClient.files.get(
     {
       fileId,
       alt: 'media',
@@ -66,12 +108,17 @@ export const getFileStreamFromDrive = async (fileId: string): Promise<{ stream: 
   };
 };
 
-export const deleteFileFromDrive = async (fileId: string): Promise<void> => {
-  if (!env.GOOGLE_DRIVE_REFRESH_TOKEN) {
-    throw new Error('GOOGLE_DRIVE_REFRESH_TOKEN is not configured in environment variables. Please run get-refresh-token script first.');
+export const deleteFileFromDrive = async (
+  fileId: string,
+  credentials: DriveCredentials
+): Promise<void> => {
+  if (!credentials || !credentials.refreshToken) {
+    throw new Error('Google Drive credentials are not configured.');
   }
 
-  await drive.files.delete({
+  const driveClient = getDriveClient(credentials);
+
+  await driveClient.files.delete({
     fileId,
   });
 };

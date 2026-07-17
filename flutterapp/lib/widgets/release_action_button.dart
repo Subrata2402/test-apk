@@ -33,6 +33,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
   bool _isDownloaded = false;
   int _installedVersionCode = -1;
   File? _apkFile;
+  bool _isInstalling = false;
 
   bool get _isAppInstalled => _installedVersionCode > -1;
   bool get _isUpdateAvailable => _isAppInstalled && !(_installedVersionCode >= widget.release.buildNumber);
@@ -54,6 +55,11 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      if (mounted) {
+        setState(() {
+          _isInstalling = false;
+        });
+      }
       _checkIfDownloaded();
       _checkIfAppInstalled();
     }
@@ -189,6 +195,9 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
           content: Text('$kDownloadedMsg${file.path.split('/').last}', style: GoogleFonts.inter(color: Colors.white)),
         ),
       );
+
+      // Automatically trigger installation after successful download
+      await _installApk();
     } catch (e) {
       if (mounted) {
         if (widget.compact) {
@@ -210,6 +219,11 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
 
   Future<void> _installApk() async {
     if (_apkFile != null) {
+      if (mounted) {
+        setState(() {
+          _isInstalling = true;
+        });
+      }
       await OpenFilex.open(_apkFile!.path);
     }
   }
@@ -272,7 +286,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: _isDownloading
+                  colors: (_isDownloading || _isInstalling)
                       ? [primaryColor.withValues(alpha: 0.40), primaryColor.withValues(alpha: 0.20)]
                       : [primaryColor.withValues(alpha: 0.85), primaryColor.withValues(alpha: 0.60)],
                 ),
@@ -280,7 +294,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                 border: Border.all(color: Colors.white.withValues(alpha: 0.25), width: 0.8),
                 boxShadow: [
                   BoxShadow(
-                    color: primaryColor.withValues(alpha: _isDownloading ? 0.15 : 0.40),
+                    color: primaryColor.withValues(alpha: (_isDownloading || _isInstalling) ? 0.15 : 0.40),
                     blurRadius: context.scale(16),
                     spreadRadius: -2,
                     offset: Offset(0, context.scale(4)),
@@ -290,7 +304,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: _isDownloading
+                  onTap: (_isDownloading || _isInstalling)
                       ? null
                       : (_isAppInstalled
                             ? (_isUpdateAvailable ? (_isDownloaded ? _installApk : _downloadApk) : _launchApp)
@@ -303,12 +317,12 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: widget.compact ? MainAxisSize.min : MainAxisSize.max,
                       children: [
-                        _isDownloading
+                        (_isDownloading || _isInstalling)
                             ? SizedBox(
                                 width: iconSize,
                                 height: iconSize,
                                 child: CircularProgressIndicator(
-                                  value: _downloadProgress > 0 ? _downloadProgress : null,
+                                  value: (_isDownloading && _downloadProgress > 0) ? _downloadProgress : null,
                                   strokeWidth: 2,
                                   color: Colors.white,
                                   backgroundColor: Colors.white.withValues(alpha: 0.2),
@@ -327,9 +341,11 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                         Text(
                           _isDownloading
                               ? '$kDownloadingMsg${(_downloadProgress * 100).toStringAsFixed(0)}%'
-                              : (_isAppInstalled
-                                    ? (_isUpdateAvailable ? (_isDownloaded ? kInstallUpdateBtnLabel : kUpdateBtnLabel) : kOpenAppBtnLabel)
-                                    : (_isDownloaded ? kInstallApkBtnLabel : kDownloadApkBtnLabel)),
+                              : _isInstalling
+                                  ? 'Installing...'
+                                  : (_isAppInstalled
+                                        ? (_isUpdateAvailable ? (_isDownloaded ? kInstallUpdateBtnLabel : kUpdateBtnLabel) : kOpenAppBtnLabel)
+                                        : (_isDownloaded ? kInstallApkBtnLabel : kDownloadApkBtnLabel)),
                           style: GoogleFonts.inter(fontSize: fontSize, fontWeight: FontWeight.w600, color: Colors.white),
                         ),
                       ],

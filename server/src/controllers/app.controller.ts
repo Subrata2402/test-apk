@@ -17,6 +17,20 @@ const populateMemberNames = async (apps: any[]): Promise<any[]> => {
   });
 };
 
+const getOwnerCredentials = async (app: any) => {
+  const ownerMember = app.members.find((m: any) => m.role === 'Owner');
+  if (ownerMember) {
+    const ownerUser = await User.findOne({ email: ownerMember.email.toLowerCase() });
+    if (ownerUser && ownerUser.googleRefreshToken && ownerUser.googleDriveFolderId) {
+      return {
+        refreshToken: ownerUser.googleRefreshToken,
+        folderId: ownerUser.googleDriveFolderId,
+      };
+    }
+  }
+  return undefined;
+};
+
 export const createApp = async (
   req: Request,
   res: Response,
@@ -190,9 +204,17 @@ export const uploadApk = async (
     // Upload to Google Drive
     let driveFileId;
     try {
+      const credentials = await getOwnerCredentials(app);
+      if (!credentials) {
+        res.status(400).json({
+          status: 'fail',
+          message: 'Google Drive is not configured for the owner of this application.',
+        });
+        return;
+      }
       const { uploadFileToDrive } = await import('../services/google-drive.service.js');
       const fileName = `${app.name.replace(/\s+/g, '_')}_v${parsed.versionName}_b${parsed.versionCode}.apk`;
-      driveFileId = await uploadFileToDrive(fileName, req.file.buffer, req.file.mimetype);
+      driveFileId = await uploadFileToDrive(fileName, req.file.buffer, req.file.mimetype, credentials);
     } catch (err: any) {
       res.status(500).json({
         status: 'error',
@@ -284,7 +306,15 @@ export const downloadApk = async (
     
     let fileData;
     try {
-      fileData = await getFileStreamFromDrive(release.apkUrl);
+      const credentials = await getOwnerCredentials(app);
+      if (!credentials) {
+        res.status(400).json({
+          status: 'fail',
+          message: 'Google Drive is not configured for the owner of this application.',
+        });
+        return;
+      }
+      fileData = await getFileStreamFromDrive(release.apkUrl, credentials);
     } catch (err: any) {
       if (err.code === 404 || err.status === 404 || (err.message && err.message.includes('File not found'))) {
         res.status(404).json({
@@ -362,8 +392,16 @@ export const deleteRelease = async (
 
     // Delete file from Google Drive
     try {
+      const credentials = await getOwnerCredentials(app);
+      if (!credentials) {
+        res.status(400).json({
+          status: 'fail',
+          message: 'Google Drive is not configured for the owner of this application.',
+        });
+        return;
+      }
       const { deleteFileFromDrive } = await import('../services/google-drive.service.js');
-      await deleteFileFromDrive(release.apkUrl);
+      await deleteFileFromDrive(release.apkUrl, credentials);
     } catch (err: any) {
       console.error(`Failed to delete file from Google Drive: ${err.message || err}`);
     }

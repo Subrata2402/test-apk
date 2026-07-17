@@ -15,7 +15,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   JWT_SECRET: z.string(),
   JWT_EXPIRES_IN: z.string().default('7d'),
-  GOOGLE_DRIVE_FOLDER_ID: z.string(),
+  GOOGLE_DRIVE_FOLDER_ID: z.string().optional(),
   GOOGLE_DRIVE_REFRESH_TOKEN: z.string().optional(),
 });
 
