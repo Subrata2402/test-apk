@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react';
-import AppDetails from './AppDetails';
+import AppDetails from '../components/dashboard/AppDetails';
 import AboutPage from './AboutPage';
 import './Dashboard.css';
 

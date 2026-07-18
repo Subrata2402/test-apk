@@ -54,7 +54,6 @@ export default function DeviceAuthPage({ user, onLoginClick, showAlert, onGoToDa
       if (response.ok && data.status === 'success') {
         setPageState('success');
         setTimeout(() => {
-          window.history.pushState({}, '', '/');
           onGoToDashboard();
         }, 3000);
       } else if (response.status === 410 || data.code === 'expired_code') {

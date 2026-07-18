@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react';
+import { Link } from 'react-router-dom';
 import logoImg from '../assets/logo.png';
 import './LandingPage.css';
 
-export default function LandingPage({ onLoginClick, onNavigate }) {
+export default function LandingPage({ user, onLoginClick, onNavigate }) {
   const [activeTab, setActiveTab] = useState('details'); // 'details' | 'releases'
 
   const appDetails = {
@@ -46,10 +47,17 @@ export default function LandingPage({ onLoginClick, onNavigate }) {
           <p className="app-description">{appDetails.description}</p>
 
           <div className="hero-actions">
-            <button className="btn btn-primary btn-lg flex-center gap-2" onClick={onLoginClick}>
-              <Icons.LogIn size={20} />
-              <span>Developer Portal / Sign In</span>
-            </button>
+            {user ? (
+              <Link to="/dashboard" className="btn btn-primary btn-lg flex-center gap-2" style={{ textDecoration: 'none' }}>
+                <Icons.LayoutDashboard size={20} />
+                <span>Go to Dashboard</span>
+              </Link>
+            ) : (
+              <button className="btn btn-primary btn-lg flex-center gap-2" onClick={onLoginClick}>
+                <Icons.LogIn size={20} />
+                <span>Developer Portal / Sign In</span>
+              </button>
+            )}
             <a
               href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
               download="testapk.apk"
@@ -381,11 +389,11 @@ export default function LandingPage({ onLoginClick, onNavigate }) {
             </div>
             <div className="dev-info-item">
               <Icons.Shield size={16} />
-              <span><a href="/privacy" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/privacy'); onNavigate('privacy'); }}>Privacy Policy</a></span>
+              <span><Link to="/privacy">Privacy Policy</Link></span>
             </div>
             <div className="dev-info-item">
               <Icons.FileText size={16} />
-              <span><a href="/terms" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/terms'); onNavigate('terms'); }}>Terms of Service</a></span>
+              <span><Link to="/terms">Terms of Service</Link></span>
             </div>
           </div>
         </div>

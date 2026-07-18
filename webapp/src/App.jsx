@@ -1,35 +1,21 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { initialApps } from './mockData';
-import LandingPage from './components/LandingPage';
-import Dashboard from './components/Dashboard';
-import GoogleLoginModal from './components/GoogleLoginModal';
-import CreateAppModal from './components/CreateAppModal';
-import CustomDropdown from './components/CustomDropdown';
-import DeviceAuthPage from './components/DeviceAuthPage';
-import PrivacyPolicy from './components/PrivacyPolicy';
-import TermsOfService from './components/TermsOfService';
+import GoogleLoginModal from './components/modals/GoogleLoginModal';
+import CreateAppModal from './components/modals/CreateAppModal';
+import Navbar from './components/layout/Navbar';
+import AlertModal from './components/common/AlertModal';
+import ConfirmModal from './components/common/ConfirmModal';
+import AppRoutes from './routes/AppRoutes';
 import './App.css';
 
 export default function App() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null); // { name, email, avatar }
   const [apps, setApps] = useState(initialApps);
   const [selectedAppId, setSelectedAppId] = useState(initialApps[0]?.id || null);
-  const [currentView, setCurrentView] = useState(() => {
-    const path = window.location.pathname;
-    if (path === '/privacy') return 'privacy';
-    if (path === '/terms') return 'terms';
-    if (path === '/device') {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('token')) {
-        return 'device-auth';
-      } else {
-        window.history.replaceState({}, '', '/');
-        return localStorage.getItem('token') ? 'dashboard' : 'landing';
-      }
-    }
-    return 'landing';
-  });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
@@ -86,20 +72,12 @@ export default function App() {
             isDriveConfigured: data.data.user.isDriveConfigured,
           });
           await fetchApps(token);
+          
           if (window.location.pathname === '/device') {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('token')) {
-              setCurrentView('device-auth');
-            } else {
-              window.history.pushState({}, '', '/');
-              setCurrentView('dashboard');
+            if (!urlParams.has('token')) {
+              navigate('/', { replace: true });
             }
-          } else if (window.location.pathname === '/privacy') {
-            setCurrentView('privacy');
-          } else if (window.location.pathname === '/terms') {
-            setCurrentView('terms');
-          } else {
-            setCurrentView('dashboard');
           }
         } else {
           localStorage.removeItem('token');
@@ -116,50 +94,17 @@ export default function App() {
   }, []);
 
   React.useEffect(() => {
-    const handlePopState = () => {
-      const path = window.location.pathname;
-      if (path === '/privacy') {
-        setCurrentView('privacy');
-      } else if (path === '/terms') {
-        setCurrentView('terms');
-      } else if (path === '/device') {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('token')) {
-          setCurrentView('device-auth');
-        } else {
-          window.history.replaceState({}, '', '/');
-          setCurrentView(localStorage.getItem('token') ? 'dashboard' : 'landing');
-        }
-      } else {
-        setCurrentView(localStorage.getItem('token') ? 'dashboard' : 'landing');
-      }
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [user]);
-
-  React.useEffect(() => {
     window.scrollTo(0, 0);
-  }, [currentView]);
+  }, [location.pathname]);
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
-    if (window.location.pathname === '/device') {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('token')) {
-        setCurrentView('device-auth');
-      } else {
-        window.history.pushState({}, '', '/');
-        setCurrentView('dashboard');
-      }
-    } else {
-      setCurrentView('dashboard');
-    }
     const token = localStorage.getItem('token');
     if (token) {
       fetchApps(token);
     }
+    // Redirect to dashboard on successful login
+    navigate('/dashboard');
   };
 
   const handleLogout = async () => {
@@ -180,7 +125,7 @@ export default function App() {
     setUser(null);
     setApps(initialApps);
     setSelectedAppId(initialApps[0]?.id || null);
-    setCurrentView('landing');
+    navigate('/');
   };
 
   const [alertConfig, setAlertConfig] = useState(null); // { title, message, type: 'error' | 'success' | 'info' }
@@ -248,80 +193,23 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      {/* Global Navigation Bar */}
-      <header className="global-navbar glass-card">
-        <div className="container nav-container">
-          <div className="nav-logo" onClick={() => {
-            window.history.pushState({}, '', '/');
-            setCurrentView(user ? 'dashboard' : 'landing');
-          }} style={{ cursor: 'pointer' }}>
-            <Icons.Cpu size={24} className="logo-icon" />
-            <span className="logo-text">TestAPK</span>
-          </div>
-
-
-
-          <div className="nav-actions">
-            {user ? (
-              <>
-                <div className="user-nav-profile" title={user.email}>
-                  <div className="user-nav-avatar">{user.avatar}</div>
-                  <span className="user-nav-name">{user.name.split(' ')[0]}</span>
-                </div>
-              </>
-            ) : (
-              <button className="btn btn-primary" onClick={() => setIsLoginModalOpen(true)}>
-                <Icons.LogIn size={16} /> Sign In
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
+      <Navbar user={user} onLoginClick={() => setIsLoginModalOpen(true)} />
 
       {/* Main Content */}
       <div className="container main-content-container">
-        {currentView === 'landing' ? (
-          <LandingPage
-            onLoginClick={() => setIsLoginModalOpen(true)}
-            onNavigate={setCurrentView}
-          />
-        ) : currentView === 'device-auth' ? (
-          <DeviceAuthPage
-            user={user}
-            onLoginClick={() => setIsLoginModalOpen(true)}
-            showAlert={showAlert}
-            onGoToDashboard={() => {
-              window.history.pushState({}, '', '/');
-              setCurrentView('dashboard');
-            }}
-          />
-        ) : currentView === 'privacy' ? (
-          <PrivacyPolicy
-            onBackToHome={() => {
-              window.history.pushState({}, '', '/');
-              setCurrentView(user ? 'dashboard' : 'landing');
-            }}
-          />
-        ) : currentView === 'terms' ? (
-          <TermsOfService
-            onBackToHome={() => {
-              window.history.pushState({}, '', '/');
-              setCurrentView(user ? 'dashboard' : 'landing');
-            }}
-          />
-        ) : (
-          <Dashboard
-            user={user}
-            apps={apps}
-            selectedAppId={selectedAppId}
-            onSelectApp={setSelectedAppId}
-            onCreateApp={handleCreateApp}
-            onLogout={handleLogout}
-            onOpenCreateModal={() => setIsCreateModalOpen(true)}
-            showAlert={showAlert}
-            showConfirm={showConfirm}
-          />
-        )}
+        <AppRoutes
+          user={user}
+          apps={apps}
+          selectedAppId={selectedAppId}
+          setSelectedAppId={setSelectedAppId}
+          handleCreateApp={handleCreateApp}
+          handleLogout={handleLogout}
+          setIsLoginModalOpen={setIsLoginModalOpen}
+          setIsCreateModalOpen={setIsCreateModalOpen}
+          showAlert={showAlert}
+          showConfirm={showConfirm}
+          setUser={setUser}
+        />
       </div>
 
       {/* Google Login Modal */}
@@ -341,115 +229,8 @@ export default function App() {
         onDriveConfigured={() => setUser(prev => ({ ...prev, isDriveConfigured: true }))}
       />
 
-      {/* Global Alert Modal */}
-      {alertConfig && (
-        <div className="modal-overlay" onClick={() => setAlertConfig(null)}>
-          <div
-            className="modal-content glass-card animate-fade-in"
-            style={{ maxWidth: '400px', textAlign: 'center' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-              {alertConfig.type === 'error' ? (
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '50%',
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    color: 'var(--accent-danger)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Icons.AlertTriangle size={24} />
-                </div>
-              ) : alertConfig.type === 'success' ? (
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '50%',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    color: 'var(--accent-success)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Icons.CheckCircle size={24} />
-                </div>
-              ) : (
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '50%',
-                    background: 'rgba(139, 92, 246, 0.1)',
-                    color: 'var(--accent-primary)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Icons.Info size={24} />
-                </div>
-              )}
-              <h3 style={{ fontSize: '1.25rem' }}>{alertConfig.title}</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>{alertConfig.message}</p>
-              <button className="btn btn-primary" style={{ width: '100%', marginTop: '8px' }} onClick={() => setAlertConfig(null)}>
-                OK
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Global Confirmation Modal */}
-      {confirmConfig && (
-        <div className="modal-overlay" onClick={() => setConfirmConfig(null)}>
-          <div
-            className="modal-content glass-card animate-fade-in"
-            style={{ maxWidth: '400px', textAlign: 'center' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
-              <div
-                style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '50%',
-                  background: 'rgba(245, 158, 11, 0.1)',
-                  color: 'var(--accent-warning)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icons.HelpCircle size={24} />
-              </div>
-              <h3 style={{ fontSize: '1.25rem' }}>{confirmConfig.title}</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>{confirmConfig.message}</p>
-              <div style={{ display: 'flex', gap: '12px', width: '100%', marginTop: '8px' }}>
-                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setConfirmConfig(null)}>
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-primary"
-                  style={{ flex: 1 }}
-                  onClick={() => {
-                    confirmConfig.onConfirm();
-                    setConfirmConfig(null);
-                  }}
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertModal config={alertConfig} onClose={() => setAlertConfig(null)} />
+      <ConfirmModal config={confirmConfig} onClose={() => setConfirmConfig(null)} />
     </div>
   );
 }

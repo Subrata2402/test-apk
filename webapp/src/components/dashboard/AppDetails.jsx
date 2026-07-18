@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import * as Icons from 'lucide-react';
-import CustomDropdown from './CustomDropdown';
+import CustomDropdown from '../common/CustomDropdown';
 import './AppDetails.css';
 
 export default function AppDetails({ app, user, onUpdateApp, showAlert, showConfirm }) {
