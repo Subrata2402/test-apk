@@ -35,7 +35,7 @@ export const generateDeviceCode = async (
     });
 
     // Use request origin or default to localhost
-    const origin = req.headers.origin || 'http://localhost:5173';
+    const origin = req.headers.origin || 'https://testapk.clipboux.online';
     // The urlToken gates access to the /device page; user code is typed manually
     const verificationUri = `${origin}/device?token=${urlToken}`;
 
