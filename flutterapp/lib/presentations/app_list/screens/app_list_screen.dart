@@ -91,7 +91,9 @@ class _AppListScreenState extends State<AppListScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
     } finally {
       if (mounted) setState(() => _processingActions.remove(appId));
     }
@@ -114,7 +116,9 @@ class _AppListScreenState extends State<AppListScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
     } finally {
       if (mounted) setState(() => _processingActions.remove(appId));
     }

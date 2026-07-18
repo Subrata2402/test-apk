@@ -126,7 +126,10 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
             SnackBar(
               backgroundColor: Colors.red.shade800,
               behavior: SnackBarBehavior.floating,
-              content: Text('$kDownloadFailedMsg${response.statusCode})', style: GoogleFonts.inter(color: Colors.white)),
+              content: Text(
+                '$kDownloadFailedMsg${response.statusCode})',
+                style: GoogleFonts.inter(color: Colors.white),
+              ),
             ),
           );
         }
@@ -331,7 +334,9 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                             : Icon(
                                 _isAppInstalled
                                     ? (_isUpdateAvailable
-                                          ? (_isDownloaded ? Icons.install_mobile_rounded : Icons.system_update_alt_rounded)
+                                          ? (_isDownloaded
+                                                ? Icons.install_mobile_rounded
+                                                : Icons.system_update_alt_rounded)
                                           : Icons.open_in_new_rounded)
                                     : (_isDownloaded ? Icons.install_mobile_rounded : Icons.download_rounded),
                                 size: iconSize,
@@ -342,11 +347,17 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                           _isDownloading
                               ? '$kDownloadingMsg${(_downloadProgress * 100).toStringAsFixed(0)}%'
                               : _isInstalling
-                                  ? 'Installing...'
-                                  : (_isAppInstalled
-                                        ? (_isUpdateAvailable ? (_isDownloaded ? kInstallUpdateBtnLabel : kUpdateBtnLabel) : kOpenAppBtnLabel)
-                                        : (_isDownloaded ? kInstallApkBtnLabel : kDownloadApkBtnLabel)),
-                          style: GoogleFonts.inter(fontSize: fontSize, fontWeight: FontWeight.w600, color: Colors.white),
+                              ? 'Installing...'
+                              : (_isAppInstalled
+                                    ? (_isUpdateAvailable
+                                          ? (_isDownloaded ? kInstallUpdateBtnLabel : kUpdateBtnLabel)
+                                          : kOpenAppBtnLabel)
+                                    : (_isDownloaded ? kInstallApkBtnLabel : kDownloadApkBtnLabel)),
+                          style: GoogleFonts.inter(
+                            fontSize: fontSize,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),

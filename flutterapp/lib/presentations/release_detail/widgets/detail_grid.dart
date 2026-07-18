@@ -17,7 +17,8 @@ class DetailGrid extends StatelessWidget {
     final items = <Map<String, String>>[
       {'label': kLabelBuildNumber, 'value': release.buildNumber.toString()},
       if (release.minSdkVersion != null) {'label': kLabelMinSdk, 'value': '$kApiPrefix${release.minSdkVersion}'},
-      if (release.targetSdkVersion != null) {'label': kLabelTargetSdk, 'value': '$kApiPrefix${release.targetSdkVersion}'},
+      if (release.targetSdkVersion != null)
+        {'label': kLabelTargetSdk, 'value': '$kApiPrefix${release.targetSdkVersion}'},
       {'label': kLabelSize, 'value': release.size},
     ];
 

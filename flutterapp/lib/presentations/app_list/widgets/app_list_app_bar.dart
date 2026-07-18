@@ -15,9 +15,7 @@ class AppListAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _openProfile(BuildContext context) {
     if (user == null) return;
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => ProfileScreen(user: user!)),
-    );
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => ProfileScreen(user: user!)));
   }
 
   @override
@@ -77,10 +75,7 @@ class AppListAppBar extends StatelessWidget implements PreferredSizeWidget {
                         border: Border.all(color: Colors.white.withValues(alpha: 0.30), width: 1),
                       ),
                       child: user?.picture != null
-                          ? CircleAvatar(
-                              radius: context.scale(16),
-                              backgroundImage: NetworkImage(user!.picture!),
-                            )
+                          ? CircleAvatar(radius: context.scale(16), backgroundImage: NetworkImage(user!.picture!))
                           : CircleAvatar(
                               radius: context.scale(16),
                               backgroundColor: IosTheme.accent.withValues(alpha: 0.25),

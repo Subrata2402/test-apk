@@ -27,10 +27,7 @@ class ProfileScreen extends StatelessWidget {
             'Sign Out',
             style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w700),
           ),
-          content: Text(
-            'Are you sure you want to sign out?',
-            style: GoogleFonts.inter(color: Colors.white70),
-          ),
+          content: Text('Are you sure you want to sign out?', style: GoogleFonts.inter(color: Colors.white70)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
@@ -38,7 +35,10 @@ class ProfileScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text('Sign Out', style: GoogleFonts.inter(color: Colors.redAccent, fontWeight: FontWeight.w600)),
+              child: Text(
+                'Sign Out',
+                style: GoogleFonts.inter(color: Colors.redAccent, fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         ),
@@ -48,10 +48,7 @@ class ProfileScreen extends StatelessWidget {
     if (confirmed == true) {
       await AuthService.instance.signOut();
       if (context.mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (_) => false,
-        );
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false);
       }
     }
   }
@@ -108,11 +105,7 @@ class ProfileScreen extends StatelessWidget {
                           child: Row(
                             children: [
                               IconButton(
-                                icon: Icon(
-                                  Icons.arrow_back_rounded,
-                                  color: Colors.white,
-                                  size: context.scale(22),
-                                ),
+                                icon: Icon(Icons.arrow_back_rounded, color: Colors.white, size: context.scale(22)),
                                 onPressed: () => Navigator.of(context).pop(),
                               ),
                               Text(
@@ -135,10 +128,7 @@ class ProfileScreen extends StatelessWidget {
 
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: context.scale(20),
-                    vertical: context.scale(32),
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: context.scale(20), vertical: context.scale(32)),
                   child: Column(
                     children: [
                       // Avatar
@@ -162,10 +152,7 @@ class ProfileScreen extends StatelessWidget {
                       // Email
                       Text(
                         user.email,
-                        style: GoogleFonts.inter(
-                          fontSize: context.scale(14),
-                          color: IosTheme.textSecondary,
-                        ),
+                        style: GoogleFonts.inter(fontSize: context.scale(14), color: IosTheme.textSecondary),
                         textAlign: TextAlign.center,
                       ),
 
@@ -173,10 +160,7 @@ class ProfileScreen extends StatelessWidget {
 
                       // Role badge
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: context.scale(12),
-                          vertical: context.scale(4),
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: context.scale(12), vertical: context.scale(4)),
                         decoration: BoxDecoration(
                           color: IosTheme.accent.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(context.scale(20)),
@@ -230,7 +214,9 @@ class ProfileScreen extends StatelessWidget {
             ),
           ],
         ),
-        child: ClipOval(child: Image.network(user.picture!, width: size, height: size, fit: BoxFit.cover)),
+        child: ClipOval(
+          child: Image.network(user.picture!, width: size, height: size, fit: BoxFit.cover),
+        ),
       );
     }
     return Container(
@@ -255,11 +241,7 @@ class ProfileScreen extends StatelessWidget {
       child: Center(
         child: Text(
           user.initials,
-          style: GoogleFonts.inter(
-            fontSize: context.scale(32),
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
+          style: GoogleFonts.inter(fontSize: context.scale(32), fontWeight: FontWeight.w700, color: Colors.white),
         ),
       ),
     );
@@ -283,7 +265,12 @@ class ProfileScreen extends StatelessWidget {
               Divider(color: Colors.white.withValues(alpha: 0.08), height: 0.8, thickness: 0.8),
               _infoRow(context, icon: Icons.email_outlined, label: 'Email', value: user.email),
               Divider(color: Colors.white.withValues(alpha: 0.08), height: 0.8, thickness: 0.8),
-              _infoRow(context, icon: Icons.shield_outlined, label: 'Role', value: user.role[0].toUpperCase() + user.role.substring(1)),
+              _infoRow(
+                context,
+                icon: Icons.shield_outlined,
+                label: 'Role',
+                value: user.role[0].toUpperCase() + user.role.substring(1),
+              ),
             ],
           ),
         ),
