@@ -291,7 +291,7 @@ export default function AboutPage({ showAlert }) {
       )}
 
       <footer className="about-footer glass-card text-center">
-        <p>TestAPK Release Manager &copy; 2026. Built with React, Node.js, and Flutter.</p>
+        <p>TestAPK &copy; 2026. Built with React, Node.js, and Flutter.</p>
       </footer>
     </div>
   );

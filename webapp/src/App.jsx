@@ -7,6 +7,8 @@ import GoogleLoginModal from './components/GoogleLoginModal';
 import CreateAppModal from './components/CreateAppModal';
 import CustomDropdown from './components/CustomDropdown';
 import DeviceAuthPage from './components/DeviceAuthPage';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
 import './App.css';
 
 export default function App() {
@@ -14,7 +16,10 @@ export default function App() {
   const [apps, setApps] = useState(initialApps);
   const [selectedAppId, setSelectedAppId] = useState(initialApps[0]?.id || null);
   const [currentView, setCurrentView] = useState(() => {
-    if (window.location.pathname === '/device') {
+    const path = window.location.pathname;
+    if (path === '/privacy') return 'privacy';
+    if (path === '/terms') return 'terms';
+    if (path === '/device') {
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has('token')) {
         return 'device-auth';
@@ -89,6 +94,10 @@ export default function App() {
               window.history.pushState({}, '', '/');
               setCurrentView('dashboard');
             }
+          } else if (window.location.pathname === '/privacy') {
+            setCurrentView('privacy');
+          } else if (window.location.pathname === '/terms') {
+            setCurrentView('terms');
           } else {
             setCurrentView('dashboard');
           }
@@ -105,6 +114,34 @@ export default function App() {
 
     checkLoggedIn();
   }, []);
+
+  React.useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      if (path === '/privacy') {
+        setCurrentView('privacy');
+      } else if (path === '/terms') {
+        setCurrentView('terms');
+      } else if (path === '/device') {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('token')) {
+          setCurrentView('device-auth');
+        } else {
+          window.history.replaceState({}, '', '/');
+          setCurrentView(localStorage.getItem('token') ? 'dashboard' : 'landing');
+        }
+      } else {
+        setCurrentView(localStorage.getItem('token') ? 'dashboard' : 'landing');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [user]);
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentView]);
 
   const handleLoginSuccess = (userData) => {
     setUser(userData);
@@ -214,9 +251,12 @@ export default function App() {
       {/* Global Navigation Bar */}
       <header className="global-navbar glass-card">
         <div className="container nav-container">
-          <div className="nav-logo" onClick={() => setCurrentView(user ? 'dashboard' : 'landing')} style={{ cursor: 'pointer' }}>
+          <div className="nav-logo" onClick={() => {
+            window.history.pushState({}, '', '/');
+            setCurrentView(user ? 'dashboard' : 'landing');
+          }} style={{ cursor: 'pointer' }}>
             <Icons.Cpu size={24} className="logo-icon" />
-            <span className="logo-text">APK Release Manager</span>
+            <span className="logo-text">TestAPK</span>
           </div>
 
 
@@ -243,13 +283,31 @@ export default function App() {
         {currentView === 'landing' ? (
           <LandingPage
             onLoginClick={() => setIsLoginModalOpen(true)}
+            onNavigate={setCurrentView}
           />
         ) : currentView === 'device-auth' ? (
           <DeviceAuthPage
             user={user}
             onLoginClick={() => setIsLoginModalOpen(true)}
             showAlert={showAlert}
-            onGoToDashboard={() => setCurrentView('dashboard')}
+            onGoToDashboard={() => {
+              window.history.pushState({}, '', '/');
+              setCurrentView('dashboard');
+            }}
+          />
+        ) : currentView === 'privacy' ? (
+          <PrivacyPolicy
+            onBackToHome={() => {
+              window.history.pushState({}, '', '/');
+              setCurrentView(user ? 'dashboard' : 'landing');
+            }}
+          />
+        ) : currentView === 'terms' ? (
+          <TermsOfService
+            onBackToHome={() => {
+              window.history.pushState({}, '', '/');
+              setCurrentView(user ? 'dashboard' : 'landing');
+            }}
           />
         ) : (
           <Dashboard

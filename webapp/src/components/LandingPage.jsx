@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/logo.png';
 import './LandingPage.css';
 
-export default function LandingPage({ onLoginClick }) {
+export default function LandingPage({ onLoginClick, onNavigate }) {
   const [activeTab, setActiveTab] = useState('details'); // 'details' | 'releases'
 
   const appDetails = {
     name: 'TestAPK',
     packageName: 'com.testapk.app',
-    description: 'The official TestAPK companion mobile app for testers. Install this app on your Android device to browse, download, and install beta releases of all your registered applications directly from your phone.',
+    description: 'TestAPK is a secure, self-hosted mobile app distribution platform that allows developers to manage, distribute, and test Android application packages (APKs) using their own Google Drive storage. Testers can install the companion mobile app on their Android devices to browse, download, and install beta releases directly from their phone.',
     downloads: '1.2K',
     rating: '4.9',
     activeUsers: '850+',
@@ -38,45 +38,45 @@ export default function LandingPage({ onLoginClick }) {
               <img src={logoImg} alt="TestAPK Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
             <div className="app-title-area">
-              <h1>{appDetails.name}</h1>
-              <span className="package-name">{appDetails.packageName}</span>
+              <h1>TestAPK</h1>
+              <span className="package-name">Self-Hosted App Distribution Platform</span>
             </div>
           </div>
 
           <p className="app-description">{appDetails.description}</p>
 
           <div className="hero-actions">
+            <button className="btn btn-primary btn-lg flex-center gap-2" onClick={onLoginClick}>
+              <Icons.LogIn size={20} />
+              <span>Developer Portal / Sign In</span>
+            </button>
             <a
               href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
               download="testapk.apk"
-              className="btn btn-primary btn-lg flex-center gap-2"
+              className="btn btn-secondary btn-lg flex-center gap-2"
               style={{ textDecoration: 'none' }}
             >
               <Icons.Download size={20} />
-              <span>Download TestAPK</span>
+              <span>Download Companion App</span>
             </a>
-            <button className="btn btn-secondary btn-lg flex-center gap-2" onClick={onLoginClick}>
-              <Icons.LogIn size={20} />
-              <span>Developer Portal</span>
-            </button>
           </div>
         </div>
 
         <div className="hero-stats">
           <div className="stat-card">
-            <Icons.Download size={20} className="stat-icon cyan" />
-            <span className="stat-value">{appDetails.downloads}</span>
-            <span className="stat-label">Downloads</span>
+            <Icons.HardDrive size={20} className="stat-icon cyan" />
+            <span className="stat-value">Google Drive</span>
+            <span className="stat-label">Secure Storage</span>
           </div>
           <div className="stat-card">
-            <Icons.Star size={20} className="stat-icon yellow" />
-            <span className="stat-value">{appDetails.rating}</span>
-            <span className="stat-label">Rating</span>
+            <Icons.ShieldCheck size={20} className="stat-icon yellow" />
+            <span className="stat-value">SHA-256</span>
+            <span className="stat-label">Integrity Verification</span>
           </div>
           <div className="stat-card">
-            <Icons.Users size={20} className="stat-icon purple" />
-            <span className="stat-value">{appDetails.activeUsers}</span>
-            <span className="stat-label">Active Testers</span>
+            <Icons.Terminal size={20} className="stat-icon purple" />
+            <span className="stat-value">CLI Tool</span>
+            <span className="stat-label">CI/CD Integration</span>
           </div>
         </div>
       </div>
@@ -175,6 +175,60 @@ export default function LandingPage({ onLoginClick }) {
             </ul>
           </div>
         </div>
+      </div>
+
+      {/* Google OAuth & Drive Usage Section */}
+      <div className="components-section glass-card" style={{ marginTop: '32px', marginBottom: '32px', padding: '32px' }}>
+        <h2 className="section-title" style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '16px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Icons.ShieldAlert size={28} className="text-cyan" />
+          <span>Google OAuth & Drive Usage Disclosure</span>
+        </h2>
+        <p style={{ color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.6, fontSize: '0.975rem', marginBottom: '20px' }}>
+          TestAPK integrates with Google OAuth and Google Drive to provide a secure, self-hosted storage solution for your Android application packages (APKs). Here is exactly how and why we request these permissions:
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Icons.UserCheck size={18} />
+              <span>Google Sign-In</span>
+            </h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9rem', margin: 0 }}>
+              We use Google Sign-In to authenticate developers and link their accounts. We only access your basic profile information (name, email, and profile picture) to personalize your dashboard.
+            </p>
+          </div>
+          <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Icons.HardDrive size={18} />
+              <span>Google Drive Access</span>
+            </h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9rem', margin: 0 }}>
+              We request the <code>drive.file</code> scope to create a dedicated folder named <code>testapk-releases</code> in your Google Drive. We only read, write, and delete files that are created or uploaded through TestAPK. We cannot access any other files in your Google Drive.
+            </p>
+          </div>
+          <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '20px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--accent-primary)', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Icons.Lock size={18} />
+              <span>Your Data, Your Control</span>
+            </h3>
+            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '0.9rem', margin: 0 }}>
+              All APK files are stored directly in your own Google Drive account. TestAPK does not host your files on its own servers. You can disconnect your Google Drive integration or revoke access at any time.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Purpose of the Application Section */}
+      <div className="components-section glass-card" style={{ marginTop: '32px', marginBottom: '32px', padding: '32px' }}>
+        <h2 className="section-title" style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '16px', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Icons.Info size={28} className="text-cyan" />
+          <span>Purpose of the Application</span>
+        </h2>
+        <p style={{ color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.6, fontSize: '0.975rem', marginBottom: '16px' }}>
+          <strong>TestAPK</strong> is designed to simplify and secure the mobile application testing lifecycle for Android developers and QA teams. The primary purpose of the application is to provide a self-hosted, private distribution channel for beta APKs, eliminating the need for expensive third-party hosting services.
+        </p>
+        <p style={{ color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.6, fontSize: '0.975rem', margin: 0 }}>
+          By connecting their own Google Drive accounts, developers can securely upload, version, and manage their APK releases. Testers can then access these authorized builds directly through the TestAPK web portal or the companion mobile app, ensuring a seamless and controlled testing environment.
+        </p>
       </div>
 
       {/* Main Grid */}
@@ -324,6 +378,14 @@ export default function LandingPage({ onLoginClick }) {
             <div className="dev-info-item">
               <Icons.Mail size={16} />
               <span>Support: <a href="mailto:support@clipboux.online">support@clipboux.online</a></span>
+            </div>
+            <div className="dev-info-item">
+              <Icons.Shield size={16} />
+              <span><a href="/privacy" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/privacy'); onNavigate('privacy'); }}>Privacy Policy</a></span>
+            </div>
+            <div className="dev-info-item">
+              <Icons.FileText size={16} />
+              <span><a href="/terms" onClick={(e) => { e.preventDefault(); window.history.pushState({}, '', '/terms'); onNavigate('terms'); }}>Terms of Service</a></span>
             </div>
           </div>
         </div>

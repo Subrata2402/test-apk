@@ -10,7 +10,8 @@ import chalk from 'chalk';
 import { exec } from 'child_process';
 
 const CONFIG_FILE = path.join(os.homedir(), '.testapk-cli.json');
-const DEFAULT_API_URL = 'http://localhost:3000/api/v1';
+const DEFAULT_API_URL = 'https://testapkapi.clipboux.online/api/v1';
+// const DEFAULT_API_URL = 'http://localhost:3000/api/v1';
 
 const openBrowser = (url) => {
   const start = {

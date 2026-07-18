@@ -108,7 +108,7 @@ export default function GoogleLoginModal({ isOpen, onClose, onLoginSuccess }) {
         </div>
 
         <div className="google-login-footer">
-          <p>To continue, Google will share your name, email address, language preference, and profile picture with APK Release Manager.</p>
+          <p>To continue, Google will share your name, email address, language preference, and profile picture with TestAPK.</p>
         </div>
       </div>
     </div>
