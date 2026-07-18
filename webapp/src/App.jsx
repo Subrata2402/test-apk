@@ -13,9 +13,18 @@ export default function App() {
   const [user, setUser] = useState(null); // { name, email, avatar }
   const [apps, setApps] = useState(initialApps);
   const [selectedAppId, setSelectedAppId] = useState(initialApps[0]?.id || null);
-  const [currentView, setCurrentView] = useState(
-    window.location.pathname === '/device' ? 'device-auth' : 'landing'
-  );
+  const [currentView, setCurrentView] = useState(() => {
+    if (window.location.pathname === '/device') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('token')) {
+        return 'device-auth';
+      } else {
+        window.history.replaceState({}, '', '/');
+        return localStorage.getItem('token') ? 'dashboard' : 'landing';
+      }
+    }
+    return 'landing';
+  });
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
@@ -73,7 +82,13 @@ export default function App() {
           });
           await fetchApps(token);
           if (window.location.pathname === '/device') {
-            setCurrentView('device-auth');
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('token')) {
+              setCurrentView('device-auth');
+            } else {
+              window.history.pushState({}, '', '/');
+              setCurrentView('dashboard');
+            }
           } else {
             setCurrentView('dashboard');
           }
@@ -94,7 +109,13 @@ export default function App() {
   const handleLoginSuccess = (userData) => {
     setUser(userData);
     if (window.location.pathname === '/device') {
-      setCurrentView('device-auth');
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('token')) {
+        setCurrentView('device-auth');
+      } else {
+        window.history.pushState({}, '', '/');
+        setCurrentView('dashboard');
+      }
     } else {
       setCurrentView('dashboard');
     }

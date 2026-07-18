@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IDeviceCode extends Document {
   deviceCode: string;
   userCode: string;
+  urlToken: string;   // short-lived token embedded in the verification URL
   userId?: mongoose.Types.ObjectId;
   isAuthorized: boolean;
   expiresAt: Date;
@@ -15,6 +16,11 @@ const deviceCodeSchema = new Schema<IDeviceCode>({
     unique: true,
   },
   userCode: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  urlToken: {
     type: String,
     required: true,
     unique: true,

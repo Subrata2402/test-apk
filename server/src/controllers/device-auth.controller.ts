@@ -23,18 +23,21 @@ export const generateDeviceCode = async (
   try {
     const deviceCode = crypto.randomUUID();
     const userCode = generateUserCode();
+    const urlToken = crypto.randomUUID(); // separate short-lived URL access token
     const expiresIn = 300; // 5 minutes
     const expiresAt = new Date(Date.now() + expiresIn * 1000);
 
     await DeviceCode.create({
       deviceCode,
       userCode,
+      urlToken,
       expiresAt,
     });
 
     // Use request origin or default to localhost
     const origin = req.headers.origin || 'http://localhost:5173';
-    const verificationUri = `${origin}/device`;
+    // The urlToken gates access to the /device page; user code is typed manually
+    const verificationUri = `${origin}/device?token=${urlToken}`;
 
     res.status(200).json({
       status: 'success',
@@ -49,6 +52,48 @@ export const generateDeviceCode = async (
     next(error);
   }
 };
+
+// Validates the URL token embedded in the verification link.
+// No auth required — this is a public page-access check.
+export const checkUrlToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { token } = req.query;
+
+    if (!token || typeof token !== 'string') {
+      res.status(400).json({ status: 'fail', code: 'missing', message: 'Token is required' });
+      return;
+    }
+
+    const doc = await DeviceCode.findOne({ urlToken: token });
+
+    if (!doc) {
+      // Token never existed or already cleaned up
+      res.status(404).json({ status: 'fail', code: 'not_found', message: 'Invalid or already used token' });
+      return;
+    }
+
+    if (doc.expiresAt < new Date()) {
+      res.status(410).json({ status: 'fail', code: 'expired', message: 'This authorization link has expired' });
+      return;
+    }
+
+    if (doc.isAuthorized) {
+      // Already authorized — treat as used
+      res.status(410).json({ status: 'fail', code: 'used', message: 'This link has already been used' });
+      return;
+    }
+
+    res.status(200).json({ status: 'success', code: 'valid' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 
 export const authorizeDeviceCode = async (
   req: Request,
@@ -82,13 +127,22 @@ export const authorizeDeviceCode = async (
 
     const deviceCodeDoc = await DeviceCode.findOne({
       userCode: normalizedCode,
-      expiresAt: { $gt: new Date() },
     });
 
     if (!deviceCodeDoc) {
       res.status(404).json({
         status: 'fail',
-        message: 'Invalid or expired user code',
+        code: 'invalid_code',
+        message: 'Invalid authorization code. Please check the code and try again.',
+      });
+      return;
+    }
+
+    if (deviceCodeDoc.expiresAt < new Date()) {
+      res.status(410).json({
+        status: 'fail',
+        code: 'expired_code',
+        message: 'This authorization code has expired. Please generate a new one.',
       });
       return;
     }
