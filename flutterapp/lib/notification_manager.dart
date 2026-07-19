@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'core/api_client.dart';
 
 class NotificationManager {
   static final NotificationManager _instance = NotificationManager._internal();
@@ -41,6 +42,23 @@ class NotificationManager {
 
     // Handle background messages
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  }
+
+  static Future<void> sendTokenToServer() async {
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      if (token != null) {
+        debugPrint('Sending FCM Token to server: $token');
+        final response = await ApiClient.instance.post('/users/fcm-token', {'token': token});
+        if (response.statusCode == 200) {
+          debugPrint('FCM Token successfully registered on server');
+        } else {
+          debugPrint('Failed to register FCM Token on server: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error sending FCM token to server: $e');
+    }
   }
 }
 

@@ -98,3 +98,54 @@ export const configureDrive = async (
     next(error);
   }
 };
+
+export const updateFcmToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      res.status(400).json({
+        status: 'fail',
+        message: 'FCM token is required',
+      });
+      return;
+    }
+
+    if (!req.user) {
+      res.status(401).json({
+        status: 'fail',
+        message: 'User not authenticated',
+      });
+      return;
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(404).json({
+        status: 'fail',
+        message: 'User not found',
+      });
+      return;
+    }
+
+    if (!user.fcmTokens) {
+      user.fcmTokens = [];
+    }
+
+    if (!user.fcmTokens.includes(token)) {
+      user.fcmTokens.push(token);
+      await user.save();
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'FCM token updated successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -256,6 +256,32 @@ export const uploadApk = async (
     app.releases.unshift(newRelease);
     await app.save();
 
+    // Send push notification to other accepted members
+    try {
+      const otherMembersEmails = app.members
+        .filter(m => m.status === 'Accepted' && m.email.toLowerCase() !== req.user!.email.toLowerCase())
+        .map(m => m.email.toLowerCase());
+
+      if (otherMembersEmails.length > 0) {
+        const users = await User.find({ email: { $in: otherMembersEmails } });
+        const tokens = users.flatMap(u => u.fcmTokens || []);
+        if (tokens.length > 0) {
+          const { sendPushNotificationToMultiple } = await import('../services/notification.service.js');
+          await sendPushNotificationToMultiple(tokens, {
+            title: `New Release for ${app.name}`,
+            body: `Version ${newRelease.version} (Build #${newRelease.buildNumber}) is now available.`,
+            data: {
+              appId: app._id.toString(),
+              buildNumber: newRelease.buildNumber.toString(),
+              type: 'new_release',
+            },
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Failed to send new release push notifications:', err);
+    }
+
     res.status(201).json({
       status: 'success',
       data: {
@@ -486,6 +512,24 @@ export const inviteMember = async (
     });
 
     await app.save();
+
+    // Send push notification to the invited user
+    try {
+      const invitedUser = await User.findOne({ email: email.toLowerCase() });
+      if (invitedUser && invitedUser.fcmTokens && invitedUser.fcmTokens.length > 0) {
+        const { sendPushNotificationToMultiple } = await import('../services/notification.service.js');
+        await sendPushNotificationToMultiple(invitedUser.fcmTokens, {
+          title: `Invitation to join ${app.name}`,
+          body: `You have been invited to join ${app.name} as a ${role}.`,
+          data: {
+            appId: app._id.toString(),
+            type: 'invitation',
+          },
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send invitation push notification:', err);
+    }
 
     res.status(200).json({
       status: 'success',

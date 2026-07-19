@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'api_client.dart';
 import 'storage_service.dart';
 import '../models/user_model.dart';
+import '../notification_manager.dart';
 
 import 'constants.dart';
 
@@ -33,6 +34,8 @@ class AuthService {
         final token = body['token'] as String;
         await StorageService.instance.saveToken(token);
         _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
+        // Send FCM token to server
+        await NotificationManager.sendTokenToServer();
         return _currentUser;
       }
       return null;
@@ -51,6 +54,8 @@ class AuthService {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
         _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
+        // Send FCM token to server
+        await NotificationManager.sendTokenToServer();
         return _currentUser;
       }
     } catch (_) {}

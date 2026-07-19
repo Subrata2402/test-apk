@@ -9,6 +9,7 @@ export interface IUser extends Document {
   googleRefreshToken?: string;
   googleDriveFolderId?: string;
   role: 'user' | 'admin';
+  fcmTokens?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,6 +50,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    fcmTokens: {
+      type: [String],
+      default: [],
     },
   },
   {

@@ -14,7 +14,8 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   JWT_SECRET: z.string(),
-  JWT_EXPIRES_IN: z.string().default('7d')
+  JWT_EXPIRES_IN: z.string().default('7d'),
+  FIREBASE_SERVICE_ACCOUNT_PATH: z.string().default('firebase-service-account.json')
 });
 
 const parseEnv = () => {
