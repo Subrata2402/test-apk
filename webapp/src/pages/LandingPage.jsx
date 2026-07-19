@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import logoImg from '../assets/logo.png';
 import './LandingPage.css';
 
-export default function LandingPage({ user, onLoginClick, onNavigate }) {
+export default function LandingPage({ user, onLoginClick, onContactClick, onNavigate }) {
   const [activeTab, setActiveTab] = useState('details'); // 'details' | 'releases'
 
   const appDetails = {
@@ -383,7 +383,7 @@ export default function LandingPage({ user, onLoginClick, onNavigate }) {
             </div>
             <div className="dev-info-item">
               <Icons.Mail size={16} />
-              <span><Link to="/contact">Contact Support</Link></span>
+              <span><a href="#" onClick={(e) => { e.preventDefault(); onContactClick(); }}>Contact Support</a></span>
             </div>
             <div className="dev-info-item">
               <Icons.Shield size={16} />
@@ -406,7 +406,7 @@ export default function LandingPage({ user, onLoginClick, onNavigate }) {
         <div className="footer-right">
           <Link to="/privacy" className="footer-link">Privacy Policy</Link>
           <Link to="/terms" className="footer-link">Terms of Service</Link>
-          <Link to="/contact" className="footer-link">Contact Support</Link>
+          <a href="#" className="footer-link" onClick={(e) => { e.preventDefault(); onContactClick(); }}>Contact Support</a>
         </div>
       </footer>
     </div>

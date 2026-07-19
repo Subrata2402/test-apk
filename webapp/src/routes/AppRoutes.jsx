@@ -4,7 +4,6 @@ import LandingPage from '../pages/LandingPage';
 import Dashboard from '../pages/Dashboard';
 import PrivacyPolicy from '../pages/PrivacyPolicy';
 import TermsOfService from '../pages/TermsOfService';
-import ContactSupport from '../pages/ContactSupport';
 import DeviceAuthPage from '../pages/DeviceAuthPage';
 
 export default function AppRoutes({
@@ -18,7 +17,8 @@ export default function AppRoutes({
   setIsCreateModalOpen,
   showAlert,
   showConfirm,
-  setUser
+  setUser,
+  onContactClick
 }) {
   const navigate = useNavigate();
 
@@ -30,6 +30,7 @@ export default function AppRoutes({
           <LandingPage
             user={user}
             onLoginClick={() => setIsLoginModalOpen(true)}
+            onContactClick={onContactClick}
             onNavigate={(view) => navigate(`/${view}`)}
           />
         }
@@ -50,12 +51,7 @@ export default function AppRoutes({
           />
         }
       />
-      <Route
-        path="/contact"
-        element={
-          <ContactSupport />
-        }
-      />
+
       <Route
         path="/device"
         element={

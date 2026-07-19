@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { initialApps } from './mockData';
 import GoogleLoginModal from './components/modals/GoogleLoginModal';
 import CreateAppModal from './components/modals/CreateAppModal';
+import ContactSupportModal from './components/modals/ContactSupportModal';
 import Navbar from './components/layout/Navbar';
 import AlertModal from './components/common/AlertModal';
 import ConfirmModal from './components/common/ConfirmModal';
@@ -18,6 +19,7 @@ export default function App() {
   const [selectedAppId, setSelectedAppId] = useState(initialApps[0]?.id || null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
   const [isLoadingApps, setIsLoadingApps] = useState(false);
 
@@ -213,6 +215,7 @@ export default function App() {
           showAlert={showAlert}
           showConfirm={showConfirm}
           setUser={setUser}
+          onContactClick={() => setIsContactModalOpen(true)}
         />
       </div>
 
@@ -231,6 +234,12 @@ export default function App() {
         user={user}
         showAlert={showAlert}
         onDriveConfigured={() => setUser(prev => ({ ...prev, isDriveConfigured: true }))}
+      />
+
+      {/* Contact Support Modal */}
+      <ContactSupportModal
+        isOpen={isContactModalOpen}
+        onClose={() => setIsContactModalOpen(false)}
       />
 
       <AlertModal config={alertConfig} onClose={() => setAlertConfig(null)} />
