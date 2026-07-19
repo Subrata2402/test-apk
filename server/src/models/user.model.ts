@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+import { encrypt, decrypt } from '../utils/crypto.js';
 
 export interface IUser extends Document {
   email: string;
@@ -36,9 +37,13 @@ const userSchema = new Schema<IUser>(
     },
     googleRefreshToken: {
       type: String,
+      get: decrypt,
+      set: encrypt,
     },
     googleDriveFolderId: {
       type: String,
+      get: decrypt,
+      set: encrypt,
     },
     role: {
       type: String,
@@ -48,6 +53,8 @@ const userSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
+    toObject: { getters: true },
+    toJSON: { getters: true },
   }
 );
 

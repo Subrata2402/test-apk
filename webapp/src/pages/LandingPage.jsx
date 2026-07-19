@@ -270,17 +270,15 @@ export default function LandingPage({ user, onLoginClick, onNavigate }) {
                   </p>
                 </div>
 
-                <div>
-                  <h3>App Icon</h3>
-                  <div className="screenshots-grid">
-                    <div
-                      className="screenshot-card flex-center"
-                      style={{ background: 'rgba(255, 255, 255, 0.02)', overflow: 'hidden', padding: '20px' }}
-                    >
-                      <img src={logoImg} alt="TestAPK Logo Large" style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '24px' }} />
-                    </div>
-                  </div>
-                </div>
+                <a
+                  href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
+                  download="testapk.apk"
+                  className="btn btn-primary btn-sm flex-center gap-2 mt-4"
+                  style={{ textDecoration: 'none', width: 'fit-content' }}
+                >
+                  <Icons.Download size={14} />
+                  <span>Download APK</span>
+                </a>
 
                 <div className="app-info-specs">
                   <h3>Technical Specifications</h3>
@@ -385,7 +383,7 @@ export default function LandingPage({ user, onLoginClick, onNavigate }) {
             </div>
             <div className="dev-info-item">
               <Icons.Mail size={16} />
-              <span>Support: <a href="mailto:support@clipboux.online">support@clipboux.online</a></span>
+              <span><Link to="/contact">Contact Support</Link></span>
             </div>
             <div className="dev-info-item">
               <Icons.Shield size={16} />
@@ -398,6 +396,19 @@ export default function LandingPage({ user, onLoginClick, onNavigate }) {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="landing-footer glass-card">
+        <div className="footer-left">
+          <Icons.Cpu size={18} className="text-cyan" />
+          <span>&copy; {new Date().getFullYear()} TestAPK. All rights reserved.</span>
+        </div>
+        <div className="footer-right">
+          <Link to="/privacy" className="footer-link">Privacy Policy</Link>
+          <Link to="/terms" className="footer-link">Terms of Service</Link>
+          <Link to="/contact" className="footer-link">Contact Support</Link>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -1,0 +1,105 @@
+.contact-container {
+  min-height: calc(100vh - 64px);
+  padding: 40px 20px;
+}
+
+.contact-card {
+  width: 100%;
+  max-width: 550px;
+  padding: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  border-radius: 24px;
+  background: rgba(15, 15, 25, 0.7);
+}
+
+.back-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: var(--transition-smooth);
+  border: 1px solid transparent;
+}
+
+.back-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: var(--border-color);
+}
+
+.contact-header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.contact-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: var(--accent-primary-glow);
+  color: var(--accent-primary);
+  margin-bottom: 8px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.contact-header h2 {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.contact-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  max-width: 360px;
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 46px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.success-state {
+  flex-direction: column;
+  text-align: center;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.success-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--accent-success-glow);
+  color: var(--accent-success);
+  margin-bottom: 8px;
+}
+
+.success-state h2 {
+  font-size: 1.8rem;
+}
+
+.success-state p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 400px;
+}

@@ -202,13 +202,15 @@ export const uploadApk = async (
     }
 
     // Check if build number is greater than the latest build number
-    const latestRelease = app.releases.reduce((prev, current) => prev.buildNumber > current.buildNumber ? prev : current);
-    if (parsed.versionCode <= latestRelease.buildNumber) {
-      res.status(400).json({
-        status: 'fail',
-        message: `Build number ${parsed.versionCode} is not greater than the latest build number ${latestRelease.buildNumber}`,
-      });
-      return;
+    if (app.releases.length > 0) {
+      const latestRelease = app.releases.reduce((prev, current) => prev.buildNumber > current.buildNumber ? prev : current);
+      if (parsed.versionCode <= latestRelease.buildNumber) {
+        res.status(400).json({
+          status: 'fail',
+          message: `Build number #${parsed.versionCode} cannot be used because the latest published build number is #${latestRelease.buildNumber}. Please increment the build number and try again.`,
+        });
+        return;
+      }
     }
 
     // Upload to Google Drive

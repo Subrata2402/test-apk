@@ -168,7 +168,7 @@
   gap: 8px;
   margin-bottom: 16px;
   border-bottom: 1px solid var(--border-color);
-  padding-bottom: 8px;
+  padding: 8px;
 }
 
 .tab-btn {
@@ -444,4 +444,58 @@
 
 .dev-info-item a:hover {
   text-decoration: underline;
+}
+
+/* Landing Footer */
+.landing-footer {
+  margin-top: 48px;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  border-radius: 16px;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-left span {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.footer-right {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-link {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-smooth);
+}
+
+.footer-link:hover {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 576px) {
+  .landing-footer {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .footer-right {
+    flex-direction: column;
+    gap: 12px;
+  }
 }

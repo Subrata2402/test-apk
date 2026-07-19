@@ -4,6 +4,7 @@ import LandingPage from '../pages/LandingPage';
 import Dashboard from '../pages/Dashboard';
 import PrivacyPolicy from '../pages/PrivacyPolicy';
 import TermsOfService from '../pages/TermsOfService';
+import ContactSupport from '../pages/ContactSupport';
 import DeviceAuthPage from '../pages/DeviceAuthPage';
 
 export default function AppRoutes({
@@ -47,6 +48,12 @@ export default function AppRoutes({
           <TermsOfService
             onBackToHome={() => navigate('/')}
           />
+        }
+      />
+      <Route
+        path="/contact"
+        element={
+          <ContactSupport />
         }
       />
       <Route

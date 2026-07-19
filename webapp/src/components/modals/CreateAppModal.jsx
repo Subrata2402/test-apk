@@ -41,19 +41,25 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
     scope: 'https://www.googleapis.com/auth/drive.file',
   });
 
+  const [isCreating, setIsCreating] = useState(false);
+
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!appName || !packageName || !description) {
       showAlert('Please fill in all fields', 'Warning', 'warning');
       return;
     }
-    onCreateApp({ name: appName, packageName, description });
-    setAppName('');
-    setPackageName('');
-    setDescription('');
-    onClose();
+    setIsCreating(true);
+    const success = await onCreateApp({ name: appName, packageName, description });
+    setIsCreating(false);
+    if (success) {
+      setAppName('');
+      setPackageName('');
+      setDescription('');
+      onClose();
+    }
   };
 
   const isDriveConfigured = user?.isDriveConfigured;
@@ -61,7 +67,7 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
   return (
     <div className="modal-overlay">
       <div className="modal-container glass-panel animate-fade-in">
-        <button className="modal-close" onClick={onClose} disabled={isConfiguring}>
+        <button className="modal-close" onClick={onClose} disabled={isConfiguring || isCreating}>
           <Icons.X size={20} />
         </button>
 
@@ -119,6 +125,7 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
                   value={appName}
                   onChange={(e) => setAppName(e.target.value)}
                   required
+                  disabled={isCreating}
                 />
               </div>
 
@@ -134,6 +141,7 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
                   value={packageName}
                   onChange={(e) => setPackageName(e.target.value)}
                   required
+                  disabled={isCreating}
                 />
               </div>
 
@@ -149,15 +157,23 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
                   onChange={(e) => setDescription(e.target.value)}
                   rows="3"
                   required
+                  disabled={isCreating}
                 />
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                <button type="button" className="btn btn-secondary" onClick={onClose} disabled={isCreating}>
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
-                  Create Application
+                <button type="submit" className="btn btn-primary" disabled={isCreating}>
+                  {isCreating ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                      <div className="spinner" style={{ width: '16px', height: '16px', borderWidth: '2px' }}></div>
+                      <span>Creating...</span>
+                    </div>
+                  ) : (
+                    'Create Application'
+                  )}
                 </button>
               </div>
             </form>

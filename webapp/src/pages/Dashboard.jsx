@@ -24,7 +24,7 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
 
         <nav className="sidebar-nav">
           <div className="nav-section">
-            <span className="nav-section-title">Applications</span>
+            {/* <span className="nav-section-title">Applications</span> */}
             <div className="apps-list mt-3">
               {apps.map((app) => {
                 const isSelected = app._id === selectedAppId || app.id === selectedAppId;
@@ -46,23 +46,9 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
               })}
             </div>
           </div>
-
-          <div className="nav-section" style={{ marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
-            <button
-              className={`app-nav-item ${selectedAppId === 'about' ? 'active' : ''}`}
-              onClick={() => onSelectApp('about')}
-            >
-              <div className="app-nav-icon-wrapper" style={{ background: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}>
-                <Icons.Info size={18} />
-              </div>
-              <div className="app-nav-info">
-                <span className="app-nav-name">About TestAPK</span>
-                <span className="app-nav-package">System Info & Docs</span>
-              </div>
-            </button>
-          </div>
         </nav>
 
+        {/* User Profile */}
         <div className="sidebar-footer">
           <div className="user-profile-widget">
             <div className="user-avatar">

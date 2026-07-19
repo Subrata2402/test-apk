@@ -147,9 +147,10 @@ export default function App() {
           : (newAppOrUpdatedApp.id && a.id === newAppOrUpdatedApp.id);
         return isMatch ? newAppOrUpdatedApp : a;
       }));
+      return true;
     } else {
       const token = localStorage.getItem('token');
-      if (!token) return;
+      if (!token) return false;
 
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/apps`, {
@@ -170,12 +171,15 @@ export default function App() {
           const createdApp = data.data.app;
           setApps([...apps, createdApp]);
           setSelectedAppId(createdApp._id);
+          return true;
         } else {
           showAlert(data.message || 'Failed to create application', 'Error', 'error');
+          return false;
         }
       } catch (err) {
         console.error('Failed to create app:', err);
         showAlert('Failed to create application', 'Error', 'error');
+        return false;
       }
     }
   };
