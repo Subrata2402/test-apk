@@ -15,6 +15,7 @@ import 'package:flutterapp/presentations/login/screens/login_screen.dart';
 import 'package:flutterapp/presentations/release_list/screens/release_list_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/orb.dart';
+import 'package:flutterapp/notification_manager.dart';
 
 class AppListScreen extends StatefulWidget {
   const AppListScreen({super.key});
@@ -34,6 +35,17 @@ class _AppListScreenState extends State<AppListScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchData();
+    NotificationManager().addListener(_onNotificationReceived);
+  }
+
+  @override
+  void dispose() {
+    NotificationManager().removeListener(_onNotificationReceived);
+    super.dispose();
+  }
+
+  void _onNotificationReceived() {
     _fetchData();
   }
 

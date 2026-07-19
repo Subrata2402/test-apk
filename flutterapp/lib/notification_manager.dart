@@ -12,6 +12,26 @@ class NotificationManager {
 
   NotificationManager._internal();
 
+  final List<VoidCallback> _listeners = [];
+
+  void addListener(VoidCallback listener) {
+    _listeners.add(listener);
+  }
+
+  void removeListener(VoidCallback listener) {
+    _listeners.remove(listener);
+  }
+
+  void _notifyListeners() {
+    for (final listener in _listeners) {
+      try {
+        listener();
+      } catch (e) {
+        debugPrint('Error notifying listener: $e');
+      }
+    }
+  }
+
   static Future<void> initialize() async {
     NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
       alert: true,
@@ -27,6 +47,8 @@ class NotificationManager {
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('Received a foreground message: ${message.notification?.title}');
+
+      _instance._notifyListeners();
 
       const channel = MethodChannel("com.testapk.app/app_launcher");
       await channel.invokeMethod("showNotification", {
