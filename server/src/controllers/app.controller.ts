@@ -495,6 +495,25 @@ export const inviteMember = async (
       return;
     }
 
+    // Check if invited user is the requester
+    if (email.toLowerCase() === req.user!.email.toLowerCase()) {
+      res.status(400).json({
+        status: 'fail',
+        message: 'You cannot invite yourself',
+      });
+      return;
+    }
+
+    // Check if invited user is registered
+    const invitedUser = await User.findOne({ email: email.toLowerCase() });
+    if (!invitedUser) {
+      res.status(400).json({
+        status: 'fail',
+        message: 'User is not registered. Only registered users can be invited.',
+      });
+      return;
+    }
+
     // Check if already a member
     const existingMember = app.members.find(m => m.email.toLowerCase() === email.toLowerCase());
     if (existingMember) {
