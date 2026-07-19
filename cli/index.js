@@ -83,7 +83,7 @@ const getClient = () => {
 program
   .name('testapk')
   .description('CLI tool for TestAPK Release Manager')
-  .version('1.0.0');
+  .version('1.0.3');
 
 program
   .command('login')
@@ -195,28 +195,6 @@ program
       console.error(chalk.red('Failed to list apps:'), error.response?.data?.message || error.message);
     }
   });
-
-// program
-//   .command('create-app')
-//   .description('Create a new application')
-//   .requiredOption('-n, --name <name>', 'Application Name')
-//   .requiredOption('-p, --package <packageName>', 'Package Name (e.g., com.example.app)')
-//   .option('-d, --desc <description>', 'Description', 'Created via CLI')
-//   .action(async (options) => {
-//     const client = getClient();
-//     try {
-//       const response = await client.post('/apps', {
-//         name: options.name,
-//         packageName: options.package,
-//         description: options.desc,
-//       });
-
-//       console.log(chalk.green('✅ Application created successfully!'));
-//       console.log(`App ID: ${chalk.yellow(response.data.data.app._id || response.data.data.app.id)}`);
-//     } catch (error) {
-//       console.error(chalk.red('Failed to create app:'), error.response?.data?.message || error.message);
-//     }
-//   });
 
 program
   .command('upload')
