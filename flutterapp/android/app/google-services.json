@@ -1,9 +1,29 @@
 {
-  "installed": {
-    "client_id": "229511253859-afvl06kemgunqla8vhtfb1fij0ue4ji8.apps.googleusercontent.com",
-    "project_id": "testapk-502213",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
-  }
+  "project_info": {
+    "project_number": "326341519831",
+    "project_id": "testapk-24",
+    "storage_bucket": "testapk-24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326341519831:android:51d3c17265ff4a73a5c392",
+        "android_client_info": {
+          "package_name": "com.testapk.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-f0BHH-ZEhZiKByZIRKJY0ribkFC76PY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }

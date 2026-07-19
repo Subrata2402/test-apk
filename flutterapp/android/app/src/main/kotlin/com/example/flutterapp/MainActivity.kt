@@ -1,6 +1,11 @@
 package com.testapk.app
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -39,6 +44,16 @@ class MainActivity : FlutterActivity() {
                         result.success(launched)
                     } else {
                         result.error("BAD_ARGS", "Package name is null", null)
+                    }
+                }
+                "showNotification" -> {
+                    val title = call.argument<String>("title")
+                    val body = call.argument<String>("body")
+                    if (title != null && body != null) {
+                        showNotification(title, body)
+                        result.success(true)
+                    } else {
+                        result.error("BAD_ARGS", "Title or body is null", null)
                     }
                 }
                 else -> {
@@ -81,5 +96,30 @@ class MainActivity : FlutterActivity() {
         } else {
             false
         }
+    }
+
+    private fun showNotification(title: String, body: String) {
+
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val channelId = "general"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "General",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            manager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setAutoCancel(true)
+            .build()
+
+        manager.notify(1, notification)
     }
 }
