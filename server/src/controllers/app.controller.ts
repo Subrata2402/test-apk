@@ -201,6 +201,16 @@ export const uploadApk = async (
       return;
     }
 
+    // Check if build number is greater than the latest build number
+    const latestRelease = app.releases.reduce((prev, current) => prev.buildNumber > current.buildNumber ? prev : current);
+    if (parsed.versionCode <= latestRelease.buildNumber) {
+      res.status(400).json({
+        status: 'fail',
+        message: `Build number ${parsed.versionCode} is not greater than the latest build number ${latestRelease.buildNumber}`,
+      });
+      return;
+    }
+
     // Upload to Google Drive
     let driveFileId;
     try {
