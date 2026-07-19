@@ -44,8 +44,8 @@ class AppCard extends StatelessWidget {
                     height: context.scale(56),
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1),
+                      // shape: BoxShape.circle,
+                      // border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1),
                       image: DecorationImage(image: _getIconProvider(app.releases.first.appIcon!), fit: BoxFit.cover),
                     ),
                   )

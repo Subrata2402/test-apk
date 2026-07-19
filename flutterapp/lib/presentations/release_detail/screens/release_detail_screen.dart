@@ -150,7 +150,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                                     image: _iconProvider ?? _getIconProvider(release.appIcon!),
                                     fit: BoxFit.cover,
                                   ),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1),
+                                  // border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1),
                                 ),
                               )
                             else
