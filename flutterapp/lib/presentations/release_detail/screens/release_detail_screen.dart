@@ -43,7 +43,12 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
 
   String _formatDate(String raw) {
     try {
-      return DateFormat('MMM d, yyyy').format(DateTime.parse(raw));
+      final dt = DateTime.parse(raw).toLocal();
+      if (raw.contains('T')) {
+        return DateFormat('MMM d, yyyy • h:mm a').format(dt);
+      } else {
+        return DateFormat('MMM d, yyyy').format(dt);
+      }
     } catch (_) {
       return raw;
     }

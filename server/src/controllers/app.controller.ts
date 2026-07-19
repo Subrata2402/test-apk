@@ -240,7 +240,7 @@ export const uploadApk = async (
       version: parsed.versionName,
       buildNumber: parsed.versionCode,
       releaseNotes: releaseNotes || 'No release notes provided',
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString(),
       size: `${(req.file.size / (1024 * 1024)).toFixed(1)} MB`,
       apkUrl: driveFileId,
       appName: parsed.appName,

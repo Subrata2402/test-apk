@@ -50,6 +50,16 @@ class _AppListScreenState extends State<AppListScreen> {
         final appsBody = jsonDecode(appsResponse.body) as Map<String, dynamic>;
         final appsList = appsBody['data']['apps'] as List;
         final apps = appsList.map((a) => AppModel.fromJson(a as Map<String, dynamic>)).toList();
+        apps.sort((a, b) {
+          final aRelease = a.latestRelease;
+          final bRelease = b.latestRelease;
+          if (aRelease == null && bRelease == null) return 0;
+          if (aRelease == null) return 1;
+          if (bRelease == null) return -1;
+          final dateCompare = bRelease.date.compareTo(aRelease.date);
+          if (dateCompare != 0) return dateCompare;
+          return bRelease.buildNumber.compareTo(aRelease.buildNumber);
+        });
 
         final invitesBody = jsonDecode(invitesResponse.body) as Map<String, dynamic>;
         final invitesList = invitesBody['data']['apps'] as List;
