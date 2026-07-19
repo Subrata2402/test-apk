@@ -34,6 +34,34 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
 
   const fileInputRef = useRef(null);
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return 'N/A';
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return dateStr;
+
+      const hasTime = dateStr.includes('T') || dateStr.includes(':');
+
+      if (hasTime) {
+        return date.toLocaleString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      } else {
+        return date.toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        });
+      }
+    } catch (_) {
+      return dateStr;
+    }
+  };
+
   // Reset upload states when app changes
   React.useEffect(() => {
     setUploadFile(null);
@@ -481,7 +509,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                             <span className="badge badge-secondary">Build #{release.buildNumber}</span>
                           </div>
                         </div>
-                        <span className="release-card-date">{release.date}</span>
+                        <span className="release-card-date">{formatDate(release.date)}</span>
                       </div>
                       <p className="release-card-notes">{release.releaseNotes}</p>
                       <div className="release-card-footer">
@@ -662,7 +690,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
               </div>
               <div className="detail-item">
                 <span className="detail-label">Upload Date</span>
-                <span className="detail-value">{selectedRelease.date}</span>
+                <span className="detail-value">{formatDate(selectedRelease.date)}</span>
               </div>
               {selectedRelease.uploadedByName && (
                 <div className="detail-item" style={{ gridColumn: 'span 2' }}>
