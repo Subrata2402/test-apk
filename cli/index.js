@@ -8,6 +8,25 @@ import os from 'os';
 import FormData from 'form-data';
 import chalk from 'chalk';
 import { exec } from 'child_process';
+import { Transform } from 'stream';
+import http from 'http';
+import https from 'https';
+
+class ProgressStream extends Transform {
+  constructor(totalSize, onProgress) {
+    super();
+    this.totalSize = totalSize;
+    this.uploadedBytes = 0;
+    this.onProgress = onProgress;
+  }
+
+  _transform(chunk, encoding, callback) {
+    this.uploadedBytes += chunk.length;
+    this.onProgress(this.uploadedBytes, this.totalSize);
+    this.push(chunk);
+    callback();
+  }
+}
 
 const CONFIG_FILE = path.join(os.homedir(), '.testapk-cli.json');
 const DEFAULT_API_URL = 'https://testapkapi.clipboux.online/api/v1';
@@ -213,95 +232,115 @@ program
       process.exit(1);
     }
 
-    console.log(chalk.blue('🚀 Uploading APK to TestAPK...'));
+    const fileStats = fs.statSync(options.file);
+    const fileSize = fileStats.size;
+
+    let isDriveSpinnerStarted = false;
+    let spinnerInterval;
+
+    const startDriveSpinner = () => {
+      if (isDriveSpinnerStarted) return;
+      isDriveSpinnerStarted = true;
+
+      const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+      let frameIndex = 0;
+      process.stdout.write('\n');
+      spinnerInterval = setInterval(() => {
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+        process.stdout.write(`${chalk.cyan(spinnerFrames[frameIndex])} ☁️ Sending to Google Drive...`);
+        frameIndex = (frameIndex + 1) % spinnerFrames.length;
+      }, 80);
+    };
+
+    const stopDriveSpinner = () => {
+      if (spinnerInterval) {
+        clearInterval(spinnerInterval);
+        process.stdout.clearLine(0);
+        process.stdout.cursorTo(0);
+      }
+    };
+
+    const fileStream = fs.createReadStream(options.file);
+    const progressStream = new ProgressStream(fileSize, (uploaded, total) => {
+      const percentage = Math.min(Math.floor((uploaded / total) * 100), 100);
+
+      const size = 30;
+      const dots = Math.floor((percentage / 100) * size);
+      const left = size - dots;
+
+      const bar = '='.repeat(dots) + '-'.repeat(left);
+
+      process.stdout.clearLine(0);
+      process.stdout.cursorTo(0);
+      process.stdout.write(`🚀 Uploading: [${bar}] ${percentage}% (${(uploaded / 1024 / 1024).toFixed(2)}MB / ${(total / 1024 / 1024).toFixed(2)}MB)`);
+
+      if (uploaded >= total) {
+        startDriveSpinner();
+      }
+    });
+
+    fileStream.pipe(progressStream);
 
     const form = new FormData();
-    form.append('file', fs.createReadStream(options.file));
+    form.append('file', progressStream, {
+      filename: path.basename(options.file),
+      knownLength: fileSize,
+    });
     form.append('releaseNotes', options.notes);
 
-    form.getLength(async (err, length) => {
-      if (err) {
-        try {
-          const response = await client.post(`/apps/${options.appId}/releases`, form, {
-            headers: {
-              ...form.getHeaders(),
-            },
-            maxContentLength: Infinity,
-            maxBodyLength: Infinity,
-          });
+    const token = getToken();
+    const apiUrl = new URL(getApiUrl());
+    const requestPath = `${apiUrl.pathname}/apps/${options.appId}/releases`;
 
-          const release = response.data.data.release;
-          console.log(chalk.green('✅ Release uploaded successfully!'));
-          console.log(`Version: ${chalk.bold(release.version)} (Build #${chalk.bold(release.buildNumber)})`);
-        } catch (error) {
-          console.error(chalk.red('Upload failed:'), error.response?.data?.message || error.message);
-        }
-        return;
+    const headers = {
+      ...form.getHeaders(),
+      'Authorization': `Bearer ${token}`
+    };
+
+    form.getLength((err, length) => {
+      if (!err && length) {
+        headers['Content-Length'] = length;
       }
 
-      let isDriveSpinnerStarted = false;
-      let spinnerInterval;
-
-      const startDriveSpinner = () => {
-        if (isDriveSpinnerStarted) return;
-        isDriveSpinnerStarted = true;
-
-        const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-        let frameIndex = 0;
-        process.stdout.write('\n');
-        spinnerInterval = setInterval(() => {
-          process.stdout.clearLine(0);
-          process.stdout.cursorTo(0);
-          process.stdout.write(`${chalk.cyan(spinnerFrames[frameIndex])} ☁️ Sending to Google Drive...`);
-          frameIndex = (frameIndex + 1) % spinnerFrames.length;
-        }, 80);
+      const reqOptions = {
+        protocol: apiUrl.protocol,
+        hostname: apiUrl.hostname,
+        port: apiUrl.port || (apiUrl.protocol === 'https:' ? 443 : 80),
+        path: requestPath,
+        method: 'POST',
+        headers: headers
       };
 
-      const stopDriveSpinner = () => {
-        if (spinnerInterval) {
-          clearInterval(spinnerInterval);
-          process.stdout.clearLine(0);
-          process.stdout.cursorTo(0);
-        }
-      };
-
-      try {
-        const response = await client.post(`/apps/${options.appId}/releases`, form, {
-          headers: {
-            ...form.getHeaders(),
-            'Content-Length': length,
-          },
-          maxContentLength: Infinity,
-          maxBodyLength: Infinity,
-          onUploadProgress: (progressEvent) => {
-            const total = progressEvent.total || length;
-            const current = progressEvent.loaded;
-            const percentage = Math.floor((current / total) * 100);
-
-            const size = 30;
-            const dots = Math.floor((percentage / 100) * size);
-            const left = size - dots;
-
-            const bar = '='.repeat(dots) + '-'.repeat(left);
-
-            process.stdout.clearLine(0);
-            process.stdout.cursorTo(0);
-            process.stdout.write(`🚀 Uploading: [${bar}] ${percentage}% (${(current / 1024 / 1024).toFixed(2)}MB / ${(total / 1024 / 1024).toFixed(2)}MB)`);
-
-            if (current >= total) {
-              startDriveSpinner();
+      const httpModule = apiUrl.protocol === 'https:' ? https : http;
+      const req = httpModule.request(reqOptions, (res) => {
+        let responseBody = '';
+        res.on('data', (chunk) => {
+          responseBody += chunk;
+        });
+        res.on('end', () => {
+          stopDriveSpinner();
+          try {
+            const parsedData = JSON.parse(responseBody);
+            if (res.statusCode === 201 && parsedData.status === 'success') {
+              const release = parsedData.data.release;
+              console.log(chalk.green('\n✅ Release uploaded successfully!'));
+              console.log(`Version: ${chalk.bold(release.version)} (Build #${chalk.bold(release.buildNumber)})`);
+            } else {
+              console.error(chalk.red(`\nUpload failed: ${parsedData.message || 'Unknown error'}`));
             }
+          } catch (e) {
+            console.error(chalk.red(`\nUpload failed: Status ${res.statusCode}. ${responseBody || 'Invalid JSON response'}`));
           }
         });
+      });
 
+      req.on('error', (error) => {
         stopDriveSpinner();
-        const release = response.data.data.release;
-        console.log(chalk.green('✅ Release uploaded successfully!'));
-        console.log(`Version: ${chalk.bold(release.version)} (Build #${chalk.bold(release.buildNumber)})`);
-      } catch (error) {
-        stopDriveSpinner();
-        console.error(chalk.red('\nUpload failed:'), error.response?.data?.message || error.message);
-      }
+        console.error(chalk.red('\nUpload failed:'), error.message);
+      });
+
+      form.pipe(req);
     });
   });
 
