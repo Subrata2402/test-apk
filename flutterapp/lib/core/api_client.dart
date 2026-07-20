@@ -1,31 +1,57 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'storage_service.dart';
 import 'constants.dart';
 
 class ApiClient {
-  ApiClient._();
+  late final Dio _dio;
+
+  ApiClient._() {
+    _dio = Dio(BaseOptions(
+      baseUrl: kApiBaseUrl,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    ));
+
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) async {
+        final token = await StorageService.instance.getToken();
+        if (token != null) {
+          options.headers['Authorization'] = 'Bearer $token';
+        }
+        return handler.next(options);
+      },
+    ));
+
+    _dio.interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseBody: true,
+      responseHeader: false,
+      error: true,
+      compact: true,
+      maxWidth: 90,
+    ));
+  }
+
   static final ApiClient instance = ApiClient._();
 
   String get baseUrl => kApiBaseUrl;
 
-  Future<Map<String, String>> _headers() async {
-    final token = await StorageService.instance.getToken();
-    return {'Content-Type': 'application/json', if (token != null) 'Authorization': 'Bearer $token'};
+  Dio get dio => _dio;
+
+  Future<Response> get(String path) async {
+    return _dio.get(path);
   }
 
-  Future<http.Response> get(String path) async {
-    final headers = await _headers();
-    return http.get(Uri.parse('$kApiBaseUrl$path'), headers: headers);
+  Future<Response> post(String path, Map<String, dynamic> body) async {
+    return _dio.post(path, data: body);
   }
 
-  Future<http.Response> post(String path, Map<String, dynamic> body) async {
-    final headers = await _headers();
-    return http.post(Uri.parse('$kApiBaseUrl$path'), headers: headers, body: jsonEncode(body));
-  }
-
-  Future<http.Response> delete(String path) async {
-    final headers = await _headers();
-    return http.delete(Uri.parse('$kApiBaseUrl$path'), headers: headers);
+  Future<Response> delete(String path) async {
+    return _dio.delete(path);
   }
 }

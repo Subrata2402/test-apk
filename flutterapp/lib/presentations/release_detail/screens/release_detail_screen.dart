@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
@@ -60,7 +61,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
     final dateStr = release.date.isNotEmpty ? _formatDate(release.date) : kUnknownDate;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: AppColors.bg3,
       body: Stack(
         children: [
           // Background gradient
@@ -69,7 +70,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF2D1B69), Color(0xFF11244D), Color(0xFF0A1628)],
+                colors: [AppColors.bg1, AppColors.bg2, AppColors.bg3],
                 stops: [0.0, 0.55, 1.0],
               ),
             ),
@@ -79,12 +80,12 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
           Positioned(
             top: -context.scale(100),
             left: -context.scale(80),
-            child: Orb(size: context.scale(300), color: const Color(0xFF7C3AED).withValues(alpha: 0.35)),
+            child: Orb(size: context.scale(300), color: AppColors.orb1.withValues(alpha: 0.35)),
           ),
           Positioned(
             bottom: -context.scale(60),
             right: -context.scale(60),
-            child: Orb(size: context.scale(240), color: const Color(0xFFEC4899).withValues(alpha: 0.22)),
+            child: Orb(size: context.scale(240), color: AppColors.orb3.withValues(alpha: 0.22)),
           ),
 
           // Content
@@ -127,6 +128,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                   ),
                 ),
               ),
+              SizedBox(height: context.scale(20)),
 
               // Scrollable body
               Expanded(
@@ -164,16 +166,16 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                                 height: context.scale(56),
                                 margin: EdgeInsets.only(right: context.scale(16)),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF8B5CF6).withValues(alpha: 0.18),
+                                  color: AppColors.accent.withValues(alpha: 0.18),
                                   borderRadius: BorderRadius.circular(context.scale(14)),
                                   border: Border.all(
-                                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.30),
+                                    color: AppColors.accent.withValues(alpha: 0.30),
                                     width: 0.8,
                                   ),
                                 ),
                                 child: Icon(
                                   Icons.android_rounded,
-                                  color: const Color(0xFFDDD6FE),
+                                  color: AppColors.accentLight,
                                   size: context.scale(32),
                                 ),
                               ),
@@ -231,10 +233,10 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                                 width: context.scale(38),
                                 height: context.scale(38),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF06B6D4).withValues(alpha: 0.15),
+                                  color: AppColors.orb2.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: const Color(0xFF06B6D4).withValues(alpha: 0.30),
+                                    color: AppColors.orb2.withValues(alpha: 0.30),
                                     width: 0.8,
                                   ),
                                 ),
@@ -246,7 +248,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                                     style: GoogleFonts.inter(
                                       fontSize: context.scale(11),
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF22D3EE),
+                                      color: AppColors.orb2,
                                     ),
                                   ),
                                 ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/glass_button.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,14 +26,14 @@ class AppListError extends StatelessWidget {
             SizedBox(height: context.scale(16)),
             Text(
               error,
-              style: GoogleFonts.inter(color: IosTheme.textSecondary, fontSize: context.scale(14)),
+              style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: context.scale(14)),
               textAlign: TextAlign.center,
             ),
             SizedBox(height: context.scale(20)),
             GlassButton(
               label: kRetryBtnLabel,
               onPressed: onRetry,
-              gradient: const LinearGradient(colors: [Color(0xFF8B5CF6), Color(0xFF6D28D9)]),
+              gradient: const LinearGradient(colors: [AppColors.accent, AppColors.accentDark]),
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/utils/extensions.dart';
 
 class SplashLogo extends StatelessWidget {
@@ -24,7 +25,7 @@ class SplashLogo extends StatelessWidget {
             border: Border.all(color: Colors.white.withValues(alpha: 0.40), width: 1),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF7C3AED).withValues(alpha: 0.55),
+                color: AppColors.orb1.withValues(alpha: 0.55),
                 blurRadius: context.scale(40),
                 spreadRadius: -4,
                 offset: Offset(0, context.scale(10)),
@@ -34,7 +35,7 @@ class SplashLogo extends StatelessWidget {
           child: Center(
             child: ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                colors: [Color(0xFFDDD6FE), Color(0xFFFFFFFF)],
+                colors: [AppColors.accentLight, Colors.white],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ).createShader(bounds),

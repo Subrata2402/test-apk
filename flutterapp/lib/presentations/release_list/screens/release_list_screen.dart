@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/core/api_service.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/presentations/release_detail/screens/release_detail_screen.dart';
@@ -31,9 +31,9 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
 
   Future<void> _refreshAppDetails() async {
     try {
-      final response = await ApiClient.instance.get('/apps');
+      final response = await ApiService.instance.getApps();
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final body = response.data as Map<String, dynamic>;
         final list = body['data']['apps'] as List;
         final apps = list.map((a) => AppModel.fromJson(a as Map<String, dynamic>)).toList();
         final updatedApp = apps.firstWhere((a) => a.id == _app.id, orElse: () => _app);
@@ -47,7 +47,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: const Color(0xFF0A1628),
+        backgroundColor: AppColors.bg3,
         body: Stack(
           children: [
             Container(
@@ -55,7 +55,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFF2D1B69), Color(0xFF11244D), Color(0xFF0A1628)],
+                  colors: [AppColors.bg1, AppColors.bg2, AppColors.bg3],
                   stops: [0.0, 0.55, 1.0],
                 ),
               ),
@@ -63,12 +63,12 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
             Positioned(
               top: -context.scale(120),
               right: -context.scale(80),
-              child: Orb(size: context.scale(300), color: const Color(0xFF7C3AED).withValues(alpha: 0.35)),
+              child: Orb(size: context.scale(300), color: AppColors.orb1.withValues(alpha: 0.35)),
             ),
             Positioned(
               bottom: -context.scale(60),
               left: -context.scale(60),
-              child: Orb(size: context.scale(260), color: const Color(0xFF06B6D4).withValues(alpha: 0.22)),
+              child: Orb(size: context.scale(260), color: AppColors.orb2.withValues(alpha: 0.22)),
             ),
             Column(
               children: [
@@ -112,7 +112,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                               ),
                             ),
                             TabBar(
-                              indicatorColor: const Color(0xFF8B5CF6),
+                              indicatorColor: AppColors.accent,
                               indicatorWeight: 2,
                               labelColor: Colors.white,
                               unselectedLabelColor: Colors.white.withValues(alpha: 0.40),
@@ -134,7 +134,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                     children: [
                       RefreshIndicator(
                         onRefresh: _refreshAppDetails,
-                        color: const Color(0xFF8B5CF6),
+                        color: AppColors.accent,
                         child: CustomScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           slivers: [
@@ -186,7 +186,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                       ),
                       RefreshIndicator(
                         onRefresh: _refreshAppDetails,
-                        color: const Color(0xFF8B5CF6),
+                        color: AppColors.accent,
                         child: CustomScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           slivers: [

@@ -1,0 +1,1457 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-site-verification" content="iGXkUnJnXGA00NUGx6kszAFA02wrQXgs_vRFnmLKKTk" />
+    <title>TestAPK</title>
+
+    <meta
+      name="description"
+      content="TestAPK is a secure APK distribution platform for Android developers. Developers use Google Sign-In to connect their Google Drive, upload APKs, manage releases, and share builds with testers."
+    />
+
+    <meta property="og:title" content="TestAPK" />
+    <meta property="og:description" content="Secure APK distribution platform." />
+    <script type="module" crossorigin src="/assets/index-CEZtaNC5.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-QTnfLwEv.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-libs-DjDK5o4-.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-react-zT8w_uwX.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-B9BHhSCv.css">
+
+    <style>
+      /* ==========================
+   RESET
+========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Inter,Arial,sans-serif;
+    color:#1f2937;
+    background:#ffffff;
+    line-height:1.7;
+}
+
+img{
+    max-width:100%;
+    display:block;
+}
+
+a{
+    text-decoration:none;
+}
+
+ul{
+    padding-left:22px;
+}
+
+section{
+    padding:90px 0;
+}
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:auto;
+}
+
+/* ==========================
+   HEADER
+========================== */
+
+header{
+    position:sticky;
+    top:0;
+    background:#fff;
+    border-bottom:1px solid #e5e7eb;
+    z-index:100;
+}
+
+.navbar{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    height:75px;
+
+}
+
+.logo{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    font-size:24px;
+    font-weight:700;
+
+}
+
+.logo img{
+
+    width:45px;
+    height:45px;
+    border-radius:10px;
+
+}
+
+nav{
+
+    display:flex;
+    gap:28px;
+
+}
+
+nav a{
+
+    color:#374151;
+    font-weight:500;
+    transition:.3s;
+
+}
+
+nav a:hover{
+
+    color:#2563eb;
+
+}
+
+/* ==========================
+   HERO
+========================== */
+
+.hero{
+
+    padding:100px 0;
+
+}
+
+.hero-grid{
+
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:70px;
+    align-items:center;
+
+}
+
+.badge{
+
+    display:inline-block;
+
+    background:#dbeafe;
+
+    color:#2563eb;
+
+    padding:8px 16px;
+
+    border-radius:40px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    margin-bottom:25px;
+
+}
+
+.hero h1{
+
+    font-size:64px;
+
+    line-height:1.1;
+
+    margin-bottom:20px;
+
+    color:#111827;
+
+}
+
+.hero h2{
+
+    font-size:28px;
+
+    color:#374151;
+
+    font-weight:600;
+
+    margin-bottom:25px;
+
+}
+
+.hero p{
+
+    font-size:18px;
+
+    color:#6b7280;
+
+    margin-bottom:35px;
+
+}
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:20px;
+
+    flex-wrap:wrap;
+
+}
+
+/* ==========================
+   BUTTONS
+========================== */
+
+.btn{
+
+    display:inline-block;
+
+    padding:15px 30px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.primary{
+
+    background:#2563eb;
+
+    color:white;
+
+}
+
+.primary:hover{
+
+    background:#1d4ed8;
+
+}
+
+.secondary{
+
+    border:2px solid #2563eb;
+
+    color:#2563eb;
+
+}
+
+.secondary:hover{
+
+    background:#2563eb;
+
+    color:white;
+
+}
+
+.hero-image{
+
+    border-radius:18px;
+
+    box-shadow:0 20px 50px rgba(0,0,0,.12);
+
+}
+
+/* ==========================
+   SECTIONS
+========================== */
+
+.light{
+
+    background:#f8fafc;
+
+}
+
+.section-title{
+
+    text-align:center;
+
+    margin-bottom:60px;
+
+}
+
+.section-title h2{
+
+    font-size:42px;
+
+    color:#111827;
+
+    margin-bottom:18px;
+
+}
+
+.section-title p{
+
+    color:#6b7280;
+
+    max-width:720px;
+
+    margin:auto;
+
+}
+
+/* ==========================
+   GRIDS
+========================== */
+
+.grid-2{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:30px;
+
+}
+
+.cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:30px;
+
+}
+
+.purpose-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:35px;
+
+}
+
+/* ==========================
+   CARD
+========================== */
+
+.card{
+
+    background:#fff;
+
+    padding:35px;
+
+    border-radius:16px;
+
+    border:1px solid #e5e7eb;
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-6px);
+
+    box-shadow:0 15px 35px rgba(0,0,0,.08);
+
+}
+
+.card h3{
+
+    font-size:24px;
+
+    margin-bottom:18px;
+
+    color:#111827;
+
+}
+
+.card p{
+
+    color:#6b7280;
+
+}
+
+.card li{
+
+    margin-bottom:12px;
+
+    color:#4b5563;
+
+}
+
+/* ==========================
+   HOW IT WORKS
+========================== */
+
+.steps{
+
+    display:grid;
+
+    grid-template-columns:repeat(5,1fr);
+
+    gap:25px;
+
+}
+
+.step{
+
+    background:#fff;
+
+    text-align:center;
+
+    padding:35px 20px;
+
+    border-radius:16px;
+
+    border:1px solid #e5e7eb;
+
+}
+
+.step span{
+
+    width:60px;
+
+    height:60px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    margin:auto;
+
+    margin-bottom:20px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+.step h3{
+
+    margin-bottom:15px;
+
+}
+
+.step p{
+
+    color:#6b7280;
+
+}
+
+/* ==========================
+   SCREENSHOT GALLERY
+========================== */
+
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px;
+}
+
+.gallery img{
+    width:100%;
+    height:520px;
+    object-fit:cover;
+    border-radius:16px;
+    border:1px solid #e5e7eb;
+    transition:.35s;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.gallery img:hover{
+    transform:translateY(-8px) scale(1.02);
+    box-shadow:0 18px 35px rgba(0,0,0,.15);
+}
+
+/* ==========================
+   SPECIFICATION TABLE
+========================== */
+
+.spec-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 8px 24px rgba(0,0,0,.05);
+}
+
+.spec-table th,
+.spec-table td{
+    padding:20px 25px;
+    border-bottom:1px solid #e5e7eb;
+    text-align:left;
+}
+
+.spec-table th{
+    width:280px;
+    background:#f8fafc;
+    color:#111827;
+}
+
+.spec-table td{
+    color:#4b5563;
+}
+
+.spec-table tr:last-child td,
+.spec-table tr:last-child th{
+    border-bottom:none;
+}
+
+/* ==========================
+   RELEASE CARD
+========================== */
+
+.release-card{
+    text-align:center;
+    max-width:700px;
+    margin:auto;
+}
+
+.release-card h3{
+    font-size:34px;
+    margin-bottom:20px;
+}
+
+.release-card p{
+    margin-bottom:35px;
+    font-size:18px;
+}
+
+/* ==========================
+   FOOTER
+========================== */
+
+footer{
+    background:#111827;
+    color:#fff;
+    margin-top:80px;
+}
+
+.footer{
+    padding:70px 0;
+    display:flex;
+    justify-content:space-between;
+    gap:80px;
+}
+
+.footer h3{
+    margin-bottom:15px;
+}
+
+.footer p{
+    color:#cbd5e1;
+}
+
+.footer a{
+    display:block;
+    margin-bottom:15px;
+    color:#cbd5e1;
+    transition:.3s;
+}
+
+.footer a:hover{
+    color:#60a5fa;
+}
+
+.copyright{
+    border-top:1px solid rgba(255,255,255,.08);
+    padding:25px;
+    text-align:center;
+    color:#94a3b8;
+    font-size:15px;
+}
+
+/* ==========================
+   UTILITIES
+========================== */
+
+.card ul{
+    margin-top:18px;
+}
+
+.card li{
+    line-height:1.8;
+}
+
+h1,h2,h3,h4{
+    font-weight:700;
+}
+
+strong{
+    color:#111827;
+}
+
+/* ==========================
+   SIMPLE ANIMATION
+========================== */
+
+.hero,
+section{
+    animation:fadeUp .8s ease;
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+/* ==========================
+   TABLET
+========================== */
+
+@media (max-width:992px){
+
+    .hero-grid{
+        grid-template-columns:1fr;
+        text-align:center;
+    }
+
+    .hero-buttons{
+        justify-content:center;
+    }
+
+    .cards{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .gallery{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .steps{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width:768px){
+
+    header{
+        position:relative;
+    }
+
+    .navbar{
+        flex-direction:column;
+        height:auto;
+        padding:20px 0;
+    }
+
+    nav{
+        margin-top:20px;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:16px;
+    }
+
+    .hero{
+        padding:70px 0;
+    }
+
+    .hero h1{
+        font-size:44px;
+    }
+
+    .hero h2{
+        font-size:24px;
+    }
+
+    .hero p{
+        font-size:16px;
+    }
+
+    .grid-2,
+    .purpose-grid,
+    .cards,
+    .steps,
+    .gallery{
+        grid-template-columns:1fr;
+    }
+
+    .gallery img{
+        height:auto;
+    }
+
+    .footer{
+        flex-direction:column;
+        text-align:center;
+        gap:40px;
+    }
+
+    .spec-table th,
+    .spec-table td{
+        display:block;
+        width:100%;
+    }
+
+    .spec-table tr{
+        display:block;
+        margin-bottom:20px;
+        border:1px solid #e5e7eb;
+        border-radius:12px;
+        overflow:hidden;
+    }
+
+}
+
+/* ==========================
+   LARGE DESKTOP
+========================== */
+
+@media (min-width:1400px){
+
+    .container{
+        max-width:1300px;
+    }
+
+}
+    </style>
+  </head>
+  <body>
+    <header>
+
+    <div class="container navbar">
+
+        <div class="logo">
+
+            <img src="images/logo.png">
+
+            <span>TestAPK</span>
+
+        </div>
+
+        <nav>
+
+            <a href="#purpose">Purpose</a>
+            <a href="#how">How It Works</a>
+            <a href="#oauth">Google OAuth</a>
+            <a href="#security">Security</a>
+            <a href="#contact">Contact</a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="container hero-grid">
+
+        <div>
+
+            <span class="badge">
+
+                Private Android App Distribution Platform
+
+            </span>
+
+            <h1>TestAPK</h1>
+
+            <h2>
+                Securely upload, manage and distribute Android APKs using your own Google Drive.
+            </h2>
+
+            <p>
+
+                TestAPK is designed for Android developers and QA teams who
+                need a secure way to privately distribute APK files to
+                authorized testers without relying on third-party hosting
+                services.
+
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#" class="btn primary">
+
+                    Download Android App
+
+                </a>
+
+                <a href="#" class="btn secondary">
+
+                    Developer Login
+
+                </a>
+
+            </div>
+
+        </div>
+
+        <div>
+
+            <img src="images/dashboard.png"
+                 class="hero-image">
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= PURPOSE ================= -->
+
+<section id="purpose">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>What is TestAPK?</h2>
+
+            <p>
+
+                TestAPK is a secure Android application distribution platform
+                built for software developers and QA teams.
+
+            </p>
+
+        </div>
+
+        <div class="purpose-grid">
+
+            <div class="card">
+
+                <h3>For Developers</h3>
+
+                <p>
+
+                    Upload Android APK files through the TestAPK web dashboard.
+                    Every APK is stored directly inside your own Google Drive,
+                    giving you complete ownership and control of your releases.
+
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>For Testers</h3>
+
+                <p>
+
+                    Testers can securely browse available builds,
+                    read release notes,
+                    download APKs,
+                    and install applications directly from the TestAPK Android app.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+
+<section id="how" class="light">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>How TestAPK Works</h2>
+
+        </div>
+
+        <div class="steps">
+
+            <div class="step">
+
+                <span>1</span>
+
+                <h3>Google Sign-In</h3>
+
+                <p>
+
+                    Developer securely signs in using Google OAuth.
+
+                </p>
+
+            </div>
+
+            <div class="step">
+
+                <span>2</span>
+
+                <h3>Connect Google Drive</h3>
+
+                <p>
+
+                    TestAPK creates a dedicated application folder.
+
+                </p>
+
+            </div>
+
+            <div class="step">
+
+                <span>3</span>
+
+                <h3>Upload APK</h3>
+
+                <p>
+
+                    APKs are uploaded securely to the developer's own Drive.
+
+                </p>
+
+            </div>
+
+            <div class="step">
+
+                <span>4</span>
+
+                <h3>Invite Testers</h3>
+
+                <p>
+
+                    Authorized testers receive access to the releases.
+
+                </p>
+
+            </div>
+
+            <div class="step">
+
+                <span>5</span>
+
+                <h3>Install App</h3>
+
+                <p>
+
+                    Testers download and install builds directly from the
+                    companion Android application.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= GOOGLE OAUTH ================= -->
+
+<section id="oauth">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Why Google Sign-In is Required</h2>
+
+            <p>
+
+                TestAPK uses Google Sign-In only for authentication and account
+                management.
+
+            </p>
+
+        </div>
+
+        <div class="grid-2">
+
+            <div class="card">
+
+                <h3>Information We Access</h3>
+
+                <ul>
+
+                    <li>Name</li>
+
+                    <li>Email Address</li>
+
+                    <li>Profile Picture</li>
+
+                </ul>
+
+            </div>
+
+            <div class="card">
+
+                <h3>Why We Need It</h3>
+
+                <ul>
+
+                    <li>Authenticate developers</li>
+
+                    <li>Identify user accounts</li>
+
+                    <li>Personalize dashboard</li>
+
+                    <li>Connect Google Drive</li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= GOOGLE DRIVE ================= -->
+
+<section id="drive" class="light">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Why Google Drive Access is Required</h2>
+
+            <p>
+
+                TestAPK requests only the
+                <strong>Google Drive drive.file</strong>
+                permission.
+
+            </p>
+
+        </div>
+
+        <div class="grid-2">
+
+            <div class="card">
+
+                <h3>What TestAPK Can Do</h3>
+
+                <ul>
+
+                    <li>Create a dedicated <strong>testapk-releases</strong> folder</li>
+
+                    <li>Upload APK files</li>
+
+                    <li>Read APKs uploaded by TestAPK</li>
+
+                    <li>Delete APKs uploaded through TestAPK</li>
+
+                </ul>
+
+            </div>
+
+            <div class="card">
+
+                <h3>What TestAPK Cannot Do</h3>
+
+                <ul>
+
+                    <li>Read personal Google Drive files</li>
+
+                    <li>Access unrelated folders</li>
+
+                    <li>Modify existing documents</li>
+
+                    <li>Share files without your permission</li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= PLATFORM ================= -->
+
+<section id="platform">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Platform Components</h2>
+
+            <p>
+
+                TestAPK includes everything needed to distribute Android
+                applications securely.
+
+            </p>
+
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h3>🌐 Web Dashboard</h3>
+
+                <p>
+
+                    Upload APKs, manage releases,
+                    invite testers,
+                    monitor versions,
+                    and configure Google Drive storage.
+
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>📱 Android App</h3>
+
+                <p>
+
+                    Browse releases,
+                    read release notes,
+                    download APKs,
+                    and install builds directly on Android devices.
+
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>💻 CLI Tool</h3>
+
+                <p>
+
+                    Automate APK uploads directly from
+                    GitHub Actions,
+                    GitLab,
+                    Jenkins,
+                    Azure DevOps,
+                    or any CI/CD pipeline.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= SCREENSHOTS ================= -->
+
+<section class="light">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Application Screenshots</h2>
+
+            <p>
+
+                A quick look at the TestAPK platform.
+
+            </p>
+
+        </div>
+
+        <div class="gallery">
+
+            <img src="images/dashboard.png" alt="Dashboard">
+
+            <img src="images/mobile.png" alt="Android App">
+
+            <img src="images/releases.png" alt="Release History">
+
+            <img src="images/drive.png" alt="Google Drive">
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= TECHNICAL ================= -->
+
+<section>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Technical Information</h2>
+
+        </div>
+
+        <table class="spec-table">
+
+            <tr>
+
+                <th>Application Name</th>
+
+                <td>TestAPK</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Package Name</th>
+
+                <td>com.testapk.app</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Category</th>
+
+                <td>Developer Tools</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Platform</th>
+
+                <td>Android</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Minimum Android</th>
+
+                <td>Android 8.0 (API 26)</td>
+
+            </tr>
+
+            <tr>
+
+                <th>Latest Version</th>
+
+                <td>1.0.0</td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+</section>
+
+<!-- ================= SECURITY ================= -->
+
+<section id="security" class="light">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Security & Privacy</h2>
+
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h3>🔒 Google OAuth</h3>
+
+                <p>
+
+                    Secure authentication using Google's OAuth 2.0 platform.
+
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>🛡 HTTPS Encryption</h3>
+
+                <p>
+
+                    All communication between the application and server is
+                    encrypted using HTTPS.
+
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>✔ SHA-256 Verification</h3>
+
+                <p>
+
+                    APK integrity is verified using SHA-256 checksums before
+                    installation.
+
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>☁ Your Google Drive</h3>
+
+                <p>
+
+                    APK files remain inside your own Google Drive account.
+                    TestAPK does not host your APKs.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= RELEASE ================= -->
+
+<section>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Latest Release</h2>
+
+        </div>
+
+        <div class="card release-card">
+
+            <h3>Version 1.0.0</h3>
+
+            <p>
+
+                Initial release of TestAPK with Google Sign-In,
+                Google Drive integration,
+                APK download,
+                release history,
+                and secure installation.
+
+            </p>
+
+            <a href="#" class="btn primary">
+
+                Download Android App
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= CONTACT ================= -->
+
+<section id="contact" class="light">
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <h2>Contact</h2>
+
+        </div>
+
+        <div class="grid-2">
+
+            <div class="card">
+
+                <h3>Website</h3>
+
+                <p>https://testapk.clipboux.online</p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>Email</h3>
+
+                <p>support@testapk.com</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <div class="container footer">
+
+        <div>
+
+            <h3>TestAPK</h3>
+
+            <p>
+
+                Private Android App Distribution Platform
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <a href="#">Privacy Policy</a>
+
+            <a href="#">Terms of Service</a>
+
+            <a href="#">Contact</a>
+
+        </div>
+
+    </div>
+
+    <div class="copyright">
+
+        © 2026 TestAPK. All Rights Reserved.
+
+    </div>
+
+</footer>
+  </body>
+</html>

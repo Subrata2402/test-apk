@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/core/api_service.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/auth_service.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/user_model.dart';
 import 'package:flutterapp/presentations/app_list/widgets/app_list_app_bar.dart';
@@ -55,11 +53,11 @@ class _AppListScreenState extends State<AppListScreen> {
       _error = null;
     });
     try {
-      final appsResponse = await ApiClient.instance.get('/apps');
-      final invitesResponse = await ApiClient.instance.get('/apps/invitations');
+      final appsResponse = await ApiService.instance.getApps();
+      final invitesResponse = await ApiService.instance.getInvitations();
 
       if (appsResponse.statusCode == 200 && invitesResponse.statusCode == 200) {
-        final appsBody = jsonDecode(appsResponse.body) as Map<String, dynamic>;
+        final appsBody = appsResponse.data as Map<String, dynamic>;
         final appsList = appsBody['data']['apps'] as List;
         final apps = appsList.map((a) => AppModel.fromJson(a as Map<String, dynamic>)).toList();
         apps.sort((a, b) {
@@ -73,7 +71,7 @@ class _AppListScreenState extends State<AppListScreen> {
           return bRelease.buildNumber.compareTo(aRelease.buildNumber);
         });
 
-        final invitesBody = jsonDecode(invitesResponse.body) as Map<String, dynamic>;
+        final invitesBody = invitesResponse.data as Map<String, dynamic>;
         final invitesList = invitesBody['data']['apps'] as List;
         final invitations = invitesList.map((a) => AppModel.fromJson(a as Map<String, dynamic>)).toList();
 
@@ -99,23 +97,23 @@ class _AppListScreenState extends State<AppListScreen> {
   Future<void> _acceptInvitation(String appId) async {
     setState(() => _processingActions[appId] = 'accept');
     try {
-      final response = await ApiClient.instance.post('/apps/$appId/invitations/accept', {});
+      final response = await ApiService.instance.acceptInvitation(appId);
       if (!mounted) return;
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text(kInviteAcceptedMsg), backgroundColor: Color(0xFF10B981)));
+        ).showSnackBar(const SnackBar(content: Text(kInviteAcceptedMsg), backgroundColor: AppColors.success));
         _fetchData();
       } else {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text(kInviteAcceptFailedMsg), backgroundColor: Colors.red));
+        ).showSnackBar(const SnackBar(content: Text(kInviteAcceptFailedMsg), backgroundColor: AppColors.error));
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
+      ).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: AppColors.error));
     } finally {
       if (mounted) setState(() => _processingActions.remove(appId));
     }
@@ -124,23 +122,23 @@ class _AppListScreenState extends State<AppListScreen> {
   Future<void> _rejectInvitation(String appId) async {
     setState(() => _processingActions[appId] = 'reject');
     try {
-      final response = await ApiClient.instance.post('/apps/$appId/invitations/reject', {});
+      final response = await ApiService.instance.rejectInvitation(appId);
       if (!mounted) return;
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text(kInviteRejectedMsg), backgroundColor: Colors.orange));
+        ).showSnackBar(const SnackBar(content: Text(kInviteRejectedMsg), backgroundColor: AppColors.warning));
         _fetchData();
       } else {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text(kInviteRejectFailedMsg), backgroundColor: Colors.red));
+        ).showSnackBar(const SnackBar(content: Text(kInviteRejectFailedMsg), backgroundColor: AppColors.error));
       }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: Colors.red));
+      ).showSnackBar(SnackBar(content: Text('$kErrorPrefix$e'), backgroundColor: AppColors.error));
     } finally {
       if (mounted) setState(() => _processingActions.remove(appId));
     }
@@ -155,7 +153,7 @@ class _AppListScreenState extends State<AppListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: IosTheme.bg3,
+      backgroundColor: AppColors.bg3,
       body: Stack(
         children: [
           // Gradient background
@@ -164,7 +162,7 @@ class _AppListScreenState extends State<AppListScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [IosTheme.bg1, IosTheme.bg2, IosTheme.bg3],
+                colors: [AppColors.bg1, AppColors.bg2, AppColors.bg3],
                 stops: [0.0, 0.55, 1.0],
               ),
             ),
@@ -174,17 +172,17 @@ class _AppListScreenState extends State<AppListScreen> {
           Positioned(
             top: -context.scale(140),
             left: -context.scale(100),
-            child: Orb(size: context.scale(360), color: IosTheme.orb1.withValues(alpha: 0.38)),
+            child: Orb(size: context.scale(360), color: AppColors.orb1.withValues(alpha: 0.38)),
           ),
           Positioned(
             top: context.scale(200),
             right: -context.scale(80),
-            child: Orb(size: context.scale(250), color: IosTheme.orb4.withValues(alpha: 0.28)),
+            child: Orb(size: context.scale(250), color: AppColors.orb4.withValues(alpha: 0.28)),
           ),
           Positioned(
             bottom: -context.scale(80),
             left: -context.scale(50),
-            child: Orb(size: context.scale(280), color: IosTheme.orb3.withValues(alpha: 0.22)),
+            child: Orb(size: context.scale(280), color: AppColors.orb3.withValues(alpha: 0.22)),
           ),
 
           // Main content
@@ -196,7 +194,7 @@ class _AppListScreenState extends State<AppListScreen> {
                   top: false,
                   child: RefreshIndicator(
                     onRefresh: _fetchData,
-                    color: IosTheme.accent,
+                    color: AppColors.accent,
                     child: _isLoading
                         ? const AppListShimmer()
                         : _error != null

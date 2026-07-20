@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/glass_panel.dart';
@@ -27,9 +28,9 @@ class MemberCard extends StatelessWidget {
             width: context.scale(42),
             height: context.scale(42),
             decoration: BoxDecoration(
-              color: const Color(0xFF06B6D4).withValues(alpha: 0.15),
+              color: AppColors.orb2.withValues(alpha: 0.15),
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF06B6D4).withValues(alpha: 0.30), width: 0.8),
+              border: Border.all(color: AppColors.orb2.withValues(alpha: 0.30), width: 0.8),
             ),
             child: Center(
               child: Text(
@@ -37,7 +38,7 @@ class MemberCard extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: context.scale(13),
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF22D3EE),
+                  color: AppColors.orb2,
                 ),
               ),
             ),
@@ -71,9 +72,9 @@ class MemberCard extends StatelessWidget {
                       SizedBox(width: context.scale(8)),
                       TagChip(
                         label: 'Pending',
-                        color: const Color(0xFFFCD34D),
-                        bg: const Color(0xFFF59E0B).withValues(alpha: 0.15),
-                        border: const Color(0xFFF59E0B).withValues(alpha: 0.30),
+                        color: AppColors.warning,
+                        bg: AppColors.warning.withValues(alpha: 0.15),
+                        border: AppColors.warning.withValues(alpha: 0.30),
                       ),
                     ],
                   ],

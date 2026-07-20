@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/firebase_options.dart';
 import 'package:flutterapp/notification_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,13 +30,13 @@ class TestApkApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        colorScheme: ColorScheme.dark(
-          primary: const Color(0xFF8B5CF6),
-          secondary: const Color(0xFF6D28D9),
-          surface: const Color(0xFF0F0F19),
-          error: Colors.red.shade400,
+        colorScheme: const ColorScheme.dark(
+          primary: AppColors.primary,
+          secondary: AppColors.primaryDark,
+          surface: AppColors.surface,
+          error: AppColors.error,
         ),
-        scaffoldBackgroundColor: const Color(0xFF080710),
+        scaffoldBackgroundColor: AppColors.background,
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.transparent,

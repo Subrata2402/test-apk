@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapp/core/ios_theme.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/utils/extensions.dart';
 
 class LoginSeparator extends StatelessWidget {
@@ -8,6 +8,6 @@ class LoginSeparator extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: EdgeInsets.symmetric(vertical: context.scale(13)),
-    child: Container(height: 0.5, color: IosTheme.glass.withValues(alpha: 0.18)),
+    child: Container(height: 0.5, color: AppColors.glass.withValues(alpha: 0.18)),
   );
 }

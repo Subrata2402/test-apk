@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -22,13 +22,13 @@ class AppListEmpty extends StatelessWidget {
             Text(
               kAppListEmptyTitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: IosTheme.textSecondary, fontSize: context.scale(15), letterSpacing: -0.2),
+              style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: context.scale(15), letterSpacing: -0.2),
             ),
             SizedBox(height: context.scale(8)),
             Text(
               kAppListEmptySubtitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: IosTheme.textTertiary, fontSize: context.scale(13)),
+              style: GoogleFonts.inter(color: AppColors.textTertiary, fontSize: context.scale(13)),
             ),
           ],
         ),

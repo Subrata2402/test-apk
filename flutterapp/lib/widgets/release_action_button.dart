@@ -2,15 +2,14 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterapp/core/api_client.dart';
+import 'package:flutterapp/core/api_service.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/storage_service.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
 
 class ReleaseActionButton extends StatefulWidget {
   final AppModel app;
@@ -154,13 +153,20 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
     });
 
     try {
-      final token = await StorageService.instance.getToken();
-      final url = '${ApiClient.instance.baseUrl}/apps/${widget.app.id}/releases/${widget.release.buildNumber}/download';
+      final file = await _getApkFile();
 
-      final request = http.Request('GET', Uri.parse(url));
-      request.headers['Authorization'] = 'Bearer $token';
-
-      final response = await request.send();
+      final response = await ApiService.instance.downloadRelease(
+        widget.app.id,
+        widget.release.buildNumber,
+        file.path,
+        (received, total) {
+          if (total > 0 && mounted) {
+            setState(() {
+              _downloadProgress = received / total;
+            });
+          }
+        },
+      );
 
       if (response.statusCode != 200) {
         if (widget.compact && mounted) {
@@ -181,48 +187,6 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
         });
         return;
       }
-
-      int contentLength = response.contentLength ?? 0;
-      if (contentLength == 0) {
-        final contentLengthHeader = response.headers.entries
-            .firstWhere((e) => e.key.toLowerCase() == 'content-length', orElse: () => const MapEntry('', ''))
-            .value;
-        if (contentLengthHeader.isNotEmpty) {
-          contentLength = int.tryParse(contentLengthHeader) ?? 0;
-        }
-      }
-
-      if (contentLength == 0 && widget.release.size.isNotEmpty) {
-        final sizeStr = widget.release.size.toLowerCase();
-        final parts = sizeStr.trim().split(RegExp(r'\s+'));
-        if (parts.length == 2) {
-          final val = double.tryParse(parts[0]) ?? 0.0;
-          final unit = parts[1];
-          if (unit.contains('mb')) {
-            contentLength = (val * 1024 * 1024).toInt();
-          } else if (unit.contains('kb')) {
-            contentLength = (val * 1024).toInt();
-          } else if (unit.contains('gb')) {
-            contentLength = (val * 1024 * 1024 * 1024).toInt();
-          }
-        }
-      }
-
-      int received = 0;
-      final List<int> bytes = [];
-
-      await for (final chunk in response.stream) {
-        bytes.addAll(chunk);
-        received += chunk.length;
-        if (contentLength > 0 && mounted) {
-          setState(() {
-            _downloadProgress = received / contentLength;
-          });
-        }
-      }
-
-      final file = await _getApkFile();
-      await file.writeAsBytes(bytes);
 
       if (mounted) {
         setState(() {
@@ -303,18 +267,18 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
 
   Color _getButtonColor() {
     if (_isDownloading) {
-      return const Color(0xFF8B5CF6); // Purple/Indigo
+      return AppColors.accent; // Purple/Indigo
     }
     if (_isInstalling) {
-      return const Color(0xFF3B82F6); // Blue
+      return AppColors.info; // Blue
     }
     if (_isAppInstalled) {
       if (_isUpdateAvailable) {
-        return _isDownloaded ? const Color(0xFFF59E0B) : const Color(0xFF8B5CF6); // Amber or Purple
+        return _isDownloaded ? AppColors.warning : AppColors.accent; // Amber or Purple
       }
-      return const Color(0xFF10B981); // Green (Open)
+      return AppColors.success; // Green (Open)
     }
-    return _isDownloaded ? const Color(0xFFF59E0B) : const Color(0xFF3B82F6); // Amber or Blue
+    return _isDownloaded ? AppColors.warning : AppColors.info; // Amber or Blue
   }
 
   String _getButtonText() {

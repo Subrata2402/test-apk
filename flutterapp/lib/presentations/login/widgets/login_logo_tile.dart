@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutterapp/core/ios_theme.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/utils/extensions.dart';
 
 class LoginLogoTile extends StatelessWidget {
@@ -20,12 +20,12 @@ class LoginLogoTile extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [IosTheme.glass.withValues(alpha: 0.30), IosTheme.glass.withValues(alpha: 0.10)],
+              colors: [AppColors.glass.withValues(alpha: 0.30), AppColors.glass.withValues(alpha: 0.10)],
             ),
-            border: Border.all(color: IosTheme.glass.withValues(alpha: 0.45), width: 1),
+            border: Border.all(color: AppColors.glass.withValues(alpha: 0.45), width: 1),
             boxShadow: [
               BoxShadow(
-                color: IosTheme.orb1.withValues(alpha: 0.50),
+                color: AppColors.orb1.withValues(alpha: 0.50),
                 blurRadius: context.scale(32),
                 spreadRadius: -4,
                 offset: Offset(0, context.scale(8)),

@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/core/app_colors.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -29,7 +28,7 @@ class LoginSignInButton extends StatelessWidget {
                   : [AppColors.primary.withValues(alpha: 0.90), AppColors.primaryDark],
             ),
             borderRadius: BorderRadius.circular(context.scale(16)),
-            border: Border.all(color: IosTheme.glass.withValues(alpha: 0.35), width: 0.8),
+            border: Border.all(color: AppColors.glass.withValues(alpha: 0.35), width: 0.8),
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withValues(alpha: isLoading ? 0.15 : 0.50),
@@ -43,7 +42,7 @@ class LoginSignInButton extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               onTap: onPressed,
-              splashColor: IosTheme.glass.withValues(alpha: 0.10),
+              splashColor: AppColors.glass.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(context.scale(16)),
               child: Center(
                 child: Row(

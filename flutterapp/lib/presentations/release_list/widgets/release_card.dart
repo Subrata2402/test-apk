@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -28,16 +29,16 @@ class ReleaseCard extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF8B5CF6).withValues(alpha: 0.25),
-                    const Color(0xFF6D28D9).withValues(alpha: 0.15),
+                    AppColors.accent.withValues(alpha: 0.25),
+                    AppColors.accentDark.withValues(alpha: 0.15),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(context.scale(11)),
-                border: Border.all(color: const Color(0xFF8B5CF6).withValues(alpha: 0.30), width: 0.8),
+                border: Border.all(color: AppColors.accent.withValues(alpha: 0.30), width: 0.8),
               ),
-              child: Icon(Icons.android, color: const Color(0xFFDDD6FE), size: context.scale(24)),
+              child: Icon(Icons.android, color: AppColors.accentLight, size: context.scale(24)),
             ),
             SizedBox(width: context.scale(14)),
             Expanded(

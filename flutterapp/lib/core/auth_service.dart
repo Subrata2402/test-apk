@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'api_client.dart';
+import 'api_service.dart';
 import 'storage_service.dart';
 import '../models/user_model.dart';
 import '../notification_manager.dart';
@@ -27,10 +26,10 @@ class AuthService {
       if (idToken == null) return null;
 
       // Exchange idToken for our JWT
-      final response = await ApiClient.instance.post('/auth/google', {'idToken': idToken});
+      final response = await ApiService.instance.loginWithGoogle(idToken);
 
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final body = response.data as Map<String, dynamic>;
         final token = body['token'] as String;
         await StorageService.instance.saveToken(token);
         _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
@@ -50,9 +49,9 @@ class AuthService {
     if (token == null) return null;
 
     try {
-      final response = await ApiClient.instance.get('/users/me');
+      final response = await ApiService.instance.getUserProfile();
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final body = response.data as Map<String, dynamic>;
         _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
         // Send FCM token to server
         await NotificationManager.sendTokenToServer();

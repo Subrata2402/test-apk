@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/auth_service.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/user_model.dart';
 import 'package:flutterapp/presentations/login/screens/login_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -21,7 +21,7 @@ class ProfileScreen extends StatelessWidget {
       builder: (ctx) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
         child: AlertDialog(
-          backgroundColor: const Color(0xFF1A2440),
+          backgroundColor: AppColors.bg3,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: Text(
             'Sign Out',
@@ -56,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: IosTheme.bg3,
+      backgroundColor: AppColors.bg3,
       body: Stack(
         children: [
           // Gradient background
@@ -65,7 +65,7 @@ class ProfileScreen extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [IosTheme.bg1, IosTheme.bg2, IosTheme.bg3],
+                colors: [AppColors.bg1, AppColors.bg2, AppColors.bg3],
                 stops: [0.0, 0.55, 1.0],
               ),
             ),
@@ -75,12 +75,12 @@ class ProfileScreen extends StatelessWidget {
           Positioned(
             top: -context.scale(120),
             left: -context.scale(80),
-            child: Orb(size: context.scale(300), color: IosTheme.orb1.withValues(alpha: 0.30)),
+            child: Orb(size: context.scale(300), color: AppColors.orb1.withValues(alpha: 0.30)),
           ),
           Positioned(
             bottom: -context.scale(60),
             right: -context.scale(60),
-            child: Orb(size: context.scale(240), color: IosTheme.orb4.withValues(alpha: 0.22)),
+            child: Orb(size: context.scale(240), color: AppColors.orb4.withValues(alpha: 0.22)),
           ),
 
           // Content
@@ -113,7 +113,7 @@ class ProfileScreen extends StatelessWidget {
                                 style: GoogleFonts.inter(
                                   fontSize: context.scale(18),
                                   fontWeight: FontWeight.w700,
-                                  color: IosTheme.textPrimary,
+                                  color: AppColors.textPrimary,
                                   letterSpacing: -0.5,
                                 ),
                               ),
@@ -142,7 +142,7 @@ class ProfileScreen extends StatelessWidget {
                         style: GoogleFonts.inter(
                           fontSize: context.scale(22),
                           fontWeight: FontWeight.w700,
-                          color: IosTheme.textPrimary,
+                          color: AppColors.textPrimary,
                           letterSpacing: -0.5,
                         ),
                         textAlign: TextAlign.center,
@@ -152,7 +152,7 @@ class ProfileScreen extends StatelessWidget {
                       // Email
                       Text(
                         user.email,
-                        style: GoogleFonts.inter(fontSize: context.scale(14), color: IosTheme.textSecondary),
+                        style: GoogleFonts.inter(fontSize: context.scale(14), color: AppColors.textSecondary),
                         textAlign: TextAlign.center,
                       ),
 
@@ -162,16 +162,16 @@ class ProfileScreen extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: context.scale(12), vertical: context.scale(4)),
                         decoration: BoxDecoration(
-                          color: IosTheme.accent.withValues(alpha: 0.18),
+                          color: AppColors.accent.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(context.scale(20)),
-                          border: Border.all(color: IosTheme.accent.withValues(alpha: 0.35), width: 0.8),
+                          border: Border.all(color: AppColors.accent.withValues(alpha: 0.35), width: 0.8),
                         ),
                         child: Text(
                           user.role[0].toUpperCase() + user.role.substring(1),
                           style: GoogleFonts.inter(
                             fontSize: context.scale(12),
                             fontWeight: FontWeight.w600,
-                            color: IosTheme.accentLight,
+                            color: AppColors.accentLight,
                             letterSpacing: 0.2,
                           ),
                         ),
@@ -205,10 +205,10 @@ class ProfileScreen extends StatelessWidget {
         height: size,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: IosTheme.accent.withValues(alpha: 0.50), width: 2.5),
+          border: Border.all(color: AppColors.accent.withValues(alpha: 0.50), width: 2.5),
           boxShadow: [
             BoxShadow(
-              color: IosTheme.accent.withValues(alpha: 0.30),
+              color: AppColors.accent.withValues(alpha: 0.30),
               blurRadius: context.scale(24),
               spreadRadius: context.scale(4),
             ),
@@ -225,14 +225,14 @@ class ProfileScreen extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: const LinearGradient(
-          colors: [IosTheme.accent, IosTheme.accentDark],
+          colors: [AppColors.accent, AppColors.accentDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(color: IosTheme.accent.withValues(alpha: 0.50), width: 2.5),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.50), width: 2.5),
         boxShadow: [
           BoxShadow(
-            color: IosTheme.accent.withValues(alpha: 0.30),
+            color: AppColors.accent.withValues(alpha: 0.30),
             blurRadius: context.scale(24),
             spreadRadius: context.scale(4),
           ),
@@ -283,7 +283,7 @@ class ProfileScreen extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: context.scale(18), vertical: context.scale(16)),
       child: Row(
         children: [
-          Icon(icon, color: IosTheme.accentLight.withValues(alpha: 0.70), size: context.scale(18)),
+          Icon(icon, color: AppColors.accentLight.withValues(alpha: 0.70), size: context.scale(18)),
           SizedBox(width: context.scale(14)),
           Expanded(
             child: Column(

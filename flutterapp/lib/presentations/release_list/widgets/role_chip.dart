@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -32,17 +33,17 @@ class RoleChip extends StatelessWidget {
   Widget build(BuildContext context) {
     late Color color, bg, border;
     if (role == 'Owner') {
-      color = const Color(0xFFC084FC);
-      bg = const Color(0xFF8B5CF6).withValues(alpha: 0.15);
-      border = const Color(0xFF8B5CF6).withValues(alpha: 0.30);
+      color = AppColors.accentLight;
+      bg = AppColors.accent.withValues(alpha: 0.15);
+      border = AppColors.accent.withValues(alpha: 0.30);
     } else if (role == 'Developer') {
-      color = const Color(0xFF22D3EE);
-      bg = const Color(0xFF06B6D4).withValues(alpha: 0.15);
-      border = const Color(0xFF06B6D4).withValues(alpha: 0.30);
+      color = AppColors.orb2;
+      bg = AppColors.orb2.withValues(alpha: 0.15);
+      border = AppColors.orb2.withValues(alpha: 0.30);
     } else {
-      color = const Color(0xFF34D399);
-      bg = const Color(0xFF10B981).withValues(alpha: 0.15);
-      border = const Color(0xFF10B981).withValues(alpha: 0.30);
+      color = AppColors.success;
+      bg = AppColors.success.withValues(alpha: 0.15);
+      border = AppColors.success.withValues(alpha: 0.30);
     }
     return TagChip(label: role, color: color, bg: bg, border: border);
   }

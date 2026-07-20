@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/auth_service.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/presentations/app_list/screens/app_list_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/orb.dart';
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: IosTheme.bg3,
+      backgroundColor: AppColors.bg3,
       body: Stack(
         children: [
           // ── Vivid iOS-style wallpaper gradient ──────────────────────────
@@ -75,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [IosTheme.bg1, IosTheme.bg2, IosTheme.bg3],
+                colors: [AppColors.bg1, AppColors.bg2, AppColors.bg3],
                 stops: [0.0, 0.55, 1.0],
               ),
             ),
@@ -85,22 +85,22 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           Positioned(
             top: -context.scale(140),
             left: -context.scale(100),
-            child: Orb(size: context.scale(380), color: IosTheme.orb1.withValues(alpha: 0.45)),
+            child: Orb(size: context.scale(380), color: AppColors.orb1.withValues(alpha: 0.45)),
           ),
           Positioned(
             top: context.scale(160),
             right: -context.scale(80),
-            child: Orb(size: context.scale(260), color: IosTheme.orb4.withValues(alpha: 0.35)),
+            child: Orb(size: context.scale(260), color: AppColors.orb4.withValues(alpha: 0.35)),
           ),
           Positioned(
             bottom: -context.scale(60),
             left: -context.scale(60),
-            child: Orb(size: context.scale(280), color: IosTheme.orb3.withValues(alpha: 0.28)),
+            child: Orb(size: context.scale(280), color: AppColors.orb3.withValues(alpha: 0.28)),
           ),
           Positioned(
             bottom: context.scale(120),
             right: -context.scale(30),
-            child: Orb(size: context.scale(200), color: IosTheme.orb2.withValues(alpha: 0.30)),
+            child: Orb(size: context.scale(200), color: AppColors.orb2.withValues(alpha: 0.30)),
           ),
 
           // ── Content ──────────────────────────────────────────────────────
@@ -126,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         style: GoogleFonts.inter(
                           fontSize: context.scale(34),
                           fontWeight: FontWeight.w700,
-                          color: IosTheme.textPrimary,
+                          color: AppColors.textPrimary,
                           letterSpacing: -1.0,
                           height: 1.1,
                         ),
@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                         kLoginSubtitle,
                         style: GoogleFonts.inter(
                           fontSize: context.scale(15),
-                          color: IosTheme.textSecondary,
+                          color: AppColors.textSecondary,
                           letterSpacing: -0.1,
                         ),
                         textAlign: TextAlign.center,
@@ -163,9 +163,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       // Glass info card
                       GlassPanel(
                         padding: EdgeInsets.symmetric(horizontal: context.scale(20), vertical: context.scale(20)),
-                        tint: IosTheme.glass.withValues(alpha: 0.11),
+                        tint: AppColors.glass.withValues(alpha: 0.11),
                         borderRadius: 20,
-                        borderColor: IosTheme.glass.withValues(alpha: 0.22),
+                        borderColor: AppColors.glass.withValues(alpha: 0.22),
                         child: Column(
                           children: const [
                             LoginInfoRow(
@@ -195,9 +195,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       if (_errorMessage != null) ...[
                         GlassPanel(
                           padding: EdgeInsets.symmetric(horizontal: context.scale(20), vertical: context.scale(20)),
-                          tint: Colors.red.withValues(alpha: 0.18),
+                          tint: AppColors.error.withValues(alpha: 0.18),
                           borderRadius: 20,
-                          borderColor: IosTheme.glass.withValues(alpha: 0.22),
+                          borderColor: AppColors.glass.withValues(alpha: 0.22),
                           child: Text(
                             _errorMessage!,
                             style: GoogleFonts.inter(
@@ -217,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       SizedBox(height: context.scale(18)),
                       Text(
                         kLoginConfirmation,
-                        style: GoogleFonts.inter(fontSize: context.scale(12), color: IosTheme.textTertiary),
+                        style: GoogleFonts.inter(fontSize: context.scale(12), color: AppColors.textTertiary),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: context.scale(12)),

@@ -1,7 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'core/api_client.dart';
+import 'core/api_service.dart';
 
 class NotificationManager {
   static final NotificationManager _instance = NotificationManager._internal();
@@ -71,7 +71,7 @@ class NotificationManager {
       final token = await FirebaseMessaging.instance.getToken();
       if (token != null) {
         debugPrint('Sending FCM Token to server: $token');
-        final response = await ApiClient.instance.post('/users/fcm-token', {'token': token});
+        final response = await ApiService.instance.sendFcmToken(token);
         if (response.statusCode == 200) {
           debugPrint('FCM Token successfully registered on server');
         } else {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/glass_avatar.dart';
@@ -39,7 +39,7 @@ class InvitationCard extends StatelessWidget {
             children: [
               GlassAvatar(
                 initials: app.initials,
-                color: const Color(0xFFFCD34D),
+                color: AppColors.warning,
                 bgColor: Colors.amber.withValues(alpha: 0.15),
               ),
               SizedBox(width: context.scale(12)),
@@ -52,12 +52,12 @@ class InvitationCard extends StatelessWidget {
                       style: GoogleFonts.inter(
                         fontSize: context.scale(14),
                         fontWeight: FontWeight.w600,
-                        color: IosTheme.textPrimary,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     Text(
                       app.packageName,
-                      style: GoogleFonts.robotoMono(fontSize: context.scale(10), color: IosTheme.textTertiary),
+                      style: GoogleFonts.robotoMono(fontSize: context.scale(10), color: AppColors.textTertiary),
                     ),
                   ],
                 ),
@@ -68,25 +68,24 @@ class InvitationCard extends StatelessWidget {
             SizedBox(height: context.scale(10)),
             Text(
               app.description,
-              style: GoogleFonts.inter(fontSize: context.scale(13), color: IosTheme.textSecondary),
+              style: GoogleFonts.inter(fontSize: context.scale(13), color: AppColors.textSecondary),
             ),
           ],
           SizedBox(height: context.scale(14)),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               GlassButton(
                 label: kDeclineBtnLabel,
                 isLoading: isRejecting,
                 onPressed: isProcessing ? null : onReject,
-                gradient: const LinearGradient(colors: [Color(0xFFEF4444), Color(0xFFDC2626)]),
+                gradient: const LinearGradient(colors: [AppColors.error, AppColors.errorDark]),
               ),
               SizedBox(width: context.scale(8)),
               GlassButton(
                 label: kAcceptBtnLabel,
                 isLoading: isAccepting,
                 onPressed: isProcessing ? null : onAccept,
-                gradient: const LinearGradient(colors: [Color(0xFFF59E0B), Color(0xFFD97706)]),
+                gradient: const LinearGradient(colors: [AppColors.warning, AppColors.warning]),
               ),
             ],
           ),

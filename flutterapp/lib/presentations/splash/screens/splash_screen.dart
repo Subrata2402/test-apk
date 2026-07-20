@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/auth_service.dart';
 import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/presentations/app_list/screens/app_list_screen.dart';
@@ -50,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A1628),
+      backgroundColor: AppColors.bg3,
       body: Stack(
         children: [
           // iOS wallpaper gradient
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Color(0xFF2D1B69), Color(0xFF11244D), Color(0xFF0A1628)],
+                colors: [AppColors.bg1, AppColors.bg2, AppColors.bg3],
                 stops: [0.0, 0.55, 1.0],
               ),
             ),
@@ -69,17 +70,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           Positioned(
             top: -context.scale(160),
             left: -context.scale(100),
-            child: Orb(size: context.scale(400), color: const Color(0xFF7C3AED).withValues(alpha: 0.40)),
+            child: Orb(size: context.scale(400), color: AppColors.orb1.withValues(alpha: 0.40)),
           ),
           Positioned(
             bottom: -context.scale(100),
             right: -context.scale(80),
-            child: Orb(size: context.scale(320), color: const Color(0xFFEC4899).withValues(alpha: 0.25)),
+            child: Orb(size: context.scale(320), color: AppColors.orb3.withValues(alpha: 0.25)),
           ),
           Positioned(
             top: context.scale(200),
             right: -context.scale(60),
-            child: Orb(size: context.scale(240), color: const Color(0xFF3B82F6).withValues(alpha: 0.28)),
+            child: Orb(size: context.scale(240), color: AppColors.orb4.withValues(alpha: 0.28)),
           ),
 
           // Content

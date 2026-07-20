@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/user_model.dart';
 import 'package:flutterapp/presentations/profile/screens/profile_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
@@ -44,7 +44,7 @@ class AppListAppBar extends StatelessWidget implements PreferredSizeWidget {
                         height: context.scale(34),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [IosTheme.accent, IosTheme.accentDark],
+                            colors: [AppColors.accent, AppColors.accentDark],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -61,7 +61,7 @@ class AppListAppBar extends StatelessWidget implements PreferredSizeWidget {
                     style: GoogleFonts.inter(
                       fontSize: context.scale(18),
                       fontWeight: FontWeight.w700,
-                      color: IosTheme.textPrimary,
+                      color: AppColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -78,13 +78,13 @@ class AppListAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ? CircleAvatar(radius: context.scale(16), backgroundImage: NetworkImage(user!.picture!))
                           : CircleAvatar(
                               radius: context.scale(16),
-                              backgroundColor: IosTheme.accent.withValues(alpha: 0.25),
+                              backgroundColor: AppColors.accent.withValues(alpha: 0.25),
                               child: Text(
                                 user?.initials ?? '?',
                                 style: GoogleFonts.inter(
                                   fontSize: context.scale(12),
                                   fontWeight: FontWeight.w600,
-                                  color: IosTheme.accentLight,
+                                  color: AppColors.accentLight,
                                 ),
                               ),
                             ),

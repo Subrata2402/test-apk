@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
-import 'package:flutterapp/core/ios_theme.dart';
 import 'package:flutterapp/models/app_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/glass_panel.dart';
@@ -54,11 +54,11 @@ class AppCard extends StatelessWidget {
                     width: context.scale(56),
                     height: context.scale(56),
                     decoration: BoxDecoration(
-                      color: IosTheme.accent.withValues(alpha: 0.15),
+                      color: AppColors.accent.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(context.scale(28)),
-                      border: Border.all(color: IosTheme.accent.withValues(alpha: 0.25), width: 1),
+                      border: Border.all(color: AppColors.accent.withValues(alpha: 0.25), width: 1),
                     ),
-                    child: Icon(Icons.android_rounded, color: const Color(0xFFC084FC), size: context.scale(32)),
+                    child: Icon(Icons.android_rounded, color: AppColors.primaryLight, size: context.scale(32)),
                   ),
                 SizedBox(width: context.scale(14)),
                 Expanded(
@@ -70,14 +70,14 @@ class AppCard extends StatelessWidget {
                         style: GoogleFonts.inter(
                           fontSize: context.scale(16),
                           fontWeight: FontWeight.w600,
-                          color: IosTheme.textPrimary,
+                          color: AppColors.textPrimary,
                           letterSpacing: -0.3,
                         ),
                       ),
                       SizedBox(height: context.scale(2)),
                       Text(
                         app.packageName,
-                        style: GoogleFonts.robotoMono(fontSize: context.scale(11), color: IosTheme.textTertiary),
+                        style: GoogleFonts.robotoMono(fontSize: context.scale(11), color: AppColors.textTertiary),
                       ),
                     ],
                   ),
@@ -110,7 +110,7 @@ class AppCard extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: context.scale(9),
             fontWeight: FontWeight.w600,
-            color: IosTheme.textTertiary,
+            color: AppColors.textTertiary,
             letterSpacing: 0.5,
           ),
         ),
@@ -120,7 +120,7 @@ class AppCard extends StatelessWidget {
           style: GoogleFonts.inter(
             fontSize: context.scale(12),
             fontWeight: FontWeight.w600,
-            color: IosTheme.textPrimary,
+            color: AppColors.textPrimary,
           ),
         ),
       ],
