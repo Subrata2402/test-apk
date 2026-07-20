@@ -43,17 +43,20 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="default_channel" />
+
+        <receiver
+            android:name=".InstallReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.testapk.app.INSTALL_STATUS" />
+            </intent-filter>
+        </receiver>
     </application>
 
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
-        </intent>
-        <!-- Required for open_filex to install APKs -->
-        <intent>
-            <action android:name="android.intent.action.VIEW"/>
-            <data android:mimeType="application/vnd.android.package-archive"/>
         </intent>
     </queries>
 </manifest>

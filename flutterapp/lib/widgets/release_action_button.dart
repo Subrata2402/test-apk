@@ -10,7 +10,6 @@ import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:open_filex/open_filex.dart';
 import 'package:http/http.dart' as http;
 
 class ReleaseActionButton extends StatefulWidget {
@@ -27,6 +26,8 @@ class ReleaseActionButton extends StatefulWidget {
 class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsBindingObserver {
   static const _platform = MethodChannel('com.testapk.app/app_launcher');
 
+  static final List<_ReleaseActionButtonState> _activeStates = [];
+
   bool _isDownloading = false;
   double _downloadProgress = 0;
   String? _errorMessage;
@@ -42,6 +43,10 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _activeStates.add(this);
+    if (_activeStates.length == 1) {
+      _platform.setMethodCallHandler(_handleStaticMethodCall);
+    }
     _checkIfDownloaded();
     _checkIfAppInstalled();
   }
@@ -49,19 +54,56 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _activeStates.remove(this);
+    if (_activeStates.isEmpty) {
+      _platform.setMethodCallHandler(null);
+    }
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      if (mounted) {
-        setState(() {
-          _isInstalling = false;
-        });
-      }
       _checkIfDownloaded();
       _checkIfAppInstalled();
+    }
+  }
+
+  static Future<void> _handleStaticMethodCall(MethodCall call) async {
+    for (final _ReleaseActionButtonState state in List.from(_activeStates)) {
+      if (state.mounted) {
+        await state._handleMethodCall(call);
+      }
+    }
+  }
+
+  Future<void> _handleMethodCall(MethodCall call) async {
+    if (call.method == 'onInstallStatusChanged') {
+      final arguments = call.arguments as Map<dynamic, dynamic>;
+      final packageName = arguments['packageName'] as String?;
+      final status = arguments['status'] as int?;
+      final message = arguments['message'] as String?;
+      
+      debugPrint('ReleaseActionButton: Received install status change for $packageName: status=$status, message=$message');
+      
+      if (packageName == widget.app.packageName) {
+        if (status == 0) {
+          if (mounted) {
+            setState(() {
+              _isInstalling = false;
+            });
+            _checkIfDownloaded();
+            _checkIfAppInstalled();
+          }
+        } else if (status != null && status > 0) {
+          if (mounted) {
+            setState(() {
+              _isInstalling = false;
+              _errorMessage = message ?? 'Installation failed';
+            });
+          }
+        }
+      }
     }
   }
 
@@ -227,7 +269,22 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
           _isInstalling = true;
         });
       }
-      await OpenFilex.open(_apkFile!.path);
+      try {
+        final bool success = await _platform.invokeMethod('installApk', {
+          'apkPath': _apkFile!.path,
+        });
+        if (!success && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to start installation')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Installation error: $e')),
+          );
+        }
+      }
     }
   }
 
@@ -244,6 +301,64 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
     }
   }
 
+  Color _getButtonColor() {
+    if (_isDownloading) {
+      return const Color(0xFF8B5CF6); // Purple/Indigo
+    }
+    if (_isInstalling) {
+      return const Color(0xFF3B82F6); // Blue
+    }
+    if (_isAppInstalled) {
+      if (_isUpdateAvailable) {
+        return _isDownloaded ? const Color(0xFFF59E0B) : const Color(0xFF8B5CF6); // Amber or Purple
+      }
+      return const Color(0xFF10B981); // Green (Open)
+    }
+    return _isDownloaded ? const Color(0xFFF59E0B) : const Color(0xFF3B82F6); // Amber or Blue
+  }
+
+  String _getButtonText() {
+    if (_isDownloading) {
+      return '$kDownloadingMsg${(_downloadProgress * 100).toStringAsFixed(0)}%';
+    }
+    if (_isInstalling) {
+      return 'Installing...';
+    }
+    if (_isAppInstalled) {
+      if (_isUpdateAvailable) {
+        return _isDownloaded ? kInstallUpdateBtnLabel : kUpdateBtnLabel;
+      }
+      return kOpenAppBtnLabel;
+    }
+    return _isDownloaded ? kInstallApkBtnLabel : kDownloadApkBtnLabel;
+  }
+
+  IconData? _getButtonIcon() {
+    if (_isDownloading || _isInstalling) {
+      return null;
+    }
+    if (_isAppInstalled) {
+      if (_isUpdateAvailable) {
+        return _isDownloaded ? Icons.install_mobile_rounded : Icons.system_update_alt_rounded;
+      }
+      return Icons.open_in_new_rounded;
+    }
+    return _isDownloaded ? Icons.install_mobile_rounded : Icons.download_rounded;
+  }
+
+  VoidCallback? _getButtonOnTap() {
+    if (_isDownloading || _isInstalling) {
+      return null;
+    }
+    if (_isAppInstalled) {
+      if (_isUpdateAvailable) {
+        return _isDownloaded ? _installApk : _downloadApk;
+      }
+      return _launchApp;
+    }
+    return _isDownloaded ? _installApk : _downloadApk;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double buttonHeight = widget.compact ? context.scale(38.0) : context.scale(52.0);
@@ -251,9 +366,10 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
     final double iconSize = widget.compact ? context.scale(16.0) : context.scale(20.0);
     final double borderRadius = widget.compact ? context.scale(10.0) : context.scale(14.0);
 
-    final Color primaryColor = _isAppInstalled
-        ? (_isUpdateAvailable ? const Color(0xFF8B5CF6) : const Color(0xFF10B981))
-        : const Color(0xFF8B5CF6);
+    final Color primaryColor = _getButtonColor();
+    final String buttonText = _getButtonText();
+    final IconData? buttonIcon = _getButtonIcon();
+    final VoidCallback? onTap = _getButtonOnTap();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -307,11 +423,7 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: (_isDownloading || _isInstalling)
-                      ? null
-                      : (_isAppInstalled
-                            ? (_isUpdateAvailable ? (_isDownloaded ? _installApk : _downloadApk) : _launchApp)
-                            : (_isDownloaded ? _installApk : _downloadApk)),
+                  onTap: onTap,
                   splashColor: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(borderRadius),
                   child: Padding(
@@ -320,39 +432,27 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: widget.compact ? MainAxisSize.min : MainAxisSize.max,
                       children: [
-                        (_isDownloading || _isInstalling)
-                            ? SizedBox(
-                                width: iconSize,
-                                height: iconSize,
-                                child: CircularProgressIndicator(
-                                  value: (_isDownloading && _downloadProgress > 0) ? _downloadProgress : null,
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                  backgroundColor: Colors.white.withValues(alpha: 0.2),
-                                ),
-                              )
-                            : Icon(
-                                _isAppInstalled
-                                    ? (_isUpdateAvailable
-                                          ? (_isDownloaded
-                                                ? Icons.install_mobile_rounded
-                                                : Icons.system_update_alt_rounded)
-                                          : Icons.open_in_new_rounded)
-                                    : (_isDownloaded ? Icons.install_mobile_rounded : Icons.download_rounded),
-                                size: iconSize,
-                                color: Colors.white,
-                              ),
-                        SizedBox(width: context.scale(8)),
+                        if (_isDownloading || _isInstalling)
+                          SizedBox(
+                            width: iconSize,
+                            height: iconSize,
+                            child: CircularProgressIndicator(
+                              value: (_isDownloading && _downloadProgress > 0) ? _downloadProgress : null,
+                              strokeWidth: 2,
+                              color: Colors.white,
+                              backgroundColor: Colors.white.withValues(alpha: 0.2),
+                            ),
+                          )
+                        else if (buttonIcon != null)
+                          Icon(
+                            buttonIcon,
+                            size: iconSize,
+                            color: Colors.white,
+                          ),
+                        if (_isDownloading || _isInstalling || buttonIcon != null)
+                          SizedBox(width: context.scale(8)),
                         Text(
-                          _isDownloading
-                              ? '$kDownloadingMsg${(_downloadProgress * 100).toStringAsFixed(0)}%'
-                              : _isInstalling
-                              ? 'Installing...'
-                              : (_isAppInstalled
-                                    ? (_isUpdateAvailable
-                                          ? (_isDownloaded ? kInstallUpdateBtnLabel : kUpdateBtnLabel)
-                                          : kOpenAppBtnLabel)
-                                    : (_isDownloaded ? kInstallApkBtnLabel : kDownloadApkBtnLabel)),
+                          buttonText,
                           style: GoogleFonts.inter(
                             fontSize: fontSize,
                             fontWeight: FontWeight.w600,
