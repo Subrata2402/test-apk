@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import * as Icons from 'lucide-react';
 import './AboutPage.css';
+import { testapkDownloadLink } from '../constants';
 
 const GithubIcon = (props) => (
   <svg
@@ -138,8 +139,7 @@ export default function AboutPage({ showAlert }) {
               </li>
             </ul>
             <a
-              href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
-              download="testapk.apk"
+              href={`${testapkDownloadLink}`}
               className="btn btn-primary btn-sm flex-center gap-2 mt-4"
               style={{ textDecoration: 'none', width: 'fit-content' }}
             >

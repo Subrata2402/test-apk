@@ -3,6 +3,7 @@ import * as Icons from 'lucide-react';
 import { Link } from 'react-router-dom';
 import logoImg from '../assets/logo.png';
 import './LandingPage.css';
+import { testapkDownloadLink } from '../constants';
 
 export default function LandingPage({ user, onLoginClick, onContactClick, onNavigate }) {
   const [activeTab, setActiveTab] = useState('details'); // 'details' | 'releases'
@@ -19,7 +20,7 @@ export default function LandingPage({ user, onLoginClick, onContactClick, onNavi
     releases: [
       {
         version: '1.0.0',
-        buildNumber: 1,
+        buildNumber: 3,
         releaseNotes: 'Initial release of the TestAPK companion app. Features Google Sign-In, real-time application list, release history, and direct APK download & installation flow with progress feedback.',
         date: '2026-07-13',
         size: '17.8 MB',
@@ -59,7 +60,7 @@ export default function LandingPage({ user, onLoginClick, onContactClick, onNavi
               </button>
             )}
             <a
-              href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
+              href={`${testapkDownloadLink}`}
               download="testapk.apk"
               className="btn btn-secondary btn-lg flex-center gap-2"
               style={{ textDecoration: 'none' }}
@@ -146,7 +147,7 @@ export default function LandingPage({ user, onLoginClick, onContactClick, onNavi
               </li>
             </ul>
             <a
-              href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
+              href={`${testapkDownloadLink}`}
               download="testapk.apk"
               className="btn btn-primary btn-sm flex-center gap-2 mt-4"
               style={{ textDecoration: 'none', width: 'fit-content' }}
@@ -271,7 +272,7 @@ export default function LandingPage({ user, onLoginClick, onContactClick, onNavi
                 </div>
 
                 <a
-                  href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
+                  href={`${testapkDownloadLink}`}
                   download="testapk.apk"
                   className="btn btn-primary btn-sm flex-center gap-2 mt-4"
                   style={{ textDecoration: 'none', width: 'fit-content' }}
@@ -335,7 +336,7 @@ export default function LandingPage({ user, onLoginClick, onContactClick, onNavi
                             <span>{release.size}</span>
                           </span>
                           <a
-                            href="https://github.com/Subrata2402/test-apk/releases/download/v1.0.0%2B2/testapk_v1.0.0+2.apk"
+                            href={`${testapkDownloadLink}`}
                             download="testapk.apk"
                             className="btn btn-primary btn-sm flex-center gap-1"
                             style={{ textDecoration: 'none' }}
