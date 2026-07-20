@@ -19,7 +19,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.testapk.app/app_launcher"
+    private val channelLink:String = "com.testapk.app/app_launcher"
     private var channel: MethodChannel? = null
 
     private val installStatusReceiver = object : BroadcastReceiver() {
@@ -63,7 +63,7 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+        channel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelLink)
         channel?.setMethodCallHandler { call, result ->
             when (call.method) {
                 "isAppInstalled" -> {
