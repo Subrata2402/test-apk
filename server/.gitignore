@@ -5,3 +5,4 @@ dist/
 *.log
 mongodb_data/
 firebase-service-account.json
+logs
