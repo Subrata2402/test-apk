@@ -101,6 +101,58 @@ export default function CreateAppModal({ isOpen, onClose, onCreateApp, user, sho
                     </svg>
                     <span>Connect Google Drive</span>
                   </button>
+
+                  <div className="drive-permissions-info" style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    textAlign: 'left',
+                    width: '100%',
+                    marginTop: '12px',
+                    fontSize: '0.85rem',
+                    lineHeight: '1.4'
+                  }}>
+                    <h4 style={{ margin: '0 0 10px 0', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem' }}>
+                      <Icons.ShieldAlert size={16} style={{ color: 'var(--accent-primary)' }} />
+                      Google Drive Permissions Explained
+                    </h4>
+                    
+                    <div style={{ marginBottom: '12px' }}>
+                      <div style={{ fontWeight: '600', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                        <Icons.CheckCircle2 size={14} /> What TestAPK can do:
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>
+                        <li>Create a secure folder named <code>TestAPK_Releases</code>.</li>
+                        <li>Upload, download, and delete APK files inside that folder.</li>
+                      </ul>
+                    </div>
+
+                    <div style={{ marginBottom: '12px' }}>
+                      <div style={{ fontWeight: '600', color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                        <Icons.XCircle size={14} /> What TestAPK CANNOT do:
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: '20px', color: 'rgba(255, 255, 255, 0.7)' }}>
+                        <li>Access any other files, folders, photos, or documents.</li>
+                        <li>Read or write any data outside the <code>TestAPK_Releases</code> folder.</li>
+                      </ul>
+                    </div>
+
+                    <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '10px', marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <p style={{ margin: 0, fontSize: '0.8rem', color: 'rgba(255, 255, 255, 0.4)', fontStyle: 'italic' }}>
+                        Google restricts our access to only the files created by this app. Your personal data remains completely private.
+                      </p>
+                      <a 
+                        href="https://developers.google.com/identity/protocols/oauth2/scopes#drive" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        style={{ color: 'var(--accent-primary)', textDecoration: 'underline', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <span>Google's Official OAuth Scopes Documentation</span>
+                        <Icons.ExternalLink size={12} />
+                      </a>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

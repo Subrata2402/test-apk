@@ -12,6 +12,8 @@
 .modal-container {
   width: 100%;
   max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 32px;
   position: relative;
   display: flex;

@@ -119,7 +119,7 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
             <p className="text-secondary">Select an application from the sidebar or create a new one to manage releases, collaborators, and downloads.</p>
 
             <div className="quick-access-section">
-              <h3>Quick Access</h3>
+              {/* <h3>Quick Access</h3> */}
               <div className="quick-apps-grid">
                 {apps.map((app) => {
                   return (
