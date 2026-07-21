@@ -15,6 +15,7 @@ export default function AppRoutes({
   handleLogout,
   setIsLoginModalOpen,
   setIsCreateModalOpen,
+  onOpenDriveModal,
   showAlert,
   showConfirm,
   setUser,
@@ -75,6 +76,7 @@ export default function AppRoutes({
               onCreateApp={handleCreateApp}
               onLogout={handleLogout}
               onOpenCreateModal={() => setIsCreateModalOpen(true)}
+              onOpenDriveModal={onOpenDriveModal}
               showAlert={showAlert}
               showConfirm={showConfirm}
             />

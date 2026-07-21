@@ -237,10 +237,18 @@ export const uploadApk = async (
       const fileName = `${app.name.replace(/\s+/g, '_')}_v${parsed.versionName}_b${parsed.versionCode}.apk`;
       driveFileId = await uploadFileToDrive(fileName, req.file.buffer, req.file.mimetype, credentials);
     } catch (err: any) {
-      res.status(500).json({
-        status: 'error',
-        message: `Failed to upload APK to Google Drive: ${err.message || err}`,
-      });
+      const errMsg = err.message || String(err);
+      if (errMsg.includes('invalid_grant')) {
+        res.status(400).json({
+          status: 'fail',
+          message: 'Google Drive access has been revoked or is invalid. Please re-configure Google Drive in your application settings.',
+        });
+      } else {
+        res.status(500).json({
+          status: 'error',
+          message: `Failed to upload APK to Google Drive: ${errMsg}`,
+        });
+      }
       return;
     }
 

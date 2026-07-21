@@ -4,7 +4,7 @@ import AppDetails from '../components/dashboard/AppDetails';
 import AboutPage from './AboutPage';
 import './Dashboard.css';
 
-export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCreateApp, onLogout, onOpenCreateModal, showAlert, showConfirm }) {
+export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCreateApp, onLogout, onOpenCreateModal, onOpenDriveModal, showAlert, showConfirm }) {
   const selectedApp = apps.find(app => (app._id === selectedAppId || app.id === selectedAppId));
 
   return (
@@ -68,21 +68,23 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
                 )}
               </span>
               <span className="user-email">{user.email}</span>
+              <button 
+                onClick={onOpenDriveModal}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--accent-primary)',
+                  fontSize: '0.75rem',
+                  padding: 0,
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  marginTop: '2px'
+                }}
+              >
+                {user.isDriveConfigured ? 'Reconnect Google Drive' : 'Connect Google Drive'}
+              </button>
             </div>
-            <button 
-              className="logout-btn" 
-              onClick={() => {
-                const token = localStorage.getItem('token');
-                if (token) {
-                  navigator.clipboard.writeText(token);
-                  showAlert('API Token copied to clipboard!', 'Success', 'success');
-                }
-              }} 
-              title="Copy API Token"
-              style={{ marginRight: '4px' }}
-            >
-              <Icons.Key size={18} />
-            </button>
             <button
               className="logout-btn"
               onClick={() => {

@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { initialApps } from './mockData';
 import GoogleLoginModal from './components/modals/GoogleLoginModal';
 import CreateAppModal from './components/modals/CreateAppModal';
+import DriveConfigModal from './components/modals/DriveConfigModal';
 import ContactSupportModal from './components/modals/ContactSupportModal';
 import Navbar from './components/layout/Navbar';
 import AlertModal from './components/common/AlertModal';
@@ -19,6 +20,7 @@ export default function App() {
   const [selectedAppId, setSelectedAppId] = useState(initialApps[0]?.id || null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isDriveModalOpen, setIsDriveModalOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
   const [isLoadingApps, setIsLoadingApps] = useState(false);
@@ -237,6 +239,7 @@ export default function App() {
           handleLogout={handleLogout}
           setIsLoginModalOpen={setIsLoginModalOpen}
           setIsCreateModalOpen={setIsCreateModalOpen}
+          onOpenDriveModal={() => setIsDriveModalOpen(true)}
           showAlert={showAlert}
           showConfirm={showConfirm}
           setUser={setUser}
@@ -256,6 +259,15 @@ export default function App() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreateApp={handleCreateApp}
+        user={user}
+        showAlert={showAlert}
+        onOpenDriveModal={() => setIsDriveModalOpen(true)}
+      />
+
+      {/* Drive Configuration Modal */}
+      <DriveConfigModal
+        isOpen={isDriveModalOpen}
+        onClose={() => setIsDriveModalOpen(false)}
         user={user}
         showAlert={showAlert}
         onDriveConfigured={() => setUser(prev => ({ ...prev, isDriveConfigured: true }))}
