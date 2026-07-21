@@ -101,8 +101,14 @@ export default function App() {
   }, [location.pathname]);
 
   const handleLoginSuccess = async (userData) => {
+    // Set user and navigate immediately to prevent landing page flicker
+    setUser(userData);
+    navigate('/dashboard');
+
     const token = localStorage.getItem('token');
     if (token) {
+      // Fetch apps (which sets isLoadingApps to true, showing the loading screen)
+      fetchApps(token);
       try {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
           headers: {
@@ -119,19 +125,11 @@ export default function App() {
             role: data.data.user.role,
             isDriveConfigured: data.data.user.isDriveConfigured,
           });
-        } else {
-          setUser(userData);
         }
       } catch (err) {
         console.error('Failed to fetch user details after login:', err);
-        setUser(userData);
       }
-      fetchApps(token);
-    } else {
-      setUser(userData);
     }
-    // Redirect to dashboard on successful login
-    navigate('/dashboard');
   };
 
   const handleLogout = async () => {
