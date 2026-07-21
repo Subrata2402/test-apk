@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { App } from '../models/app.model.js';
 import { User } from '../models/user.model.js';
+import { Release } from '../models/release.model.js';
 
 const populateMemberNames = async (apps: any[]): Promise<any[]> => {
   const emails = apps.flatMap(app => app.members.map((m: any) => m.email.toLowerCase()));
@@ -78,6 +79,8 @@ export const createApp = async (
       ],
     });
 
+    await newApp.populate('releases');
+
     res.status(201).json({
       status: 'success',
       data: {
@@ -104,20 +107,26 @@ export const getApps = async (
     }
 
     // Get apps where the user is a member and has accepted the invitation
-    const apps = await App.find({
-      members: {
-        $elemMatch: {
-          email: req.user.email,
-          status: 'Accepted',
+    const apps = await App.find(
+      {
+        members: {
+          $elemMatch: {
+            email: req.user.email,
+            status: 'Accepted',
+          },
         },
       },
-    });
+      { members: 0 }
+    ).populate({
+      path: 'releases',
+      options: { limit: 1, sort: { buildNumber: -1 } },
+    }).populate('releasesCount');
 
     res.status(200).json({
       status: 'success',
       results: apps.length,
       data: {
-        apps: await populateMemberNames(apps),
+        apps,
       },
     });
   } catch (error) {
@@ -192,7 +201,7 @@ export const uploadApk = async (
     }
 
     // Check if build number already exists
-    const buildExists = app.releases.some(r => r.buildNumber === parsed.versionCode);
+    const buildExists = await Release.findOne({ appId: app._id, buildNumber: parsed.versionCode });
     if (buildExists) {
       res.status(400).json({
         status: 'fail',
@@ -202,8 +211,8 @@ export const uploadApk = async (
     }
 
     // Check if build number is greater than the latest build number
-    if (app.releases.length > 0) {
-      const latestRelease = app.releases.reduce((prev, current) => prev.buildNumber > current.buildNumber ? prev : current);
+    const latestRelease = await Release.findOne({ appId: app._id }).sort({ buildNumber: -1 });
+    if (latestRelease) {
       if (parsed.versionCode <= latestRelease.buildNumber) {
         res.status(400).json({
           status: 'fail',
@@ -235,8 +244,13 @@ export const uploadApk = async (
       return;
     }
 
+    // Check if this is the first release
+    const releaseCount = await Release.countDocuments({ appId: app._id });
+    const isFirstRelease = releaseCount === 0;
+
     // Save release to DB
-    const newRelease = {
+    const newRelease = await Release.create({
+      appId: app._id,
       version: parsed.versionName,
       buildNumber: parsed.versionCode,
       releaseNotes: releaseNotes || 'No release notes provided',
@@ -251,10 +265,14 @@ export const uploadApk = async (
       appIcon: parsed.appIcon,
       uploadedByEmail: req.user.email,
       uploadedByName: req.user.name,
-    };
+    });
 
-    app.releases.unshift(newRelease);
-    await app.save();
+    if (isFirstRelease && parsed.appIcon) {
+      app.icon = parsed.appIcon;
+      await app.save();
+    }
+
+    await app.populate('releases');
 
     // Send push notification to other accepted members
     try {
@@ -330,7 +348,7 @@ export const downloadApk = async (
     }
 
     // Find release
-    const release = app.releases.find(r => r.buildNumber === parseInt(buildNumber as string));
+    const release = await Release.findOne({ appId: app._id, buildNumber: parseInt(buildNumber as string) });
     if (!release) {
       res.status(404).json({
         status: 'fail',
@@ -417,16 +435,14 @@ export const deleteRelease = async (
     }
 
     // Find release
-    const releaseIndex = app.releases.findIndex(r => r.buildNumber === parseInt(buildNumber as string));
-    if (releaseIndex === -1) {
+    const release = await Release.findOne({ appId: app._id, buildNumber: parseInt(buildNumber as string) });
+    if (!release) {
       res.status(404).json({
         status: 'fail',
         message: 'Release not found',
       });
       return;
     }
-
-    const release = app.releases[releaseIndex];
 
     // Delete file from Google Drive
     try {
@@ -444,9 +460,9 @@ export const deleteRelease = async (
       console.error(`Failed to delete file from Google Drive: ${err.message || err}`);
     }
 
-    // Remove release from array
-    app.releases.splice(releaseIndex, 1);
-    await app.save();
+    // Remove release from DB
+    await Release.deleteOne({ _id: release._id });
+    await app.populate('releases');
 
     res.status(200).json({
       status: 'success',
@@ -531,6 +547,7 @@ export const inviteMember = async (
     });
 
     await app.save();
+    await app.populate('releases');
 
     // Send push notification to the invited user
     try {
@@ -602,6 +619,7 @@ export const removeMember = async (
 
     app.members = app.members.filter(m => m.email.toLowerCase() !== emailStr.toLowerCase());
     await app.save();
+    await app.populate('releases');
 
     res.status(200).json({
       status: 'success',
@@ -628,20 +646,26 @@ export const getInvitations = async (
       return;
     }
 
-    const apps = await App.find({
-      members: {
-        $elemMatch: {
-          email: req.user.email,
-          status: 'Pending',
+    const apps = await App.find(
+      {
+        members: {
+          $elemMatch: {
+            email: req.user.email,
+            status: 'Pending',
+          },
         },
       },
-    });
+      { members: 0 }
+    ).populate({
+      path: 'releases',
+      options: { limit: 1, sort: { buildNumber: -1 } },
+    }).populate('releasesCount');
 
     res.status(200).json({
       status: 'success',
       results: apps.length,
       data: {
-        apps: await populateMemberNames(apps),
+        apps,
       },
     });
   } catch (error) {
@@ -677,6 +701,7 @@ export const acceptInvitation = async (
 
     member.status = 'Accepted';
     await app.save();
+    await app.populate('releases');
 
     res.status(200).json({
       status: 'success',
@@ -708,10 +733,110 @@ export const rejectInvitation = async (
 
     app.members = app.members.filter(m => m.email.toLowerCase() !== req.user!.email.toLowerCase());
     await app.save();
+    await app.populate('releases');
 
     res.status(200).json({
       status: 'success',
       message: 'Invitation rejected successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getReleases = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { appId } = req.params;
+
+    if (!req.user) {
+      res.status(401).json({
+        status: 'fail',
+        message: 'User not authenticated',
+      });
+      return;
+    }
+
+    const app = await App.findById(appId);
+    if (!app) {
+      res.status(404).json({
+        status: 'fail',
+        message: 'Application not found',
+      });
+      return;
+    }
+
+    // Verify role (Owner, Developer, or Tester)
+    const isMember = app.members.some(m => m.email.toLowerCase() === req.user!.email.toLowerCase());
+    if (!isMember) {
+      res.status(403).json({
+        status: 'fail',
+        message: 'You are not a member of this application',
+      });
+      return;
+    }
+
+    const releases = await Release.find({ appId }).sort({ buildNumber: -1 });
+
+    res.status(200).json({
+      status: 'success',
+      results: releases.length,
+      data: {
+        releases,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMembers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { appId } = req.params;
+
+    if (!req.user) {
+      res.status(401).json({
+        status: 'fail',
+        message: 'User not authenticated',
+      });
+      return;
+    }
+
+    const app = await App.findById(appId);
+    if (!app) {
+      res.status(404).json({
+        status: 'fail',
+        message: 'Application not found',
+      });
+      return;
+    }
+
+    // Verify role (Owner, Developer, or Tester)
+    const isMember = app.members.some(m => m.email.toLowerCase() === req.user!.email.toLowerCase());
+    if (!isMember) {
+      res.status(403).json({
+        status: 'fail',
+        message: 'You are not a member of this application',
+      });
+      return;
+    }
+
+    const populatedApps = await populateMemberNames([app]);
+    const members = populatedApps[0].members;
+
+    res.status(200).json({
+      status: 'success',
+      results: members.length,
+      data: {
+        members,
+      },
     });
   } catch (error) {
     next(error);

@@ -1,21 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-
-export interface IRelease {
-  version: string;
-  buildNumber: number;
-  releaseNotes: string;
-  date: string;
-  size: string;
-  apkUrl: string;
-  appName?: string;
-  minSdkVersion?: string;
-  targetSdkVersion?: string;
-  sha256?: string;
-  permissions?: string[];
-  appIcon?: string;
-  uploadedByEmail?: string;
-  uploadedByName?: string;
-}
+import { IRelease } from './release.model.js';
 
 export interface IMember {
   email: string;
@@ -35,27 +19,11 @@ export interface IApp extends Document {
   activeUsers: string;
   screenshots: string[];
   releases: IRelease[];
+  releasesCount?: number;
   members: IMember[];
   createdAt: Date;
   updatedAt: Date;
 }
-
-const ReleaseSchema = new Schema<IRelease>({
-  version: { type: String, required: true },
-  buildNumber: { type: Number, required: true },
-  releaseNotes: { type: String, required: true },
-  date: { type: String, required: true },
-  size: { type: String, required: true },
-  apkUrl: { type: String, required: true },
-  appName: { type: String },
-  minSdkVersion: { type: String },
-  targetSdkVersion: { type: String },
-  sha256: { type: String },
-  permissions: { type: [String], default: [] },
-  appIcon: { type: String },
-  uploadedByEmail: { type: String },
-  uploadedByName: { type: String },
-});
 
 const MemberSchema = new Schema<IMember>({
   email: { type: String, required: true },
@@ -81,12 +49,29 @@ const AppSchema = new Schema<IApp>(
         'linear-gradient(135deg, #2af598 0%, #009efd 100%)',
       ],
     },
-    releases: { type: [ReleaseSchema], default: [] },
     members: { type: [MemberSchema], required: true },
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+// Virtual populate for releases
+AppSchema.virtual('releases', {
+  ref: 'Release',
+  localField: '_id',
+  foreignField: 'appId',
+  options: { sort: { buildNumber: -1 } },
+});
+
+// Virtual populate for releases count
+AppSchema.virtual('releasesCount', {
+  ref: 'Release',
+  localField: '_id',
+  foreignField: 'appId',
+  count: true,
+});
 
 export const App = mongoose.model<IApp>('App', AppSchema);

@@ -7,11 +7,12 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
   const [activeTab, setActiveTab] = useState('releases'); // 'releases' | 'collaborators'
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('Tester');
+  const [members, setMembers] = useState([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
 
-  const isMock = !app._id;
-  const currentUserMember = app.members.find(m => m.email.toLowerCase() === user.email.toLowerCase());
-  const canUpload = !isMock && currentUserMember && (currentUserMember.role === 'Owner' || currentUserMember.role === 'Developer');
-  const canInvite = !isMock && currentUserMember && (currentUserMember.role === 'Owner' || currentUserMember.role === 'Developer');
+  const currentUserMember = members.find(m => m.email.toLowerCase() === user.email.toLowerCase());
+  const canUpload = currentUserMember && (currentUserMember.role === 'Owner' || currentUserMember.role === 'Developer');
+  const canInvite = currentUserMember && (currentUserMember.role === 'Owner' || currentUserMember.role === 'Developer');
 
   // APK Upload States
   const [isDragging, setIsDragging] = useState(false);
@@ -62,7 +63,54 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
     }
   };
 
-  // Reset upload states when app changes
+  const [releases, setReleases] = useState([]);
+  const [isLoadingReleases, setIsLoadingReleases] = useState(false);
+
+  const fetchReleases = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    setIsLoadingReleases(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/apps/${app._id || app.id}/releases`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok && data.status === 'success') {
+        setReleases(data.data.releases);
+      }
+    } catch (err) {
+      console.error('Failed to fetch releases:', err);
+    } finally {
+      setIsLoadingReleases(false);
+    }
+  };
+
+  const fetchMembers = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    setIsLoadingMembers(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/apps/${app._id || app.id}/members`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok && data.status === 'success') {
+        setMembers(data.data.members);
+      }
+    } catch (err) {
+      console.error('Failed to fetch members:', err);
+    } finally {
+      setIsLoadingMembers(false);
+    }
+  };
+
+  // Reset upload states and fetch releases/members when app changes
   React.useEffect(() => {
     setUploadFile(null);
     setUploadProgress(0);
@@ -72,6 +120,8 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
     setReleaseNotes('');
     setSelectedRelease(null);
     setInviteEmail('');
+    fetchReleases();
+    fetchMembers();
   }, [app._id, app.id]);
 
   // Helper to render dynamic Lucide icons
@@ -151,6 +201,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
         if (xhr.status === 201) {
           const responseData = JSON.parse(xhr.responseText);
           onUpdateApp(responseData.data.app);
+          setReleases(prev => [responseData.data.release, ...prev]);
           setUploadFile(null);
           setShowReleaseForm(false);
           setReleaseNotes('');
@@ -218,7 +269,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
     if (!inviteEmail) return;
 
     // Check if already invited
-    if (app.members.some(m => m.email.toLowerCase() === inviteEmail.toLowerCase())) {
+    if (members.some(m => m.email.toLowerCase() === inviteEmail.toLowerCase())) {
       showAlert('This user is already a member of this application.', 'Error', 'error');
       return;
     }
@@ -243,6 +294,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
       const data = await response.json();
       if (response.ok && data.status === 'success') {
         onUpdateApp(data.data.app);
+        setMembers(data.data.app.members);
         setInviteEmail('');
         showAlert('Invitation sent successfully.', 'Success', 'success');
       } else {
@@ -280,6 +332,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
           const data = await response.json();
           if (response.ok && data.status === 'success') {
             onUpdateApp(data.data.app);
+            setMembers(data.data.app.members);
             showAlert('Member removed successfully.', 'Success', 'success');
           } else {
             showAlert(data.message || 'Failed to remove member', 'Error', 'error');
@@ -314,6 +367,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
           const data = await response.json();
           if (response.ok && data.status === 'success') {
             onUpdateApp(data.data.app);
+            setReleases(prev => prev.filter(r => r.buildNumber !== buildNumberToDelete));
             showAlert('Release deleted successfully.', 'Success', 'success');
           } else {
             showAlert(data.message || 'Failed to delete release', 'Error', 'error');
@@ -335,7 +389,11 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
       <header className="app-details-header glass-card">
         <div className="app-header-main">
           <div className="app-icon-wrapper-sm">
-            <IconComponent size={32} />
+            {app.icon && (app.icon.startsWith('data:') || app.icon.startsWith('http')) ? (
+              <img src={app.icon} alt={app.name} className="app-icon-img" style={{ width: '50px', height: '50px', borderRadius: '9px', objectFit: 'cover' }} />
+            ) : (
+              <IconComponent size={32} />
+            )}
           </div>
           <div className="app-header-info">
             <div className="app-header-title-row">
@@ -364,29 +422,12 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
           className={`tab-btn ${activeTab === 'collaborators' ? 'active' : ''}`}
           onClick={() => setActiveTab('collaborators')}
         >
-          <Icons.Users size={16} /> Collaborators & Testers ({app.members.length})
+          <Icons.Users size={16} /> Collaborators & Testers ({members.length})
         </button>
       </div>
 
       {/* Tab Content */}
       <div className="tab-content-wrapper">
-        {isMock && (
-          <div className="demo-warning-banner" style={{
-            background: 'rgba(245, 158, 11, 0.1)',
-            border: '1px solid rgba(245, 158, 11, 0.2)',
-            color: '#f59e0b',
-            padding: '12px 16px',
-            borderRadius: '8px',
-            marginBottom: '16px',
-            fontSize: '0.9rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <Icons.AlertTriangle size={16} />
-            <span><strong>Demo Mode:</strong> This is a demo application. To invite collaborators or upload releases, please create a new application first.</span>
-          </div>
-        )}
         {activeTab === 'releases' ? (
           <div className="releases-tab-content">
             {/* Upload Area */}
@@ -409,7 +450,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                   <Icons.UploadCloud size={48} className="upload-icon" />
                   <h3>Drag & Drop APK file here</h3>
                   <p>or click to browse your files</p>
-                  <span className="upload-limits">Maximum file size: 150MB (.apk only)</span>
+                  <span className="upload-limits">Maximum file size: 200MB (.apk only)</span>
                 </div>
               </div>
             )}
@@ -478,7 +519,12 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
             {/* Releases List */}
             <div className="releases-list-section">
               <h3>Release History</h3>
-              {app.releases.length === 0 ? (
+              {isLoadingReleases ? (
+                <div className="empty-state glass-card flex-center">
+                  <Icons.Loader size={32} className="empty-icon animate-spin" />
+                  <p>Loading releases...</p>
+                </div>
+              ) : releases.length === 0 ? (
                 <div className="empty-state glass-card flex-center">
                   <Icons.Layers size={32} className="empty-icon" />
                   <p>
@@ -489,7 +535,7 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                 </div>
               ) : (
                 <div className="dashboard-releases-grid">
-                  {app.releases.map((release) => (
+                  {releases.map((release) => (
                     <div
                       key={release.buildNumber}
                       className="dashboard-release-card glass-card"
@@ -553,64 +599,63 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
         ) : (
           <div className="collaborators-tab-content animate-fade-in">
             {/* Invite Form */}
-            {!isMock ? (
-              canInvite ? (
-                <div className="invite-form-container glass-card">
-                  <h3>Invite Collaborator</h3>
-                  <p className="invite-desc">Invite developers to upload releases or testers to download and test builds.</p>
+            {canInvite ? (
+              <div className="invite-form-container glass-card">
+                <h3>Invite Collaborator</h3>
+                <p className="invite-desc">Invite developers to upload releases or testers to download and test builds.</p>
 
-                  <form onSubmit={handleInviteSubmit} className="invite-form">
-                    <div className="form-group" style={{ flex: 2 }}>
-                      <label className="form-label">Email Address</label>
-                      <div className="input-with-icon">
-                        <Icons.Mail size={16} className="input-icon" />
-                        <input
-                          type="email"
-                          className="form-input"
-                          placeholder="developer@company.com"
-                          value={inviteEmail}
-                          onChange={(e) => setInviteEmail(e.target.value)}
-                          required
-                          style={{ paddingLeft: '40px' }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-group" style={{ flex: 1 }}>
-                      <label className="form-label">Role</label>
-                      <CustomDropdown
-                        options={['Developer', 'Tester']}
-                        value={inviteRole}
-                        onChange={setInviteRole}
+                <form onSubmit={handleInviteSubmit} className="invite-form">
+                  <div className="form-group" style={{ flex: 2 }}>
+                    <label className="form-label">Email Address</label>
+                    <div className="input-with-icon">
+                      <Icons.Mail size={16} className="input-icon" />
+                      <input
+                        type="email"
+                        className="form-input"
+                        placeholder="developer@company.com"
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        required
+                        style={{ paddingLeft: '40px' }}
                       />
                     </div>
+                  </div>
 
-                    <div className="form-group" style={{ justifyContent: 'flex-end' }}>
-                      <label className="form-label" style={{ visibility: 'hidden' }}>Invite</label>
-                      <button type="submit" className="btn btn-primary invite-btn">
-                        <Icons.UserPlus size={16} /> Send Invitation
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                <div className="glass-card" style={{ padding: '24px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.4)', marginBottom: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                  <Icons.Lock size={24} style={{ color: 'rgba(255, 255, 255, 0.2)' }} />
-                  <p style={{ margin: 0 }}>Only owners and developers can invite collaborators.</p>
-                </div>
-              )
+                  <div className="form-group" style={{ flex: 1 }}>
+                    <label className="form-label">Role</label>
+                    <CustomDropdown
+                      options={['Developer', 'Tester']}
+                      value={inviteRole}
+                      onChange={setInviteRole}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ justifyContent: 'flex-end' }}>
+                    <label className="form-label" style={{ visibility: 'hidden' }}>Invite</label>
+                    <button type="submit" className="btn btn-primary invite-btn">
+                      <Icons.UserPlus size={16} /> Send Invitation
+                    </button>
+                  </div>
+                </form>
+              </div>
             ) : (
               <div className="glass-card" style={{ padding: '24px', textAlign: 'center', color: 'rgba(255, 255, 255, 0.4)', marginBottom: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                 <Icons.Lock size={24} style={{ color: 'rgba(255, 255, 255, 0.2)' }} />
-                <p style={{ margin: 0 }}>Invitation is disabled for demo applications.</p>
+                <p style={{ margin: 0 }}>Only owners and developers can invite collaborators.</p>
               </div>
             )}
 
             {/* Collaborators List */}
             <div className="collaborators-list-section">
               <h3>Team Members</h3>
-              <div className="collaborators-list glass-card">
-                {app.members.map((member, idx) => (
+              {isLoadingMembers ? (
+                <div className="empty-state glass-card flex-center" style={{ minHeight: '150px' }}>
+                  <Icons.Loader size={32} className="empty-icon animate-spin" />
+                  <p>Loading members...</p>
+                </div>
+              ) : (
+                <div className="collaborators-list glass-card">
+                  {members.map((member, idx) => (
                   <div key={idx} className="collaborator-item">
                     <div className="collaborator-info-main">
                       <div className="collaborator-avatar">
@@ -639,7 +684,8 @@ export default function AppDetails({ app, user, onUpdateApp, showAlert, showConf
                   </div>
                 ))}
               </div>
-            </div>
+            )}
+          </div>
           </div>
         )}
       </div>

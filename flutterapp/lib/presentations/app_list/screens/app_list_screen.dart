@@ -145,8 +145,16 @@ class _AppListScreenState extends State<AppListScreen> {
   }
 
   Future<void> _signOut() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const Center(
+        child: CircularProgressIndicator(color: AppColors.accent),
+      ),
+    );
     await AuthService.instance.signOut();
     if (!mounted) return;
+    Navigator.of(context).pop(); // Dismiss the dialog
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const LoginScreen()));
   }
 

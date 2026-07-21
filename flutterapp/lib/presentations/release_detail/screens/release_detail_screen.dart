@@ -31,7 +31,9 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.release.appIcon != null && widget.release.appIcon!.isNotEmpty) {
+    if (widget.release.appIcon != null &&
+        widget.release.appIcon!.isNotEmpty &&
+        widget.release.appIcon != 'Android') {
       _iconProvider = _getIconProvider(widget.release.appIcon!);
     }
   }
@@ -146,7 +148,9 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (release.appIcon != null && release.appIcon!.isNotEmpty)
+                            if (release.appIcon != null &&
+                                release.appIcon!.isNotEmpty &&
+                                release.appIcon != 'Android')
                               Container(
                                 width: context.scale(56),
                                 height: context.scale(56),

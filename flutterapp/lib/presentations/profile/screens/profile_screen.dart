@@ -46,8 +46,16 @@ class ProfileScreen extends StatelessWidget {
     );
 
     if (confirmed == true) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => const Center(
+          child: CircularProgressIndicator(color: AppColors.accent),
+        ),
+      );
       await AuthService.instance.signOut();
       if (context.mounted) {
+        Navigator.of(context).pop(); // Dismiss the dialog
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false);
       }
     }

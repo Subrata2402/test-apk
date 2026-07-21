@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'api_service.dart';
 import 'storage_service.dart';
@@ -32,7 +33,20 @@ class AuthService {
         final body = response.data as Map<String, dynamic>;
         final token = body['token'] as String;
         await StorageService.instance.saveToken(token);
-        _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
+        
+        // Fetch updated user details from /users/me
+        try {
+          final profileResponse = await ApiService.instance.getUserProfile();
+          if (profileResponse.statusCode == 200) {
+            final profileBody = profileResponse.data as Map<String, dynamic>;
+            _currentUser = UserModel.fromJson(profileBody['data']['user'] as Map<String, dynamic>);
+          } else {
+            _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
+          }
+        } catch (_) {
+          _currentUser = UserModel.fromJson(body['data']['user'] as Map<String, dynamic>);
+        }
+
         // Send FCM token to server
         await NotificationManager.sendTokenToServer();
         return _currentUser;
@@ -64,6 +78,10 @@ class AuthService {
   }
 
   Future<void> signOut() async {
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      await ApiService.instance.logout(token);
+    } catch (_) {}
     await _googleSignIn.signOut();
     await StorageService.instance.deleteToken();
     _currentUser = null;

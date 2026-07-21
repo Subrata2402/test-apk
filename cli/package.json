@@ -1,6 +1,6 @@
 {
   "name": "testapk-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI tool for TestAPK Release Manager",
   "main": "index.js",
   "type": "module",

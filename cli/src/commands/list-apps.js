@@ -25,7 +25,7 @@ export const registerListAppsCommand = (program) => {
         apps.forEach((app) => {
           console.log(`${chalk.bold.cyan(app.name)} (${chalk.gray(app.packageName)})`);
           console.log(`ID: ${chalk.yellow(app._id || app.id)}`);
-          console.log(`Releases: ${app.releases.length}`);
+          console.log(`Releases: ${app.releasesCount ?? app.releases.length}`);
           console.log('----------------------------------------------------------------------');
         });
       } catch (error) {

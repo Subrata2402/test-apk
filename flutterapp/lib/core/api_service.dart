@@ -24,8 +24,23 @@ class ApiService {
     return _client.get(ApiEndpoints.apps);
   }
 
+  Future<Response> getAppReleases(String appId) {
+    return _client.get(ApiEndpoints.appReleases(appId));
+  }
+
+  Future<Response> getAppMembers(String appId) {
+    return _client.get(ApiEndpoints.appMembers(appId));
+  }
+
   Future<Response> getInvitations() {
     return _client.get(ApiEndpoints.invitations);
+  }
+
+  Future<Response> logout(String? fcmToken) {
+    return _client.post(
+      ApiEndpoints.logout,
+      fcmToken != null ? {'fcmToken': fcmToken} : {},
+    );
   }
 
   Future<Response> acceptInvitation(String appId) {

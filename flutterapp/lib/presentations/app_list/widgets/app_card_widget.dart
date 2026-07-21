@@ -36,17 +36,24 @@ class AppCard extends StatelessWidget {
             Row(
               children: [
                 // App icon
-                if (app.releases.isNotEmpty &&
-                    app.releases.first.appIcon != null &&
-                    app.releases.first.appIcon!.isNotEmpty)
+                if ((app.icon != null && app.icon!.isNotEmpty && app.icon != 'Android') ||
+                    (app.releases.isNotEmpty &&
+                        app.releases.first.appIcon != null &&
+                        app.releases.first.appIcon!.isNotEmpty &&
+                        app.releases.first.appIcon != 'Android'))
                   Container(
                     width: context.scale(56),
                     height: context.scale(56),
                     clipBehavior: Clip.hardEdge,
                     decoration: BoxDecoration(
-                      // shape: BoxShape.circle,
-                      // border: Border.all(color: Colors.white.withValues(alpha: 0.20), width: 1),
-                      image: DecorationImage(image: _getIconProvider(app.releases.first.appIcon!), fit: BoxFit.cover),
+                      image: DecorationImage(
+                        image: _getIconProvider(
+                          (app.icon != null && app.icon!.isNotEmpty && app.icon != 'Android')
+                              ? app.icon!
+                              : app.releases.first.appIcon!,
+                        ),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   )
                 else

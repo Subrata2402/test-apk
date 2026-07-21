@@ -24,6 +24,7 @@ class AppModel {
   final List<ReleaseModel> releases;
   final List<MemberModel> members;
   final String? memberRole;
+  final String? icon;
 
   const AppModel({
     required this.id,
@@ -33,17 +34,28 @@ class AppModel {
     required this.releases,
     required this.members,
     this.memberRole,
+    this.icon,
   });
 
-  factory AppModel.fromJson(Map<String, dynamic> json) => AppModel(
-    id: json['_id'] as String? ?? json['id'] as String,
-    name: json['name'] as String,
-    packageName: json['packageName'] as String? ?? '',
-    description: json['description'] as String? ?? '',
-    releases: (json['releases'] as List?)?.map((r) => ReleaseModel.fromJson(r as Map<String, dynamic>)).toList() ?? [],
-    members: (json['members'] as List?)?.map((m) => MemberModel.fromJson(m as Map<String, dynamic>)).toList() ?? [],
-    memberRole: json['memberRole'] as String?,
-  );
+  factory AppModel.fromJson(Map<String, dynamic> json) {
+    final membersList = json['members'] as List? ?? [];
+    final releasesList = json['releases'] as List? ?? [];
+
+    return AppModel(
+      id: json['_id'] as String? ?? json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      packageName: json['packageName'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      releases: releasesList
+          .map((r) => ReleaseModel.fromJson(r as Map<String, dynamic>))
+          .toList(),
+      members: membersList
+          .map((m) => MemberModel.fromJson(m as Map<String, dynamic>))
+          .toList(),
+      memberRole: json['memberRole'] as String?,
+      icon: json['icon'] as String?,
+    );
+  }
 
   ReleaseModel? get latestRelease => releases.isNotEmpty ? releases.first : null;
 

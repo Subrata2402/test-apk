@@ -5,6 +5,7 @@ import 'package:flutterapp/core/api_service.dart';
 import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/constants.dart';
 import 'package:flutterapp/models/app_model.dart';
+import 'package:flutterapp/models/release_model.dart';
 import 'package:flutterapp/presentations/release_detail/screens/release_detail_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/orb.dart';
@@ -22,14 +23,60 @@ class ReleaseListScreen extends StatefulWidget {
 
 class _ReleaseListScreenState extends State<ReleaseListScreen> {
   late AppModel _app;
+  List<ReleaseModel> _releases = [];
+  List<MemberModel> _members = [];
+  bool _isLoadingReleases = false;
+  bool _isLoadingMembers = false;
 
   @override
   void initState() {
     super.initState();
     _app = widget.app;
+    _releases = widget.app.releases;
+    _members = widget.app.members;
+    _fetchReleases();
+    _fetchMembers();
+  }
+
+  Future<void> _fetchReleases() async {
+    setState(() => _isLoadingReleases = true);
+    try {
+      final response = await ApiService.instance.getAppReleases(_app.id);
+      if (response.statusCode == 200) {
+        final body = response.data as Map<String, dynamic>;
+        final list = body['data']['releases'] as List;
+        final releases = list.map((r) => ReleaseModel.fromJson(r as Map<String, dynamic>)).toList();
+        setState(() {
+          _releases = releases;
+        });
+      }
+    } catch (_) {} finally {
+      setState(() => _isLoadingReleases = false);
+    }
+  }
+
+  Future<void> _fetchMembers() async {
+    setState(() => _isLoadingMembers = true);
+    try {
+      final response = await ApiService.instance.getAppMembers(_app.id);
+      if (response.statusCode == 200) {
+        final body = response.data as Map<String, dynamic>;
+        final list = body['data']['members'] as List;
+        final members = list.map((m) => MemberModel.fromJson(m as Map<String, dynamic>)).toList();
+        setState(() {
+          _members = members;
+        });
+      }
+    } catch (_) {} finally {
+      setState(() => _isLoadingMembers = false);
+    }
   }
 
   Future<void> _refreshAppDetails() async {
+    await Future.wait([
+      _fetchReleases(),
+      _fetchMembers(),
+    ]);
     try {
       final response = await ApiService.instance.getApps();
       if (response.statusCode == 200) {
@@ -139,7 +186,14 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           slivers: [
                             SliverToBoxAdapter(child: SizedBox(height: context.scale(20))),
-                            if (_app.releases.isEmpty)
+                            if (_isLoadingReleases)
+                              SliverFillRemaining(
+                                hasScrollBody: false,
+                                child: Center(
+                                  child: CircularProgressIndicator(color: AppColors.accent),
+                                ),
+                              )
+                            else if (_releases.isEmpty)
                               SliverFillRemaining(
                                 hasScrollBody: false,
                                 child: Center(
@@ -169,14 +223,14 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                 sliver: SliverList(
                                   delegate: SliverChildBuilderDelegate(
                                     (_, i) => ReleaseCard(
-                                      release: _app.releases[i],
+                                      release: _releases[i],
                                       onTap: () => Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (_) => ReleaseDetailScreen(release: _app.releases[i], app: _app),
+                                          builder: (_) => ReleaseDetailScreen(release: _releases[i], app: _app),
                                         ),
                                       ),
                                     ),
-                                    childCount: _app.releases.length,
+                                    childCount: _releases.length,
                                   ),
                                 ),
                               ),
@@ -222,7 +276,14 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                 ),
                               ),
                             ),
-                            if (_app.members.isEmpty)
+                            if (_isLoadingMembers)
+                              SliverFillRemaining(
+                                hasScrollBody: false,
+                                child: Center(
+                                  child: CircularProgressIndicator(color: AppColors.accent),
+                                ),
+                              )
+                            else if (_members.isEmpty)
                               SliverFillRemaining(
                                 hasScrollBody: false,
                                 child: Center(
@@ -251,8 +312,8 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                                 padding: EdgeInsets.symmetric(horizontal: context.scale(20)),
                                 sliver: SliverList(
                                   delegate: SliverChildBuilderDelegate(
-                                    (_, i) => MemberCard(member: _app.members[i]),
-                                    childCount: _app.members.length,
+                                    (_, i) => MemberCard(member: _members[i]),
+                                    childCount: _members.length,
                                   ),
                                 ),
                               ),

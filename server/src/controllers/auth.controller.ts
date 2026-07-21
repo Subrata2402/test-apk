@@ -116,6 +116,11 @@ export const logout = async (
   next: NextFunction
 ): Promise<void> => {
   try {
+    const { fcmToken } = req.body || {};
+    if (req.user && fcmToken) {
+      req.user.fcmTokens = req.user.fcmTokens?.filter(t => t !== fcmToken) || [];
+      await req.user.save();
+    }
     res.status(200).json({
       status: 'success',
       message: 'Logged out successfully',

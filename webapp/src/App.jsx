@@ -22,6 +22,7 @@ export default function App() {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isAuthChecking, setIsAuthChecking] = useState(!!localStorage.getItem('token'));
   const [isLoadingApps, setIsLoadingApps] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const fetchApps = async (token) => {
     setIsLoadingApps(true);
@@ -99,17 +100,42 @@ export default function App() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  const handleLoginSuccess = (userData) => {
-    setUser(userData);
+  const handleLoginSuccess = async (userData) => {
     const token = localStorage.getItem('token');
     if (token) {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/users/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        if (response.ok && data.status === 'success') {
+          setUser({
+            name: data.data.user.name,
+            email: data.data.user.email,
+            avatar: data.data.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase(),
+            picture: data.data.user.picture,
+            role: data.data.user.role,
+            isDriveConfigured: data.data.user.isDriveConfigured,
+          });
+        } else {
+          setUser(userData);
+        }
+      } catch (err) {
+        console.error('Failed to fetch user details after login:', err);
+        setUser(userData);
+      }
       fetchApps(token);
+    } else {
+      setUser(userData);
     }
     // Redirect to dashboard on successful login
     navigate('/dashboard');
   };
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     const token = localStorage.getItem('token');
     if (token) {
       try {
@@ -127,6 +153,7 @@ export default function App() {
     setUser(null);
     setApps(initialApps);
     setSelectedAppId(initialApps[0]?.id || null);
+    setIsLoggingOut(false);
     navigate('/');
   };
 
@@ -244,6 +271,16 @@ export default function App() {
 
       <AlertModal config={alertConfig} onClose={() => setAlertConfig(null)} />
       <ConfirmModal config={confirmConfig} onClose={() => setConfirmConfig(null)} />
+
+      {isLoggingOut && (
+        <div className="modal-overlay flex-center" style={{ zIndex: 9999, background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(10px)' }}>
+          <div className="google-loading-state" style={{ color: '#ffffff' }}>
+            <div className="spinner"></div>
+            <p style={{ marginTop: '16px', fontSize: '1.1rem', fontWeight: '500' }}>Logging out...</p>
+            <span className="loading-subtext" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>Cleaning up session data</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -35,7 +35,11 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
                     onClick={() => onSelectApp(app._id || app.id)}
                   >
                     <div className="app-nav-icon-wrapper">
-                      <Icons.Smartphone size={18} />
+                      {app.icon && (app.icon.startsWith('data:') || app.icon.startsWith('http')) ? (
+                        <img src={app.icon} alt={app.name} className="app-nav-icon-img" style={{ width: '18px', height: '18px', borderRadius: '4px', objectFit: 'cover' }} />
+                      ) : (
+                        <Icons.Smartphone size={18} />
+                      )}
                     </div>
                     <div className="app-nav-info">
                       <span className="app-nav-name">{app.name}</span>
@@ -124,7 +128,11 @@ export default function Dashboard({ user, apps, selectedAppId, onSelectApp, onCr
                       className="quick-app-card glass-card"
                       onClick={() => onSelectApp(app._id || app.id)}
                     >
-                      <Icons.Smartphone size={24} className="quick-app-icon" />
+                      {app.icon && (app.icon.startsWith('data:') || app.icon.startsWith('http')) ? (
+                        <img src={app.icon} alt={app.name} className="quick-app-icon-img" style={{ width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', marginBottom: '8px' }} />
+                      ) : (
+                        <Icons.Smartphone size={24} className="quick-app-icon" />
+                      )}
                       <h4>{app.name}</h4>
                       <code>{app.packageName}</code>
                     </button>
