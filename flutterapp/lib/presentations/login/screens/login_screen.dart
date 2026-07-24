@@ -1,11 +1,14 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/auth_service.dart';
 import 'package:flutterapp/core/constants.dart';
+import 'package:flutterapp/core/legal_texts.dart';
 import 'package:flutterapp/presentations/app_list/screens/app_list_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/orb.dart';
 import 'package:flutterapp/widgets/glass_panel.dart';
+import 'package:flutterapp/widgets/legal_document_viewer.dart';
 import 'package:flutterapp/presentations/login/widgets/login_logo_tile.dart';
 import 'package:flutterapp/presentations/login/widgets/login_info_row.dart';
 import 'package:flutterapp/presentations/login/widgets/login_chip.dart';
@@ -27,6 +30,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   late AnimationController _ctrl;
   late Animation<double> _fade;
   late Animation<Offset> _slide;
+  late TapGestureRecognizer _termsRecognizer;
+  late TapGestureRecognizer _privacyRecognizer;
 
   @override
   void initState() {
@@ -38,11 +43,32 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
     _ctrl.forward();
+
+    _termsRecognizer = TapGestureRecognizer()
+      ..onTap = () {
+        LegalDocumentViewer.showModal(
+          context,
+          title: 'Terms of Service',
+          lastUpdated: LegalTexts.termsOfServiceLastUpdated,
+          sections: LegalTexts.termsOfService,
+        );
+      };
+    _privacyRecognizer = TapGestureRecognizer()
+      ..onTap = () {
+        LegalDocumentViewer.showModal(
+          context,
+          title: 'Privacy Policy',
+          lastUpdated: LegalTexts.privacyPolicyLastUpdated,
+          sections: LegalTexts.privacyPolicy,
+        );
+      };
   }
 
   @override
   void dispose() {
     _ctrl.dispose();
+    _termsRecognizer.dispose();
+    _privacyRecognizer.dispose();
     super.dispose();
   }
 
@@ -215,10 +241,36 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       LoginSignInButton(isLoading: _isLoading, onPressed: _isLoading ? null : _handleGoogleSignIn),
 
                       SizedBox(height: context.scale(18)),
-                      Text(
-                        kLoginConfirmation,
-                        style: GoogleFonts.inter(fontSize: context.scale(12), color: AppColors.textTertiary),
+                      RichText(
                         textAlign: TextAlign.center,
+                        text: TextSpan(
+                          style: GoogleFonts.inter(
+                            fontSize: context.scale(12),
+                            color: AppColors.textTertiary,
+                            height: 1.4,
+                          ),
+                          children: [
+                            const TextSpan(text: 'By signing in, you agree to our '),
+                            TextSpan(
+                              text: 'Terms of Service',
+                              style: const TextStyle(
+                                color: AppColors.accentLight,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              recognizer: _termsRecognizer,
+                            ),
+                            const TextSpan(text: ' and '),
+                            TextSpan(
+                              text: 'Privacy Policy',
+                              style: const TextStyle(
+                                color: AppColors.accentLight,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              recognizer: _privacyRecognizer,
+                            ),
+                            const TextSpan(text: '.'),
+                          ],
+                        ),
                       ),
                       SizedBox(height: context.scale(12)),
                     ],
