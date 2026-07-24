@@ -33,7 +33,7 @@ class AuthService {
         final body = response.data as Map<String, dynamic>;
         final token = body['token'] as String;
         await StorageService.instance.saveToken(token);
-        
+
         // Fetch updated user details from /users/me
         try {
           final profileResponse = await ApiService.instance.getUserProfile();

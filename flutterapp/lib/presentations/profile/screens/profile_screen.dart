@@ -32,10 +32,7 @@ class ProfileScreen extends StatelessWidget {
         final curve = CurvedAnimation(parent: anim1, curve: Curves.easeOutBack);
         return ScaleTransition(
           scale: curve,
-          child: FadeTransition(
-            opacity: anim1,
-            child: const LogoutConfirmationDialog(),
-          ),
+          child: FadeTransition(opacity: anim1, child: const LogoutConfirmationDialog()),
         );
       },
     );
@@ -45,9 +42,7 @@ class ProfileScreen extends StatelessWidget {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (ctx) => const Center(
-          child: CircularProgressIndicator(color: AppColors.accent),
-        ),
+        builder: (ctx) => const Center(child: CircularProgressIndicator(color: AppColors.accent)),
       );
       await AuthService.instance.signOut();
       if (context.mounted) {

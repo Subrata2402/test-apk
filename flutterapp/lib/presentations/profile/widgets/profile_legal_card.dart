@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterapp/core/app_colors.dart';
 import 'package:flutterapp/core/legal_texts.dart';
 import 'package:flutterapp/presentations/profile/screens/about_screen.dart';
+import 'package:flutterapp/presentations/profile/screens/feedback_screen.dart';
 import 'package:flutterapp/utils/extensions.dart';
 import 'package:flutterapp/widgets/legal_document_viewer.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,6 +26,15 @@ class ProfileLegalCard extends StatelessWidget {
           ),
           child: Column(
             children: [
+              _legalRow(
+                context,
+                icon: Icons.feedback_outlined,
+                label: 'Send Feedback',
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FeedbackScreen()));
+                },
+              ),
+              Divider(color: Colors.white.withValues(alpha: 0.08), height: 0.8, thickness: 0.8),
               _legalRow(
                 context,
                 icon: Icons.description_outlined,
@@ -58,9 +68,7 @@ class ProfileLegalCard extends StatelessWidget {
                 icon: Icons.info_outline_rounded,
                 label: 'About TestAPK',
                 onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const AboutScreen()),
-                  );
+                  Navigator.of(context).push(MaterialPageRoute(builder: (_) => const AboutScreen()));
                 },
               ),
             ],
@@ -91,11 +99,7 @@ class ProfileLegalCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: Colors.white.withValues(alpha: 0.40),
-                size: context.scale(20),
-              ),
+              Icon(Icons.chevron_right_rounded, color: Colors.white.withValues(alpha: 0.40), size: context.scale(20)),
             ],
           ),
         ),

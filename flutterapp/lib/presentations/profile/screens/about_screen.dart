@@ -19,16 +19,12 @@ class AboutScreen extends StatelessWidget {
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Could not launch $urlString')),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not launch $urlString')));
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -150,10 +146,7 @@ class AboutScreen extends StatelessWidget {
                         // Version
                         Text(
                           'Version 1.0.0+3',
-                          style: GoogleFonts.inter(
-                            fontSize: context.scale(13),
-                            color: AppColors.textSecondary,
-                          ),
+                          style: GoogleFonts.inter(fontSize: context.scale(13), color: AppColors.textSecondary),
                         ),
                         SizedBox(height: context.scale(12)),
 

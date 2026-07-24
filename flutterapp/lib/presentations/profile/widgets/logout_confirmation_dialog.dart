@@ -28,15 +28,8 @@ class LogoutConfirmationDialog extends StatelessWidget {
                 // Icon
                 Container(
                   padding: EdgeInsets.all(context.scale(12)),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.logout_rounded,
-                    color: Colors.redAccent,
-                    size: context.scale(28),
-                  ),
+                  decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.15), shape: BoxShape.circle),
+                  child: Icon(Icons.logout_rounded, color: Colors.redAccent, size: context.scale(28)),
                 ),
                 SizedBox(height: context.scale(16)),
                 // Title
@@ -92,16 +85,11 @@ class LogoutConfirmationDialog extends StatelessWidget {
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: EdgeInsets.symmetric(vertical: context.scale(12)),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(context.scale(10)),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(context.scale(10))),
                         ),
                         child: Text(
                           'Sign Out',
-                          style: GoogleFonts.inter(
-                            fontWeight: FontWeight.w600,
-                            fontSize: context.scale(14),
-                          ),
+                          style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: context.scale(14)),
                         ),
                       ),
                     ),

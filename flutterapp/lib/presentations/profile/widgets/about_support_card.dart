@@ -83,11 +83,7 @@ class AboutSupportCard extends StatelessWidget {
           ),
           if (onTap != null) ...[
             SizedBox(width: context.scale(8)),
-            Icon(
-              Icons.open_in_new_rounded,
-              color: Colors.white.withValues(alpha: 0.30),
-              size: context.scale(16),
-            ),
+            Icon(Icons.open_in_new_rounded, color: Colors.white.withValues(alpha: 0.30), size: context.scale(16)),
           ],
         ],
       ),
@@ -96,10 +92,7 @@ class AboutSupportCard extends StatelessWidget {
     if (onTap != null) {
       return Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          child: tileContent,
-        ),
+        child: InkWell(onTap: onTap, child: tileContent),
       );
     }
 

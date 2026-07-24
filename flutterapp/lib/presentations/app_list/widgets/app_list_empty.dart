@@ -22,7 +22,11 @@ class AppListEmpty extends StatelessWidget {
             Text(
               kAppListEmptyTitle,
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(color: AppColors.textSecondary, fontSize: context.scale(15), letterSpacing: -0.2),
+              style: GoogleFonts.inter(
+                color: AppColors.textSecondary,
+                fontSize: context.scale(15),
+                letterSpacing: -0.2,
+              ),
             ),
             SizedBox(height: context.scale(8)),
             Text(

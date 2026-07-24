@@ -46,12 +46,8 @@ class AppModel {
       name: json['name'] as String? ?? '',
       packageName: json['packageName'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      releases: releasesList
-          .map((r) => ReleaseModel.fromJson(r as Map<String, dynamic>))
-          .toList(),
-      members: membersList
-          .map((m) => MemberModel.fromJson(m as Map<String, dynamic>))
-          .toList(),
+      releases: releasesList.map((r) => ReleaseModel.fromJson(r as Map<String, dynamic>)).toList(),
+      members: membersList.map((m) => MemberModel.fromJson(m as Map<String, dynamic>)).toList(),
       memberRole: json['memberRole'] as String?,
       icon: json['icon'] as String?,
     );

@@ -31,12 +31,8 @@ class LegalDocumentViewer extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withValues(alpha: 0.5),
-      builder: (context) => LegalDocumentViewer(
-        title: title,
-        lastUpdated: lastUpdated,
-        sections: sections,
-        isFullScreen: false,
-      ),
+      builder: (context) =>
+          LegalDocumentViewer(title: title, lastUpdated: lastUpdated, sections: sections, isFullScreen: false),
     );
   }
 
@@ -48,12 +44,8 @@ class LegalDocumentViewer extends StatelessWidget {
   }) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => LegalDocumentViewer(
-          title: title,
-          lastUpdated: lastUpdated,
-          sections: sections,
-          isFullScreen: true,
-        ),
+        builder: (context) =>
+            LegalDocumentViewer(title: title, lastUpdated: lastUpdated, sections: sections, isFullScreen: true),
       ),
     );
   }
@@ -209,10 +201,7 @@ class LegalDocumentViewer extends StatelessWidget {
           topLeft: Radius.circular(context.scale(24)),
           topRight: Radius.circular(context.scale(24)),
         ),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.12),
-          width: 0.8,
-        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12), width: 0.8),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.only(
@@ -256,10 +245,7 @@ class LegalDocumentViewer extends StatelessWidget {
                           SizedBox(height: context.scale(4)),
                           Text(
                             'Last Updated: $lastUpdated',
-                            style: GoogleFonts.inter(
-                              fontSize: context.scale(12),
-                              color: AppColors.textTertiary,
-                            ),
+                            style: GoogleFonts.inter(fontSize: context.scale(12), color: AppColors.textTertiary),
                           ),
                         ],
                       ),
@@ -276,11 +262,7 @@ class LegalDocumentViewer extends StatelessWidget {
                 ),
               ),
               SizedBox(height: context.scale(12)),
-              Divider(
-                color: Colors.white.withValues(alpha: 0.08),
-                height: 0.8,
-                thickness: 0.8,
-              ),
+              Divider(color: Colors.white.withValues(alpha: 0.08), height: 0.8, thickness: 0.8),
 
               // Content
               Expanded(

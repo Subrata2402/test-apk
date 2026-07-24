@@ -148,9 +148,7 @@ class _AppListScreenState extends State<AppListScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => const Center(
-        child: CircularProgressIndicator(color: AppColors.accent),
-      ),
+      builder: (ctx) => const Center(child: CircularProgressIndicator(color: AppColors.accent)),
     );
     await AuthService.instance.signOut();
     if (!mounted) return;

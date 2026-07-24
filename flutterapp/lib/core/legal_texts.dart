@@ -7,7 +7,7 @@ class LegalSection {
 
 class LegalTexts {
   static const String privacyPolicyLastUpdated = 'July 18, 2026';
-  
+
   static const List<LegalSection> privacyPolicy = [
     LegalSection(
       title: '1. Introduction',

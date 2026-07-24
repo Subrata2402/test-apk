@@ -50,7 +50,8 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
           _releases = releases;
         });
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       setState(() => _isLoadingReleases = false);
     }
   }
@@ -67,16 +68,14 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
           _members = members;
         });
       }
-    } catch (_) {} finally {
+    } catch (_) {
+    } finally {
       setState(() => _isLoadingMembers = false);
     }
   }
 
   Future<void> _refreshAppDetails() async {
-    await Future.wait([
-      _fetchReleases(),
-      _fetchMembers(),
-    ]);
+    await Future.wait([_fetchReleases(), _fetchMembers()]);
     try {
       final response = await ApiService.instance.getApps();
       if (response.statusCode == 200) {
@@ -189,9 +188,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                             if (_isLoadingReleases)
                               SliverFillRemaining(
                                 hasScrollBody: false,
-                                child: Center(
-                                  child: CircularProgressIndicator(color: AppColors.accent),
-                                ),
+                                child: Center(child: CircularProgressIndicator(color: AppColors.accent)),
                               )
                             else if (_releases.isEmpty)
                               SliverFillRemaining(
@@ -279,9 +276,7 @@ class _ReleaseListScreenState extends State<ReleaseListScreen> {
                             if (_isLoadingMembers)
                               SliverFillRemaining(
                                 hasScrollBody: false,
-                                child: Center(
-                                  child: CircularProgressIndicator(color: AppColors.accent),
-                                ),
+                                child: Center(child: CircularProgressIndicator(color: AppColors.accent)),
                               )
                             else if (_members.isEmpty)
                               SliverFillRemaining(

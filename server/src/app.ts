@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import appRoutes from './routes/app.routes.js';
 import deviceAuthRoutes from './routes/device-auth.routes.js';
+import feedbackRoutes from './routes/feedback.route.js';
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/v1', healthRoutes);
 app.use('/api/v1', authRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', appRoutes);
+app.use('/api/v1', feedbackRoutes);
 app.use('/api/v1/auth/device', deviceAuthRoutes);
 
 // Handle undefined routes

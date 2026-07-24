@@ -37,10 +37,7 @@ class ApiService {
   }
 
   Future<Response> logout(String? fcmToken) {
-    return _client.post(
-      ApiEndpoints.logout,
-      fcmToken != null ? {'fcmToken': fcmToken} : {},
-    );
+    return _client.post(ApiEndpoints.logout, fcmToken != null ? {'fcmToken': fcmToken} : {});
   }
 
   Future<Response> acceptInvitation(String appId) {

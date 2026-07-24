@@ -31,9 +31,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.release.appIcon != null &&
-        widget.release.appIcon!.isNotEmpty &&
-        widget.release.appIcon != 'Android') {
+    if (widget.release.appIcon != null && widget.release.appIcon!.isNotEmpty && widget.release.appIcon != 'Android') {
       _iconProvider = _getIconProvider(widget.release.appIcon!);
     }
   }
@@ -148,9 +146,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (release.appIcon != null &&
-                                release.appIcon!.isNotEmpty &&
-                                release.appIcon != 'Android')
+                            if (release.appIcon != null && release.appIcon!.isNotEmpty && release.appIcon != 'Android')
                               Container(
                                 width: context.scale(56),
                                 height: context.scale(56),
@@ -172,10 +168,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                                 decoration: BoxDecoration(
                                   color: AppColors.accent.withValues(alpha: 0.18),
                                   borderRadius: BorderRadius.circular(context.scale(14)),
-                                  border: Border.all(
-                                    color: AppColors.accent.withValues(alpha: 0.30),
-                                    width: 0.8,
-                                  ),
+                                  border: Border.all(color: AppColors.accent.withValues(alpha: 0.30), width: 0.8),
                                 ),
                                 child: Icon(
                                   Icons.android_rounded,
@@ -239,10 +232,7 @@ class _ReleaseDetailScreenState extends State<ReleaseDetailScreen> {
                                 decoration: BoxDecoration(
                                   color: AppColors.orb2.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: AppColors.orb2.withValues(alpha: 0.30),
-                                    width: 0.8,
-                                  ),
+                                  border: Border.all(color: AppColors.orb2.withValues(alpha: 0.30), width: 0.8),
                                 ),
                                 child: Center(
                                   child: Text(

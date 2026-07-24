@@ -28,10 +28,7 @@ class ReleaseCard extends StatelessWidget {
               height: context.scale(44),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.accent.withValues(alpha: 0.25),
-                    AppColors.accentDark.withValues(alpha: 0.15),
-                  ],
+                  colors: [AppColors.accent.withValues(alpha: 0.25), AppColors.accentDark.withValues(alpha: 0.15)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),

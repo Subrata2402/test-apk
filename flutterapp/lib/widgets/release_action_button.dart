@@ -82,9 +82,11 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
       final packageName = arguments['packageName'] as String?;
       final status = arguments['status'] as int?;
       final message = arguments['message'] as String?;
-      
-      debugPrint('ReleaseActionButton: Received install status change for $packageName: status=$status, message=$message');
-      
+
+      debugPrint(
+        'ReleaseActionButton: Received install status change for $packageName: status=$status, message=$message',
+      );
+
       if (packageName == widget.app.packageName) {
         if (status == 0) {
           if (mounted) {
@@ -155,18 +157,16 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
     try {
       final file = await _getApkFile();
 
-      final response = await ApiService.instance.downloadRelease(
-        widget.app.id,
-        widget.release.buildNumber,
-        file.path,
-        (received, total) {
-          if (total > 0 && mounted) {
-            setState(() {
-              _downloadProgress = received / total;
-            });
-          }
-        },
-      );
+      final response = await ApiService.instance.downloadRelease(widget.app.id, widget.release.buildNumber, file.path, (
+        received,
+        total,
+      ) {
+        if (total > 0 && mounted) {
+          setState(() {
+            _downloadProgress = received / total;
+          });
+        }
+      });
 
       if (response.statusCode != 200) {
         if (widget.compact && mounted) {
@@ -234,19 +234,13 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
         });
       }
       try {
-        final bool success = await _platform.invokeMethod('installApk', {
-          'apkPath': _apkFile!.path,
-        });
+        final bool success = await _platform.invokeMethod('installApk', {'apkPath': _apkFile!.path});
         if (!success && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to start installation')),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to start installation')));
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Installation error: $e')),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Installation error: $e')));
         }
       }
     }
@@ -408,13 +402,8 @@ class _ReleaseActionButtonState extends State<ReleaseActionButton> with WidgetsB
                             ),
                           )
                         else if (buttonIcon != null)
-                          Icon(
-                            buttonIcon,
-                            size: iconSize,
-                            color: Colors.white,
-                          ),
-                        if (_isDownloading || _isInstalling || buttonIcon != null)
-                          SizedBox(width: context.scale(8)),
+                          Icon(buttonIcon, size: iconSize, color: Colors.white),
+                        if (_isDownloading || _isInstalling || buttonIcon != null) SizedBox(width: context.scale(8)),
                         Text(
                           buttonText,
                           style: GoogleFonts.inter(

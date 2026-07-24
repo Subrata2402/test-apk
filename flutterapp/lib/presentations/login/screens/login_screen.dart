@@ -253,19 +253,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             const TextSpan(text: 'By signing in, you agree to our '),
                             TextSpan(
                               text: 'Terms of Service',
-                              style: const TextStyle(
-                                color: AppColors.accentLight,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: const TextStyle(color: AppColors.accentLight, fontWeight: FontWeight.w600),
                               recognizer: _termsRecognizer,
                             ),
                             const TextSpan(text: ' and '),
                             TextSpan(
                               text: 'Privacy Policy',
-                              style: const TextStyle(
-                                color: AppColors.accentLight,
-                                fontWeight: FontWeight.w600,
-                              ),
+                              style: const TextStyle(color: AppColors.accentLight, fontWeight: FontWeight.w600),
                               recognizer: _privacyRecognizer,
                             ),
                             const TextSpan(text: '.'),
